@@ -1,7 +1,7 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
 import {catalogData,demo,whatsapp} from '@/lib/api';
-import {Product,seed} from '@/lib/catalog';
+import {Product,purchaseLimit,seed} from '@/lib/catalog';
 import {money} from '@/lib/model';
 import {thumbnailUrl} from '@/lib/thumbnail';
 
@@ -35,12 +35,12 @@ export default function PurchaseForm(){
 
  const purchasable=products.filter(p=>p.active&&p.mode!=='alquiler');
  const selected=purchasable.find(p=>p.id===productId);
- const available=selected?.stock||0;
+ const available=selected?purchaseLimit(selected):0;
  const canSend=!!selected&&available>0&&Number.isInteger(quantity)&&quantity>=1&&quantity<=available;
 
  function send(e:React.FormEvent<HTMLFormElement>){
   e.preventDefault();
-  if(!selected||!canSend){setError('Elegí una cantidad que no supere las unidades disponibles.');return}
+  if(!selected||!canSend){setError('Elegí una cantidad dentro del límite indicado para este producto.');return}
   const condition=selected.area==='disfraces'&&selected.saleCondition?' Condición de venta: '+selected.saleCondition+'.':'';
   const measures=madeToOrder(selected)?' Entiendo que la entrega puede demorar '+(selected.deliveryTime||'aproximadamente 1 mes')+'. Por favor, indíquenme qué medidas tengo que enviar para confeccionarlo.':'';
   const message='¡Hola! Quiero consultar para comprar '+quantity+' × '+selected.name+' ('+(selected.area==='cotillon'?'Cotillón':'Disfraces')+', '+selected.category+'). Precio publicado: '+money(selected.price)+' por unidad.'+condition+measures+' Mi nombre es '+name.trim()+'.'+(note.trim()?' Consulta: '+note.trim():'');
@@ -65,7 +65,7 @@ export default function PurchaseForm(){
     <span><strong>{selected.name}</strong><br/>{selected.category} · {money(selected.price)} por unidad<br/>
      {selected.area==='disfraces'&&selected.saleCondition&&<>Condición: <strong>{selected.saleCondition}</strong><br/></>}
      {madeToOrder(selected)&&<>Entrega estimada: {selected.deliveryTime||'aproximadamente 1 mes'}. Pediremos tus medidas por WhatsApp.<br/></>}
-     {available>0?`Disponibles para consultar: ${available}`:'Sin unidades disponibles para consultar'}
+     {madeToOrder(selected)?`Máximo por consulta: ${available}`:available>0?`Unidades disponibles: ${available}`:'Sin unidades disponibles para consultar'}
     </span>
    </div>}
    <div className="field-grid">
@@ -74,7 +74,7 @@ export default function PurchaseForm(){
    </div>
    <label>Comentario opcional<textarea maxLength={500} value={note} onChange={e=>setNote(e.target.value)} placeholder="Color, talle o fecha que necesitás"/></label>
    <button className="button dark" disabled={!canSend}>Consultar compra por WhatsApp</button>
-   <small>Esta consulta no confirma una compra ni realiza un pago. El local verificará el stock antes de cerrar la venta.</small>
+   <small>Esta consulta no confirma una compra ni realiza un pago. El local verificará {madeToOrder(selected)?'la capacidad de confección':'el stock'} antes de cerrar la venta.</small>
   </form>}
   <dialog ref={dialogRef} className="sale-condition-dialog" aria-labelledby="sale-condition-title" onCancel={e=>{e.preventDefault();setPending(null)}} onClick={e=>{if(e.target===e.currentTarget)setPending(null)}}>
    <div className="sale-condition-content">

@@ -162,7 +162,7 @@ Ejemplo: alquiler de $40.000. Hoy recibís $20.000 de seña y al retirar recibí
 4. Para registrar el saldo, tocá **Nuevo movimiento** y cargá el segundo cobro con su fecha real.
 5. Si hubo un costo de limpieza de $3.000, cargalo una sola vez en el costo de una de las operaciones. No lo repitas en la seña y en el saldo.
 
-Una venta permite elegir el producto y la cantidad, y descuenta stock. Un cobro de alquiler no puede superar el total acordado sumando los cobros anteriores. Los gastos y reintegros son salidas de dinero. Una anulación conserva el movimiento como anulado y, si era una venta, repone el stock.
+Una venta inmediata permite elegir el producto y la cantidad, y descuenta stock. Una venta de un disfraz **Nuevo a pedido** respeta el límite por consulta, pero no descuenta stock físico; al anularla tampoco repone stock. Un cobro de alquiler no puede superar el total acordado sumando los cobros anteriores. Los gastos y reintegros son salidas de dinero. Una anulación conserva el movimiento como anulado.
 
 Si se corta la conexión, podés repetir **Registrar movimiento** sin duplicarlo mientras conserves el mismo formulario. Para una operación distinta, tocá **Nuevo movimiento**. Revisá la lista antes de volver a cargar un cobro tras cerrar o recargar la página.
 
@@ -200,7 +200,7 @@ Dejá `MAIL_MODE=test`. Las dos notificaciones se dirigen al correo del negocio 
 - Intentá abrir `/solicitud/` sin la clave: no debe mostrar datos.
 - En administración, descargá los documentos de prueba. Pedí una corrección y completala desde el enlace privado.
 - Confirmá la solicitud, registrá una seña, luego un saldo. Revisá estadísticas y comprobá que no permita cobrar de más.
-- Registrá y anulá una venta. El stock debe bajar y luego volver al valor anterior.
+- Registrá y anulá una venta inmediata. El stock debe bajar y luego volver al valor anterior. En un disfraz **Nuevo a pedido**, el límite por consulta se respeta, pero el stock no cambia.
 - Probá el formulario de arrepentimiento y su gestión desde el panel.
 - Probá desde un teléfono real los archivos, la firma y el acceso a WhatsApp.
 - Revisá en Sheets los registros y en Drive que la carpeta siga restringida.
