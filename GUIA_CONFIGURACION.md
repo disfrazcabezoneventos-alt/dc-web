@@ -211,6 +211,7 @@ Dejá `MAIL_MODE=test`. Las dos notificaciones se dirigen al correo del negocio 
 - Probá desde un teléfono real los archivos, la firma y el acceso a WhatsApp.
 - Revisá en Sheets los registros y en Drive que la carpeta siga restringida.
 - Confirmá la recepción de los correos de prueba. Si un aviso está en `review`, revisá el correo antes de reenviarlo manualmente: pudo haberse enviado aunque hubiera una interrupción.
+- Si la pestaña `notifications` muestra `retry` porque se agotó la cuota de correo, esperá a que vuelva la cuota y ejecutá **`reintentarAvisosSinCuota`** desde el selector de funciones del editor Apps Script. Procesa hasta 10 avisos por ejecución, sólo del `MAIL_MODE` actual. No reenvía estados `sent`, `sending` ni `review` para evitar duplicados. Revisá el resultado en el registro de ejecución y la pestaña `notifications`.
 - Cuando todo esté bien, cambiá `MAIL_MODE` a `production`. Las solicitudes nuevas enviarán el aviso al negocio y al cliente. Los avisos anteriores no se reenvían automáticamente.
 
 La compilación, las pruebas locales y la revisión visual están hechas; las conexiones con tus cuentas deben verificarse con este recorrido. No se migraron reservas antiguas ni datos de Cloudflare. Si querés conservarlos en la nueva aplicación, hace falta una exportación autorizada y una migración específica.

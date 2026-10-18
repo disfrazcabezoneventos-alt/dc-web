@@ -100,12 +100,35 @@ function submit_(b){
  return {id,code,mailStatus:row.mailStatus};
 }
 /* Avisos privados sin adjuntos: conserva test/production e incertidumbre de envío. */
+function sendNotice_(r,kind,mode,row){
+ const business=config_('BUSINESS_EMAIL'),to=mode==='test'||kind==='business'?business:r.data.email;
+ const details='Solicitud: '+r.code+'\nCliente: '+r.data.fullName+'\nPersonajes: '+r.data.items.map(i=>i.quantity+' × '+i.name).join(', ')+'\nRetiro: '+r.data.pickupDate+'\nDevolución: '+r.data.returnDate+'\nAlquiler declarado: $ '+r.data.total+'\nPago declarado: $ '+paid(r.data)+' (pendiente de verificación)';
+ try{MailApp.sendEmail({to,subject:(mode==='test'?'[PRUEBA] ':'')+'Recibimos la solicitud '+r.code+' · Disfraz Cabezón',body:details+'\n\nPendiente de revisión. Este aviso NO confirma la reserva. Conservá el enlace privado del formulario. No enviamos documentos personales por correo.'+(kind==='business'?'\nPanel: '+config_('SITE_URL')+'/admin/':''),name:'Disfraz Cabezón',replyTo:business});row.status='sent';}catch(_){row.status='review';}
+ row.updatedAt=now_();put_('notifications',row);return row.status;
+}
 function notify_(r){const mode=config_('MAIL_MODE');if(!['test','production'].includes(mode))return 'disabled';const results=['business','customer'].map(kind=>{
  const id=mode+':'+r.id+':'+kind+':received:v1',old=rows_('notifications').find(x=>x.id===id);if(old)return old.status==='sent'?'sent':'review';
  const row={id,status:'sending',updatedAt:now_()};if(MailApp.getRemainingDailyQuota()<1){row.status='retry';put_('notifications',row);return 'retry';}put_('notifications',row);
- const business=config_('BUSINESS_EMAIL'),to=mode==='test'||kind==='business'?business:r.data.email;
- const details='Solicitud: '+r.code+'\nCliente: '+r.data.fullName+'\nPersonajes: '+r.data.items.map(i=>i.quantity+' × '+i.name).join(', ')+'\nRetiro: '+r.data.pickupDate+'\nDevolución: '+r.data.returnDate+'\nAlquiler declarado: $ '+r.data.total+'\nPago declarado: $ '+paid(r.data)+' (pendiente de verificación)';
- try{MailApp.sendEmail({to,subject:(mode==='test'?'[PRUEBA] ':'')+'Recibimos la solicitud '+r.code+' · Disfraz Cabezón',body:details+'\n\nPendiente de revisión. Este aviso NO confirma la reserva. Conservá el enlace privado del formulario. No enviamos documentos personales por correo.'+(kind==='business'?'\nPanel: '+config_('SITE_URL')+'/admin/':''),name:'Disfraz Cabezón',replyTo:business});row.status='sent';}catch(_){row.status='review';}row.updatedAt=now_();put_('notifications',row);return row.status;});return mode==='test'?'test':results.every(s=>s==='sent')?'sent':'review';}
+ return sendNotice_(r,kind,mode,row);
+});return mode==='test'?'test':results.every(s=>s==='sent')?'sent':'review';}
+// Ejecutar manualmente desde el editor. Sólo retoma avisos que nunca llegaron a MailApp por falta de cuota.
+function reintentarAvisosSinCuota(){
+ const mode=config_('MAIL_MODE');need_(['test','production'].includes(mode),'MAIL_MODE debe ser test o production.');
+ return lock_(()=>{
+  const batch=rows_('notifications').filter(row=>row.status==='retry'&&typeof row.id==='string'&&row.id.startsWith(mode+':')).slice(0,10);
+  const requests=new Map(rows_('reservas').map(r=>[r.id,r]));
+  const result={mode,revisados:batch.length,enviados:0,revisionManual:0,omitidos:0,sinCuota:0};
+  for(const row of batch){
+   const match=/^(test|production):([a-f0-9-]{36}):(business|customer):received:v1$/.exec(row.id);
+   const request=match&&match[1]===mode?requests.get(match[2]):null;
+   if(!request){result.omitidos++;continue;}
+   if(MailApp.getRemainingDailyQuota()<1){result.sinCuota=batch.length-result.enviados-result.revisionManual-result.omitidos;break;}
+   row.status='sending';row.updatedAt=now_();put_('notifications',row);
+   if(sendNotice_(request,match[3],mode,row)==='sent')result.enviados++;else result.revisionManual++;
+  }
+  console.log(JSON.stringify(result));return result;
+ });
+}
 function prepararConfiguracion(){const p=props_();if(!config_('SPREADSHEET_ID')){const ss=SpreadsheetApp.create('Disfraz Cabezón — tienda y reservas');p.setProperty('SPREADSHEET_ID',ss.getId());}const ss=SpreadsheetApp.openById(config_('SPREADSHEET_ID'));TABLES.forEach(name=>{let s=ss.getSheetByName(name);if(!s){s=ss.insertSheet(name);s.appendRow(['id','registro_json']);s.setFrozenRows(1);}});if(!config_('PRIVATE_FOLDER_ID'))p.setProperty('PRIVATE_FOLDER_ID',DriveApp.createFolder('Disfraz Cabezón — documentación privada').getId());if(!config_('ADMIN_USER'))p.setProperty('ADMIN_USER','admin');if(!config_('ADMIN_PASSWORD'))p.setProperty('ADMIN_PASSWORD',Utilities.getUuid()+Utilities.getUuid());if(!config_('MAIL_MODE'))p.setProperty('MAIL_MODE','test');if(!config_('BUSINESS_EMAIL'))p.setProperty('BUSINESS_EMAIL','disfrazcabezoneventos@gmail.com');}
 // Ejecutar una vez después de actualizar Code.gs. Se puede repetir sin duplicar datos.
 function prepararCategorias(){prepararConfiguracion();return lock_(()=>{const summary={};CATEGORY_AREAS.forEach(area=>{const table=categoryTable_(area),existing=categories_(area),products=rows_(area),firstRun=!config_('CATEGORIES_SEEDED_V1'),names=firstRun?(area==='disfraces'?SUGGESTED_COSTUME_CATEGORIES.slice():['Otros']):[];if(firstRun)products.forEach(p=>{if(!p.categoryId&&p.category&&categoryKey_(p.category)!==categoryKey_('Sin categoría'))names.push(p.category);});names.forEach(name=>{if(!existing.some(c=>categoryKey_(c.name)===categoryKey_(name))){const category={id:Utilities.getUuid(),area,name:String(name).trim()};put_(table,category);existing.push(category);}});products.forEach(p=>{const category=existing.find(c=>c.id===p.categoryId)||existing.find(c=>categoryKey_(c.name)===categoryKey_(p.category));if(category&&(p.categoryId!==category.id||p.category!==category.name))put_(area,{...p,categoryId:category.id,category:category.name});});summary[area]={categorias:existing.length,productos:products.length};});props_().setProperty('CATEGORIES_SEEDED_V1','yes');return summary;});}

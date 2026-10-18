@@ -2,7 +2,7 @@
 
 ## Comprobado
 
-- [x] Next.js compila con exportación estática para Render (`out/`); TypeScript y las 27 pruebas automatizadas pasan.
+- [x] Next.js compila con exportación estática para Render (`out/`); TypeScript y las 31 pruebas automatizadas pasan.
 - [x] El sitio publicado abre portada, disfraces, cotillón, compra, reservas, administración, condiciones y arrepentimiento.
 - [x] La URL pública de Apps Script responde con el esquema `saleCondition+orderLimit` y los catálogos publicados cargan desde allí.
 - [x] Se muestran las imágenes reales del catálogo; la búsqueda y los estados sin resultados funcionan.
@@ -20,8 +20,8 @@
 - [ ] No se realizó una reserva real ni se enviaron documentos, correos o cobros de prueba en producción.
 - [ ] No se verificó el inicio de sesión privado, la subida de una nueva foto a Cloudinary, los permisos reales de Google Drive ni la administración/caja en vivo. Las pruebas automatizadas de esas reglas usan simuladores.
 - [ ] Queda revisar el sitio en teléfonos físicos y realizar una prueba completa controlada con las cuentas del negocio.
-- [x] `npm audit --omit=dev --audit-level=high` consultó el registro npm y encontró 0 vulnerabilidades en las dependencias de producción.
-- [ ] Los avisos de correo que quedan en `retry` por falta de cuota no se reintentan solos. Los estados de envío incierto permanecen bloqueados para evitar correos duplicados; un reintento seguro requiere una acción administrativa específica.
-- [ ] Los diálogos de categorías y condiciones deben recibir una mejora de manejo del foco y de la tecla Escape para accesibilidad con teclado.
+- [x] `npm audit --audit-level=high` consultó el registro npm y encontró 0 vulnerabilidades, incluidas las dependencias de compilación.
+- [x] Los avisos de correo en `retry` por falta de cuota se pueden reintentar manualmente con `reintentarAvisosSinCuota` desde Apps Script, en lotes de hasta 10. Los estados de envío incierto permanecen bloqueados para evitar duplicados.
+- [x] Los diálogos de eliminación de categorías y condiciones mantienen el foco dentro, cierran con Escape y devuelven el foco al control anterior.
 
 La disponibilidad de disfraces por fecha se confirma manualmente. La estadística de ganancia usa los cobros y costos cargados y es una estimación, no una conciliación bancaria.
