@@ -18,7 +18,7 @@ export default function Admin(){const[token,setToken]=useState(''),[tab,setTab]=
    const listed=(updated.products as Product[]).find(p=>p.id===saved.id);
    if(product.area==='disfraces'&&product.mode!=='alquiler'&&product.saleCondition&&(saved.saleCondition!==product.saleCondition||listed?.saleCondition!==product.saleCondition)){
     setEdit({...product,id:saved.id||product.id});
-    throw new Error('Apps Script guardó el disfraz, pero descartó la condición de venta. Actualizá Code.gs y publicá una nueva versión de la implementación web. Después volvé a guardar este mismo disfraz.');
+    throw new Error('La URL de Apps Script que usa Render guardó el disfraz sin la condición de venta. Verificá que la implementación de esa misma URL muestre version 2 al abrirla; después volvé a guardar este disfraz.');
    }
    setEdit(null);
    setNotice('Producto guardado.');

@@ -27,7 +27,7 @@ function categoryKey_(name){return String(name||'').normalize('NFD').replace(/[\
 function categories_(area){return rows_(categoryTable_(area));}
 function products_(area){const categories=categories_(area);return rows_(area).map(p=>{const category=categories.find(c=>c.id===p.categoryId)||categories.find(c=>!p.categoryId&&categoryKey_(c.name)===categoryKey_(p.category));return {...p,categoryId:category?category.id:'',category:category?category.name:'Sin categoría'};});}
 function categoryName_(name,area,ignoreId){const clean=text_(name,80);need_(clean!=='Sin categoría','Ese nombre está reservado para los productos sin categoría.');need_(!categories_(area).some(c=>c.id!==ignoreId&&categoryKey_(c.name)===categoryKey_(clean)),'Ya existe una categoría con ese nombre.');return clean;}
-function doGet(){return json_({ok:true,data:{service:'Disfraz Cabezón',version:1}});}
+function doGet(){return json_({ok:true,data:{service:'Disfraz Cabezón',version:2,catalogSchema:'saleCondition+orderLimit'}});}
 function reply_(e,result){
  if(!e||!e.parameter||e.parameter.transport!=='frame')return json_(result);
  const id=String(e.parameter.bridgeId||'');
