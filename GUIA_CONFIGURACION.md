@@ -14,7 +14,7 @@ Imaginá el negocio como un local:
 | Cloudinary | El álbum de fotos públicas de los productos |
 | Carpeta privada de Google Drive | DNI, comprobantes y firmas de las reservas |
 
-El sitio **sí es estático**. Render no necesita ejecutar un servidor de Next.js. Las operaciones se envían desde el navegador a Apps Script.
+El sitio **sí es estático**. Render no necesita ejecutar un servidor de Next.js. Las operaciones se envían desde el navegador a Apps Script mediante un formulario invisible; Apps Script devuelve la respuesta a la página. Este mecanismo evita el bloqueo CORS que produciría `fetch` desde Render.
 
 ## 2. Mirar el diseño antes de conectar nada
 
@@ -60,7 +60,7 @@ La primera ejecución ya crea estas propiedades:
 | `MAIL_MODE` | Empieza en `test`. Dejalo así durante las pruebas. |
 | `BUSINESS_EMAIL` | Empieza en `disfrazcabezoneventos@gmail.com`. Verificá que sea correcto. |
 
-Agregá después `SITE_URL`, con la dirección final de Render, por ejemplo `https://tu-sitio.onrender.com`, sin `/` al final. Se usa en el aviso al negocio para abrir la administración.
+Agregá **`SITE_URL`** con la dirección final de Render, por ejemplo `https://dc-web-8ai4.onrender.com`, sin `/` al final. Es necesaria para que Apps Script entregue sus respuestas solamente a tu web y para incluir el enlace de administración en el aviso al negocio. Si cambiás de dominio, actualizá esta propiedad.
 
 El usuario y la contraseña se comprueban **en Apps Script**. Nunca los pongas en variables `NEXT_PUBLIC_`, en el código React ni en GitHub. Una sesión dura hasta seis horas y se cierra antes si Google descarta su caché. El panel permite cerrar sesión manualmente.
 
@@ -96,7 +96,7 @@ Eliminar un producto elimina su registro del catálogo. Su imagen queda en Cloud
 6. Tocá **Implementar** y copiá la URL de aplicación web. Debe terminar en **`/exec`**, no en `/dev`.
 7. Abrila en una ventana privada. Debe mostrar un pequeño JSON con `ok: true` y `Disfraz Cabezón`. Si pide iniciar sesión, revisá la opción de acceso.
 
-Cuando cambies el código `.gs`, no alcanza con guardarlo: **Implementar → Administrar implementaciones → Editar → Nueva versión → Implementar**. Al editar la implementación existente conservás la misma URL.
+Cuando cambies el código `.gs`, no alcanza con guardarlo: **Implementar → Administrar implementaciones → Editar → Nueva versión → Implementar**. Al editar la implementación existente conservás la misma URL. Si el sitio muestra «no se pudo conectar» después de publicar, comprobá que hayas copiado la versión nueva de `Code.gs`, que `SITE_URL` sea exactamente el origen de tu sitio y que Render haya compilado la versión nueva de `lib/api.ts`.
 
 ## 6. El `.env` del proyecto Next.js
 

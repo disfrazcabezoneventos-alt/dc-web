@@ -2,9 +2,39 @@ export const endpoint = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL || '';
 export const demo = !endpoint;
 export async function api(action:string, data:Record<string,unknown>={}, token=''):Promise<any> {
   if(!endpoint) throw new Error('Modo demostración: configurá NEXT_PUBLIC_APPS_SCRIPT_URL para guardar datos reales.');
-  const response = await fetch(endpoint,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,...data,token}),redirect:'follow',signal:AbortSignal.timeout(120000)});
-  if(!response.ok) throw new Error('No se pudo conectar con Apps Script. Intentá nuevamente.');
-  let result;try{result=await response.json();}catch{throw new Error('Apps Script no devolvió JSON. Revisá que la implementación sea pública y termine en /exec.');}
+  // Un formulario dirigido a un iframe permite recibir la respuesta de Apps Script
+  // mediante postMessage. fetch() queda bloqueado por CORS en un sitio estático.
+  const result=await new Promise<{ok:boolean;data?:any;error?:string}>((resolve,reject)=>{
+    const id=crypto.randomUUID(), frame=document.createElement('iframe'), form=document.createElement('form');
+    frame.name='dc-apps-'+id;
+    frame.hidden=true;
+    frame.tabIndex=-1;
+    frame.setAttribute('aria-hidden','true');
+    form.action=endpoint;
+    form.method='POST';
+    form.target=frame.name;
+    form.style.display='none';
+    const field=(name:string,value:string)=>{const input=document.createElement('input');input.type='hidden';input.name=name;input.value=value;form.append(input)};
+    field('transport','frame');
+    field('bridgeId',id);
+    field('origin',location.origin);
+    field('payload',JSON.stringify({action,...data,token}));
+    let done=false;
+    const finish=(error?:Error,value?:{ok:boolean;data?:any;error?:string})=>{
+      if(done)return;done=true;clearTimeout(timer);window.removeEventListener('message',receive);form.remove();frame.remove();
+      if(error)reject(error);else resolve(value!);
+    };
+    const receive=(event:MessageEvent)=>{
+      const origin=event.origin;
+      if(origin!=='https://script.google.com'&&!/^https:\/\/[a-z0-9-]+\.googleusercontent\.com$/.test(origin))return;
+      if(event.data?.type!=='dc-apps-result'||event.data.id!==id)return;
+      finish(undefined,event.data.result);
+    };
+    const timer=setTimeout(()=>finish(new Error('Apps Script tardó demasiado en responder. Si estabas guardando datos, revisá el panel antes de repetir la operación.')),120000);
+    window.addEventListener('message',receive);
+    document.body.append(frame,form);
+    form.submit();
+  });
   if(!result.ok) throw new Error(result.error||'No se pudo completar la operación.');
   return result.data;
 }

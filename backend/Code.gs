@@ -21,7 +21,20 @@ function date_(v){need_(typeof v==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(v)&&new 
 function now_(){return new Date().toISOString();}
 function today_(){return Utilities.formatDate(new Date(),'America/Argentina/Buenos_Aires','yyyy-MM-dd');}
 function doGet(){return json_({ok:true,data:{service:'Disfraz Cabezón',version:1}});}
-function doPost(e){try{need_(e&&e.postData&&e.postData.contents.length<47000000,'Solicitud demasiado grande.');const b=JSON.parse(e.postData.contents);need_(b&&typeof b.action==='string','Solicitud inválida.');return json_({ok:true,data:lock_(()=>dispatch_(b))});}catch(e){return json_({ok:false,error:String(e.message||'No se pudo completar la operación.').slice(0,300)});}}
+function reply_(e,result){
+ if(!e||!e.parameter||e.parameter.transport!=='frame')return json_(result);
+ const id=String(e.parameter.bridgeId||'');
+ need_(/^[a-f0-9-]{36}$/.test(id),'Identificador de respuesta inválido.');
+ const site=config_('SITE_URL')||'https://dc-web-8ai4.onrender.com';
+ const match=/^https:\/\/[^\s/?#]+/.exec(site);
+ need_(match,'SITE_URL debe empezar con https:// y contener el dominio de Render.');
+ const origin=match[0];
+ need_(e.parameter.origin===origin,'Origen del sitio no configurado. Revisá SITE_URL.');
+ const message=JSON.stringify({type:'dc-apps-result',id,result}).replace(/</g,'\\u003c');
+ const html='<!doctype html><html><body><script>window.top.postMessage('+message+','+JSON.stringify(origin)+');</script></body></html>';
+ return HtmlService.createHtmlOutput(html).setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+function doPost(e){let result;try{need_(e&&e.postData&&e.postData.contents.length<47000000,'Solicitud demasiado grande.');const raw=e.parameter&&e.parameter.transport==='frame'?e.parameter.payload:e.postData.contents;const b=JSON.parse(raw);need_(b&&typeof b.action==='string','Solicitud inválida.');result={ok:true,data:lock_(()=>dispatch_(b))};}catch(error){result={ok:false,error:String(error.message||'No se pudo completar la operación.').slice(0,300)};}return reply_(e,result);}
 function dispatch_(b){
  recoverStock_();
  if(b.action==='catalog')return ['disfraces','cotillon'].flatMap(a=>rows_(a).filter(p=>p.active));
