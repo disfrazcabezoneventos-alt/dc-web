@@ -16,3 +16,8 @@
 .rental-item-thumbnail{width:64px;height:64px}.product-note-with-image{display:flex;align-items:center;gap:13px}.product-note-with-image img{width:72px;height:72px}
 .admin input:disabled{background:#f1eef3;color:#8b8292;cursor:not-allowed}.admin label:has(input:disabled){color:#8b8292}
 @media(prefers-reduced-motion:reduce){.spinner{animation:none;border-top-color:#744a9a}}
+.sale-condition-chip{display:inline-block;margin:7px 0;padding:5px 9px;border-radius:999px;background:#eee4f7;color:#634084;font-size:11px;font-weight:700}
+.sale-condition-dialog{width:min(92vw,540px);max-height:90vh;border:0;border-radius:16px;padding:0;background:var(--paper);color:var(--ink);box-shadow:0 24px 80px #1d132c55}
+.sale-condition-dialog::backdrop{background:#211b2ab8}
+.sale-condition-content{padding:34px;overflow:auto}.sale-condition-content h2{font-size:30px;line-height:1.12;margin:13px 0 20px}.sale-condition-content p{font-size:15px;line-height:1.65}.sale-condition-content .actions{margin-top:28px}
+@media(max-width:760px){.sale-condition-content{padding:25px}.sale-condition-content h2{font-size:25px}}
