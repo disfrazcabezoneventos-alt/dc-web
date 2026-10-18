@@ -16,6 +16,8 @@
 - [x] Formulario y gestión de solicitudes de arrepentimiento.
 - [x] Acceso administrador con usuario y contraseña en propiedades privadas de Apps Script.
 - [x] CRUD separado de disfraces y cotillón, visibilidad y stock.
+- [x] Editor de categorías independiente por área, migración de productos existentes y recategorización al eliminar.
+- [x] Filtros públicos por categorías guardadas en Sheets y enlaces de alquiler/compra con producto precargado.
 - [x] Backend de Google Sheets y archivos personales en Drive privado.
 - [x] Subida firmada de imágenes de productos a Cloudinary desde Apps Script.
 - [x] Caja: ventas, cobros parciales de alquiler, costos, gastos, reintegros y anulaciones.
@@ -27,7 +29,7 @@
 
 ## Verificación realizada localmente
 
-- Compilación de producción: `npm run build`, exportación estática de las ocho páginas de negocio y página 404.
+- Compilación de producción: `npm run build`, exportación estática de las nueve páginas de negocio y página 404.
 - TypeScript: `npm run typecheck`.
 - Doce pruebas automáticas: validación, autenticación, CRUD separado, stock/idempotencia, recuperación tras corte, acceso privado, estados/cobros, archivos, reenvío de reserva, estadísticas, exportación, correo y generación PDF (algunas agrupadas en una prueba).
 - Backend ejecutado con dobles de prueba de Google: verifica las reglas, no los permisos ni el comportamiento real de los servicios Google.

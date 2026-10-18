@@ -1,3 +1,4 @@
+import type {Category,Product} from './catalog';
 export const endpoint = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL || '';
 export const demo = !endpoint;
 export async function api(action:string, data:Record<string,unknown>={}, token=''):Promise<any> {
@@ -47,4 +48,6 @@ export async function rentalApi(action:string,form:FormData){
  for(const [key,value] of form.entries())if(value instanceof Blob)files[key]=await fileData(value);
  return api(action,{data,files,access:sessionStorage.getItem('dc-submit-'+data.requestKey)||''});
 }
+export function legacyCategories(products:Product[]):Category[]{const list:Category[]=[];products.forEach(p=>{if(p.category&&p.category!=='Sin categoría'&&!list.some(c=>c.area===p.area&&c.name===p.category))list.push({id:'legacy:'+p.area+':'+p.category,area:p.area,name:p.category})});return list;}
+export async function catalogData():Promise<{products:Product[];categories:Category[]}>{try{return await api('catalogData')}catch(e){if(!/Acción desconocida/.test((e as Error).message))throw e;const products=await api('catalog') as Product[];return {products,categories:legacyCategories(products)}}}
 export function whatsapp(message='¡Hola! Quiero consultar por disfraces y cotillón.'){return 'https://wa.me/5491149897969?text='+encodeURIComponent(message);}

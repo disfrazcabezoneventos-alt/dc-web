@@ -114,6 +114,8 @@ Cuando existe esta URL, el catálogo consulta Sheets. Si la hoja está vacía, s
 
 ## 7. Entrar como administrador y cargar productos
 
+Si ya tenías el sitio funcionando y querés instalar el editor de categorías, seguí primero la guía corta [`ACTUALIZACION_CATEGORIAS.md`](ACTUALIZACION_CATEGORIAS.md). Ejecutá `prepararCategorias` una vez antes de publicar la nueva versión de Apps Script.
+
 1. Abrí `/admin/` desde el enlace **Acceso administrador** al pie de la web.
 2. Ingresá el `ADMIN_USER` y el `ADMIN_PASSWORD` que están en Apps Script.
 3. Entrá a **Disfraces** o **Cotillón**. Son catálogos independientes y se guardan en pestañas separadas.
