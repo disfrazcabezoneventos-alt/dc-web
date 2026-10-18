@@ -57,7 +57,7 @@ export default function PurchaseForm(){
    <label>Producto
     <select required value={productId} onChange={e=>chooseProduct(e.target.value)}>
      <option value="">Elegí un producto</option>
-     {purchasable.map(p=><option key={p.id} value={p.id}>{p.name} · {p.category}</option>)}
+     {purchasable.map(p=><option key={p.id} value={p.id} disabled={purchaseLimit(p)<1}>{p.name} · {p.category}{purchaseLimit(p)<1?' · Sin stock':''}</option>)}
     </select>
    </label>
    {selected&&<div className="rental-product-note product-note-with-image">
