@@ -1,0 +1,231 @@
+# Disfraz Cabezón: de la carpeta a tu web funcionando
+
+Esta guía está pensada para hacer los pasos de a uno. El proyecto está en `C:\Users\Usuario\OneDrive\Documentos\dc-web`.
+
+## 1. Qué hace cada parte
+
+Imaginá el negocio como un local:
+
+| Parte | Para qué sirve |
+|---|---|
+| Next.js + Render Static Site | La vidriera: páginas, catálogo, formulario y panel |
+| Apps Script | La persona detrás del mostrador: valida y guarda cada operación |
+| Google Sheets | El registro: productos, reservas, caja y avisos |
+| Cloudinary | El álbum de fotos públicas de los productos |
+| Carpeta privada de Google Drive | DNI, comprobantes y firmas de las reservas |
+
+El sitio **sí es estático**. Render no necesita ejecutar un servidor de Next.js. Las operaciones se envían desde el navegador a Apps Script.
+
+## 2. Mirar el diseño antes de conectar nada
+
+Abrí una terminal en la carpeta del proyecto. Necesitás Node.js 22.13 o posterior.
+
+```powershell
+npm ci
+npm run dev
+```
+
+Abrí `http://127.0.0.1:3000`. Dejá la terminal abierta mientras lo usás. Para detenerlo, presioná `Ctrl+C`.
+
+Sin la URL de Apps Script, aparecen productos de ejemplo, sus precios están marcados como demostración, el formulario permite recorrer los cinco pasos sin enviar y `/admin/` ofrece un botón para explorar el panel. No hay reservas ni ingresos inventados en Sheets.
+
+## 3. Crear el nuevo Apps Script
+
+**Usá un proyecto nuevo de Apps Script para esta versión.** Tu script anterior es un receptor de avisos firmado por el servidor de Cloudflare. Este nuevo script también administra catálogo, documentos y reservas: su API es diferente. No pegues ambos `doPost` en el mismo proyecto ni reemplaces el servicio antiguo mientras la web anterior lo usa. El registro anterior de notificaciones queda intacto.
+
+1. Entrá a [Google Apps Script](https://script.google.com/) con la cuenta del negocio.
+2. Elegí **Nuevo proyecto**. Nombre sugerido: `Disfraz Cabezón — tienda nueva`.
+3. Abrí el archivo `Código.gs` o `Code.gs` que aparece inicialmente. Borrá la función de ejemplo y pegá TODO el contenido de `backend/Code.gs` de esta carpeta.
+4. Al lado de **Archivos**, tocá **+ → Secuencia de comandos**. Llamalo `Validation` y pegá TODO `backend/Validation.gs`. Son necesarios **los dos archivos**.
+5. En **Configuración del proyecto**, activá la opción que muestra `appsscript.json` en el editor.
+6. Volvé al editor, abrí `appsscript.json` y reemplazá su contenido con el archivo del mismo nombre que está en `backend/`.
+7. Guardá. En el selector de funciones de arriba, elegí `prepararConfiguracion`. Tocá **Ejecutar**.
+8. Google te pedirá autorizar el uso de tus hojas, Drive y correo. Comprobá que estás autorizando tu propio proyecto y tu cuenta del negocio. Si la cuenta de tu organización bloquea estas autorizaciones, su administrador tiene que habilitarlas.
+9. Al terminar, buscá en Drive una hoja llamada **Disfraz Cabezón — tienda y reservas** y una carpeta llamada **Disfraz Cabezón — documentación privada**.
+
+La función crea la hoja y sus pestañas automáticamente. Si la ejecutás otra vez, conserva la configuración existente.
+
+### Las propiedades: el equivalente del `.env` en Apps Script
+
+Apps Script no usa un archivo `.env` normal. Entrá en **Configuración del proyecto → Propiedades de la secuencia de comandos → Editar propiedades**.
+
+La primera ejecución ya crea estas propiedades:
+
+| Propiedad | Qué hacer |
+|---|---|
+| `ADMIN_USER` | Se crea como `admin`. Podés cambiarlo. |
+| `ADMIN_PASSWORD` | Se genera una contraseña aleatoria privada. Copiala para iniciar sesión o reemplazala por una de al menos 12 caracteres. |
+| `SPREADSHEET_ID` | Identifica la hoja recién creada. Dejala como está. |
+| `PRIVATE_FOLDER_ID` | Identifica la carpeta privada. Dejala como está. |
+| `MAIL_MODE` | Empieza en `test`. Dejalo así durante las pruebas. |
+| `BUSINESS_EMAIL` | Empieza en `disfrazcabezoneventos@gmail.com`. Verificá que sea correcto. |
+
+Agregá después `SITE_URL`, con la dirección final de Render, por ejemplo `https://tu-sitio.onrender.com`, sin `/` al final. Se usa en el aviso al negocio para abrir la administración.
+
+El usuario y la contraseña se comprueban **en Apps Script**. Nunca los pongas en variables `NEXT_PUBLIC_`, en el código React ni en GitHub. Una sesión dura hasta seis horas y se cierra antes si Google descarta su caché. El panel permite cerrar sesión manualmente.
+
+**La hoja y la carpeta deben permanecer restringidas en Drive.** Publicar la aplicación web no implica compartir estos archivos: el código da acceso a cada solicitud mediante su clave privada y al equipo mediante su sesión.
+
+## 4. Conectar Cloudinary para las fotos
+
+1. Creá o abrí tu cuenta en [Cloudinary](https://cloudinary.com/).
+2. En la consola, buscá el nombre del entorno de producto, llamado **Cloud name**, y la sección **API Keys**.
+3. Copiá los tres valores a las propiedades privadas de Apps Script:
+
+| Propiedad | Valor |
+|---|---|
+| `CLOUDINARY_CLOUD_NAME` | Tu Cloud name |
+| `CLOUDINARY_API_KEY` | Tu API Key |
+| `CLOUDINARY_API_SECRET` | Tu API Secret |
+
+4. Guardá las propiedades.
+
+No necesitás crear un preset de subida sin firma. El panel envía la imagen a Apps Script; Apps Script firma la subida y la envía a Cloudinary. La clave secreta queda del lado de Google. Las imágenes del catálogo se guardan bajo `disfraz-cabezon/catalogo`.
+
+Al editar un producto, podés **subir JPG, PNG o WEBP de hasta 8 MB** o pegar la URL HTTPS de una imagen ya alojada en Cloudinary. Comprimir fotos a 300–800 KB hace que el catálogo cargue más rápido.
+
+Eliminar un producto elimina su registro del catálogo. Su imagen queda en Cloudinary por si se usa en otro producto; podés limpiar imágenes sin uso desde la biblioteca de Cloudinary. Los documentos de clientes nunca se suben al álbum público.
+
+## 5. Publicar Apps Script como aplicación web
+
+1. Arriba a la derecha elegí **Implementar → Nueva implementación**.
+2. En el engranaje, elegí **Aplicación web**.
+3. Descripción: `Tienda y reservas v1`.
+4. **Ejecutar como:** vos, la cuenta propietaria del proyecto.
+5. **Quién tiene acceso:** **Cualquier persona**. Es necesario para que un cliente pueda completar una reserva sin iniciar sesión en Google. Los datos privados siguen protegidos por el código.
+6. Tocá **Implementar** y copiá la URL de aplicación web. Debe terminar en **`/exec`**, no en `/dev`.
+7. Abrila en una ventana privada. Debe mostrar un pequeño JSON con `ok: true` y `Disfraz Cabezón`. Si pide iniciar sesión, revisá la opción de acceso.
+
+Cuando cambies el código `.gs`, no alcanza con guardarlo: **Implementar → Administrar implementaciones → Editar → Nueva versión → Implementar**. Al editar la implementación existente conservás la misma URL.
+
+## 6. El `.env` del proyecto Next.js
+
+En la raíz de `dc-web`, copiá `.env.example` como `.env.local`. Su contenido es una sola variable:
+
+```dotenv
+NEXT_PUBLIC_APPS_SCRIPT_URL=https://script.google.com/macros/s/TU_IMPLEMENTACION/exec
+```
+
+Reemplazá la URL de ejemplo por la real. Reiniciá `npm run dev` después de guardar.
+
+**No tenés que copiar el `.env` del proyecto viejo.** `RESEND_API_KEY` y `MAIL_FROM` no se usan: los avisos salen con MailApp en Apps Script. `WEBHOOK_SECRET` y `LEDGER_SPREADSHEET_ID` pertenecen al script anterior; no se copian al navegador ni a esta nueva configuración.
+
+Cuando existe esta URL, el catálogo consulta Sheets. Si la hoja está vacía, se ve un catálogo vacío. Si hay un error de conexión, se informa el error: no se disfraza mostrando los productos de ejemplo.
+
+## 7. Entrar como administrador y cargar productos
+
+1. Abrí `/admin/` desde el enlace **Acceso administrador** al pie de la web.
+2. Ingresá el `ADMIN_USER` y el `ADMIN_PASSWORD` que están en Apps Script.
+3. Entrá a **Disfraces** o **Cotillón**. Son catálogos independientes y se guardan en pestañas separadas.
+4. Tocá **Agregar producto**.
+5. Completá nombre, categoría, descripción, modalidad, precio y stock. En Disfraces podés elegir venta, alquiler o ambos. Cotillón es venta.
+6. Subí la foto. Esperá a que aparezca la vista previa.
+7. Guardá el producto. Revisalo en la página pública correspondiente.
+
+**Editar** modifica el registro existente. **Visible en el catálogo** permite ocultarlo sin borrarlo. **Eliminar** pide confirmar y lo quita de Sheets. Si no estás seguro, ocultalo primero.
+
+Los precios de venta y alquiler son distintos. Las ventas se consultan por WhatsApp: no hay carrito ni cobro automático con tarjeta. El total de cada alquiler se acuerda por WhatsApp, como en el formulario original.
+
+## 8. Habilitar las reservas
+
+1. En administración, abrí **Datos de cobro**.
+2. Completá titular, banco, CUIT y alias o CBU/CVU. El CBU/CVU debe tener 22 dígitos.
+3. Guardá. Sin cuenta de cobro, el formulario real no permite completar el envío.
+4. El cliente acuerda disponibilidad, talle, fechas y precio con el negocio por WhatsApp.
+5. Completa los cinco pasos: datos, alquiler, documentos, comprobante de pago y firma.
+6. El envío crea una **solicitud pendiente**, no una confirmación automática.
+7. El cliente debe guardar el enlace privado que aparece al terminar. Desde ahí puede ver el estado, descargar el contrato y enviar correcciones si se las pedís.
+8. En **Reservas**, revisá los documentos, comprobá el pago y la disponibilidad. Después elegí el nuevo estado y escribí una nota.
+9. Avisale al cliente por WhatsApp. El sistema manda avisos iniciales de recepción por correo; no manda mensajes automáticos de WhatsApp ni avisos de todos los cambios de estado.
+
+Las fotos de DNI, comprobantes y firma se guardan en la carpeta privada de Drive. El contrato se genera al descargarlo con los datos originales, la firma y las condiciones guardadas. Los correos no llevan adjuntos ni enlaces privados.
+
+La corrección documental conserva un plazo inicial de 12 horas. Los reintegros pendientes conservan un plazo inicial de 24 horas. Cambiar un estado no verifica una transferencia ni devuelve dinero: son tareas que realizás y registrás vos.
+
+La disponibilidad de los trajes se confirma manualmente. Este sistema no es un calendario de bloqueo automático por traje, talle y fecha. El stock de alquiler sirve como inventario; no se descuenta cuando llega una solicitud pendiente.
+
+## 9. Registrar caja y entender las estadísticas
+
+Los números salen de **Caja**, no de lo que un cliente escribió en un formulario.
+
+Ejemplo: alquiler de $40.000. Hoy recibís $20.000 de seña y al retirar recibís $20.000 de saldo.
+
+1. Confirmá la reserva cuando corresponda, después de revisar el pago.
+2. En **Caja**, elegí **Cobro de alquiler**, área **Disfraces**, y la reserva asociada.
+3. Registrá $20.000, con la fecha en que efectivamente los cobraste y el detalle `Seña`.
+4. Para registrar el saldo, tocá **Nuevo movimiento** y cargá el segundo cobro con su fecha real.
+5. Si hubo un costo de limpieza de $3.000, cargalo una sola vez en el costo de una de las operaciones. No lo repitas en la seña y en el saldo.
+
+Una venta permite elegir el producto y la cantidad, y descuenta stock. Un cobro de alquiler no puede superar el total acordado sumando los cobros anteriores. Los gastos y reintegros son salidas de dinero. Una anulación conserva el movimiento como anulado y, si era una venta, repone el stock.
+
+Si se corta la conexión, podés repetir **Registrar movimiento** sin duplicarlo mientras conserves el mismo formulario. Para una operación distinta, tocá **Nuevo movimiento**. Revisá la lista antes de volver a cargar un cobro tras cerrar o recargar la página.
+
+En **Estadísticas** podés elegir hoy, esta semana desde el lunes o este mes. Se muestran productos, unidades, ingresos, ganancia estimada, alquileres confirmados y sus cobros/ganancia. Los costos generales se descuentan en la ganancia global. La ganancia de alquileres descuenta los costos vinculados a sus cobros y los reintegros vinculados a una reserva.
+
+No registres depósitos de garantía como ventas o ganancia. No hay contabilidad impositiva ni conciliación bancaria automática. Para que la estimación sea útil, registrá todos los cobros y costos reales.
+
+## 10. Publicar en Render como Static Site
+
+1. Subí el código a un repositorio privado de GitHub. Incluí `package-lock.json`, `app`, `components`, `lib`, `public`, `backend`, `scripts` y los archivos de configuración.
+2. No subas `.env.local`, `node_modules`, `.next`, `out`, documentos de clientes ni secretos. El `.gitignore` ya excluye los archivos locales habituales.
+3. En [Render](https://dashboard.render.com/), elegí **New → Static Site**.
+4. Conectá el repositorio.
+5. Si el proyecto está en la raíz del repositorio, dejá **Root Directory** vacío.
+6. **Build Command:** `npm ci && npm run build`.
+7. **Publish Directory:** `out`.
+8. En **Environment**, agregá `NEXT_PUBLIC_APPS_SCRIPT_URL` con tu URL `/exec`.
+9. Elegí **Create Static Site** y esperá el resultado.
+10. Abrí la URL que entrega Render. Ponela también en `SITE_URL` de Apps Script.
+
+No hay comando de inicio para este despliegue. `next.config.ts` ya contiene `output: 'export'` y `trailingSlash: true`. También se incluye `render.yaml` para quien prefiera usar un Blueprint.
+
+Si cambiás `NEXT_PUBLIC_APPS_SCRIPT_URL` en Render, ejecutá un nuevo deploy: Next.js incluye esa variable al compilar. Cambiar productos en Sheets desde el panel no requiere volver a desplegar.
+
+No agregues una regla general que redirija todas las rutas a `index.html`: cada página ya tiene su propio archivo. Para conectar tu dominio, usá la sección **Custom Domains** y los registros DNS que Render te indique para ese dominio concreto.
+
+## 11. Prueba final antes de recibir clientes
+
+Dejá `MAIL_MODE=test`. Las dos notificaciones se dirigen al correo del negocio con `[PRUEBA]`, aunque el formulario tenga otro correo.
+
+- Creá un producto de cada área y subí fotos. Abrí sus catálogos en una ventana privada.
+- Editá el precio, ocultá un producto y verificá que desaparezca. Probá eliminar un producto de prueba.
+- Enviá una reserva de prueba con imágenes y comprobantes ficticios, sin efectuar una transferencia real.
+- Guardá su enlace privado y abrilo en otro navegador. Revisá el estado y descargá el PDF.
+- Intentá abrir `/solicitud/` sin la clave: no debe mostrar datos.
+- En administración, descargá los documentos de prueba. Pedí una corrección y completala desde el enlace privado.
+- Confirmá la solicitud, registrá una seña, luego un saldo. Revisá estadísticas y comprobá que no permita cobrar de más.
+- Registrá y anulá una venta. El stock debe bajar y luego volver al valor anterior.
+- Probá el formulario de arrepentimiento y su gestión desde el panel.
+- Probá desde un teléfono real los archivos, la firma y el acceso a WhatsApp.
+- Revisá en Sheets los registros y en Drive que la carpeta siga restringida.
+- Confirmá la recepción de los correos de prueba. Si un aviso está en `review`, revisá el correo antes de reenviarlo manualmente: pudo haberse enviado aunque hubiera una interrupción.
+- Cuando todo esté bien, cambiá `MAIL_MODE` a `production`. Las solicitudes nuevas enviarán el aviso al negocio y al cliente. Los avisos anteriores no se reenvían automáticamente.
+
+La compilación, las pruebas locales y la revisión visual están hechas; las conexiones con tus cuentas deben verificarse con este recorrido. No se migraron reservas antiguas ni datos de Cloudflare. Si querés conservarlos en la nueva aplicación, hace falta una exportación autorizada y una migración específica.
+
+## 12. Si algo falla
+
+| Lo que ves | Qué revisar |
+|---|---|
+| Sigue diciendo demostración | Falta la variable pública o no reiniciaste / recompilaste |
+| Catálogo vacío sin error | Sheets está conectado pero todavía no cargaste productos visibles |
+| `Failed to fetch` / no se pudo conectar | URL `/exec`, acceso Cualquier persona, última implementación y restricciones de Google Workspace |
+| Apps Script no devolvió JSON | Probablemente copiaste `/dev`, una URL del editor o Google devuelve una página de inicio de sesión |
+| `validate is not defined` | Falta pegar `Validation.gs` y publicar una nueva versión |
+| Cuenta de cobro pendiente | Completá titular y alias o CBU en administración |
+| Error al subir foto | Revisá las tres propiedades de Cloudinary, el formato y los 8 MB máximos |
+| Sesión vencida | Volvé a iniciar sesión; la caché de Google puede vencer antes de seis horas |
+| Demasiados intentos al ingresar | Esperá 15 minutos antes de volver a intentar |
+| No llegó un correo | Revisá Spam, `MAIL_MODE`, el destinatario del negocio, la pestaña notifications y las cuotas de MailApp |
+| 404 al abrir una página en Render | Publish Directory debe ser `out`; no debe usarse `.next` |
+
+Apps Script, Sheets, Drive, correo y Cloudinary tienen cuotas. Esta arquitectura está pensada para un negocio de volumen moderado. Se limita el envío repetido, pero no incluye CAPTCHA ni protección distribuida contra ataques masivos. Monitoreá las ejecuciones de Apps Script y el uso de tus servicios.
+
+## Documentación oficial de referencia
+
+- [Exportación estática de Next.js](https://nextjs.org/docs/app/guides/static-exports)
+- [Next.js estático en Render](https://render.com/docs/deploy-nextjs-app)
+- [Aplicaciones web en Apps Script](https://developers.google.com/apps-script/guides/web)
+- [Propiedades privadas de Apps Script](https://developers.google.com/apps-script/guides/properties)
+- [ContentService y redirecciones de Apps Script](https://developers.google.com/apps-script/guides/content)
+- [Subida de imágenes a Cloudinary](https://cloudinary.com/documentation/upload_images)
