@@ -49,5 +49,5 @@ export async function rentalApi(action:string,form:FormData){
  return api(action,{data,files,access:sessionStorage.getItem('dc-submit-'+data.requestKey)||''});
 }
 export function legacyCategories(products:Product[]):Category[]{const list:Category[]=[];products.forEach(p=>{if(p.category&&p.category!=='Sin categoría'&&!list.some(c=>c.area===p.area&&c.name===p.category))list.push({id:'legacy:'+p.area+':'+p.category,area:p.area,name:p.category})});return list;}
-export async function catalogData():Promise<{products:Product[];categories:Category[]}>{try{return await api('catalogData')}catch(e){if(!/Acción desconocida/.test((e as Error).message))throw e;const products=await api('catalog') as Product[];return {products,categories:legacyCategories(products)}}}
+export async function catalogData():Promise<{products:Product[];categories:Category[]}>{try{return await api('catalogData')}catch(e){if(!/Acción desconocida|Sesión vencida/.test((e as Error).message))throw e;const products=await api('catalog') as Product[];return {products,categories:legacyCategories(products)}}}
 export function whatsapp(message='¡Hola! Quiero consultar por disfraces y cotillón.'){return 'https://wa.me/5491149897969?text='+encodeURIComponent(message);}
