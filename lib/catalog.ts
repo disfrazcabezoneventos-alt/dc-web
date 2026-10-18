@@ -1,6 +1,6 @@
 export type Area='disfraces'|'cotillon';
 export type Category={id:string;area:Area;name:string};
-export type Product={id:string;area:Area;name:string;categoryId?:string;category:string;mode:'alquiler'|'venta'|'ambos';price:number;rentPrice:number;stock:number;image:string;description:string;active:boolean};
+export type Product={id:string;area:Area;name:string;categoryId?:string;category:string;mode:'alquiler'|'venta'|'ambos';price:number;rentPrice:number;stock:number;image:string;thumbnail?:string;description:string;active:boolean};
 export const suggestedCostumeCategories=['Hombres','Cabezones','Mujeres','Personajes','Profesiones','Superheroes y Princesas','Halloween','Históricos','Otros'];
 export const seedCategories:Category[]=[...suggestedCostumeCategories.map((name,i)=>({id:'demo-disfraces-'+i,area:'disfraces' as const,name})),...['Infantiles','Princesas','Superhéroes'].map((name,i)=>({id:'demo-extra-'+i,area:'disfraces' as const,name})),...['Globos','Decoración','Accesorios','Cotillón','Otros'].map((name,i)=>({id:'demo-cotillon-'+i,area:'cotillon' as const,name}))];
 const image=(name:string)=>'/catalog/'+name;

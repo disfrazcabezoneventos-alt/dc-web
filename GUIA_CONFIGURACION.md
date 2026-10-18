@@ -80,7 +80,7 @@ El usuario y la contraseña se comprueban **en Apps Script**. Nunca los pongas e
 
 4. Guardá las propiedades.
 
-No necesitás crear un preset de subida sin firma. El panel envía la imagen a Apps Script; Apps Script firma la subida y la envía a Cloudinary. La clave secreta queda del lado de Google. Las imágenes del catálogo se guardan bajo `disfraz-cabezon/catalogo`.
+No necesitás crear un preset de subida sin firma. El panel envía la imagen a Apps Script; Apps Script firma la subida y la envía a Cloudinary. La clave secreta queda del lado de Google. Las imágenes del catálogo se guardan bajo `disfraz-cabezon/catalogo`. Al subir una foto, Cloudinary crea también una miniatura de hasta 160 × 160 píxeles para el panel y el formulario de alquiler. Las fotos antiguas se muestran mediante una versión pequeña generada a partir de su URL, sin necesidad de volver a subirlas.
 
 Al editar un producto, podés **subir JPG, PNG o WEBP de hasta 8 MB** o pegar la URL HTTPS de una imagen ya alojada en Cloudinary. Comprimir fotos a 300–800 KB hace que el catálogo cargue más rápido.
 
@@ -97,6 +97,8 @@ Eliminar un producto elimina su registro del catálogo. Su imagen queda en Cloud
 7. Abrila en una ventana privada. Debe mostrar un pequeño JSON con `ok: true` y `Disfraz Cabezón`. Si pide iniciar sesión, revisá la opción de acceso.
 
 Cuando cambies el código `.gs`, no alcanza con guardarlo: **Implementar → Administrar implementaciones → Editar → Nueva versión → Implementar**. Al editar la implementación existente conservás la misma URL. Si el sitio muestra «no se pudo conectar» después de publicar, comprobá que hayas copiado la versión nueva de `Code.gs`, que `SITE_URL` sea exactamente el origen de tu sitio y que Render haya compilado la versión nueva de `lib/api.ts`.
+
+Si el sitio ya está publicado y solo estás instalando las miniaturas, seguí los pasos cortos de [`ACTUALIZACION_MINIATURAS.md`](ACTUALIZACION_MINIATURAS.md). No necesitás nuevas propiedades ni pestañas en Sheets.
 
 ## 6. El `.env` del proyecto Next.js
 
