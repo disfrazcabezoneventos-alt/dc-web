@@ -20,7 +20,7 @@
 - [ ] No se realizó una reserva real ni se enviaron documentos, correos o cobros de prueba en producción.
 - [ ] No se verificó el inicio de sesión privado, la subida de una nueva foto a Cloudinary, los permisos reales de Google Drive ni la administración/caja en vivo. Las pruebas automatizadas de esas reglas usan simuladores.
 - [ ] Queda revisar el sitio en teléfonos físicos y realizar una prueba completa controlada con las cuentas del negocio.
-- [ ] `npm audit` no pudo consultar el registro npm desde este entorno; no hay resultado de auditoría de dependencias.
+- [x] `npm audit --omit=dev --audit-level=high` consultó el registro npm y encontró 0 vulnerabilidades en las dependencias de producción.
 - [ ] Los avisos de correo que quedan en `retry` por falta de cuota no se reintentan solos. Los estados de envío incierto permanecen bloqueados para evitar correos duplicados; un reintento seguro requiere una acción administrativa específica.
 - [ ] Los diálogos de categorías y condiciones deben recibir una mejora de manejo del foco y de la tecla Escape para accesibilidad con teclado.
 
