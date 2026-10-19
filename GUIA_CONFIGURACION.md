@@ -102,7 +102,32 @@ Cuando cambies el código `.gs`, no alcanza con guardarlo: **Implementar → Adm
 
 Usá el proyecto Apps Script **web-dc**, cuya implementación existente tiene la misma URL `/exec` guardada en Render. En ese proyecto, reemplazá por completo **Code.gs** con el archivo [`backend/Code.gs`](backend/Code.gs) de este repositorio y guardá. Conservá `Validation.gs`, las propiedades del proyecto, la hoja y la carpeta de Drive. Después entrá a **Implementar → Administrar implementaciones**, elegí la aplicación web cuya URL coincide con `NEXT_PUBLIC_APPS_SCRIPT_URL` de Render, tocá el lápiz, seleccioná **Nueva versión** y finalmente **Implementar**. No crees otra implementación: la URL debe seguir siendo la misma.
 
-Abrí esa URL `/exec` en el navegador. La actualización de esta revisión se reconoce porque la respuesta contiene **`"version":3`**. Si todavía dice `2`, la implementación pública sigue usando una versión anterior; revisá que hayas editado la implementación correcta y seleccionado **Nueva versión**. Estos cambios no requieren nuevas propiedades ni pestañas en Sheets.
+Abrí esa URL `/exec` en el navegador. La actualización del carrito y la migración de cotillón se reconoce porque la respuesta contiene **`"version":4`**. Si todavía dice `2` o `3`, la implementación pública sigue usando una versión anterior; revisá que hayas editado la implementación correcta y seleccionado **Nueva versión**.
+
+### Pasar las ocho secciones de cotillón del sitio anterior
+
+El archivo [`backend/import-cotillon.json`](backend/import-cotillon.json) contiene una copia de **635 productos públicos** tomada del catálogo anterior. Incluye únicamente Repostería, Halloween, Accesorios disfraz, Golosinas, Fiestas patrias, Comunión y bautismo, Navidad y Egresados. Un producto que pertenece a dos secciones se guarda una sola vez y aparece en ambas.
+
+1. Esperá a que Render termine el despliegue del código nuevo de GitHub. No cambies ninguna variable `.env` de Render para esta migración.
+2. En el proyecto Apps Script **web-dc**, reemplazá el contenido de `Code.gs` por la versión nueva del archivo [`backend/Code.gs`](backend/Code.gs). Reemplazá también `appsscript.json` por [`backend/appsscript.json`](backend/appsscript.json): agrega el permiso de Apps Script para crear y quitar el activador de fotos. **No borres `Validation.gs` ni cambies `SPREADSHEET_ID`.** Guardá.
+3. En **Implementar → Administrar implementaciones**, editá la implementación cuya URL `/exec` coincide con la de Render, elegí **Nueva versión** e implementá. La URL queda igual.
+4. Abrí esa misma URL `/exec`. Comprobá que dice **`"version":4`**.
+5. Volvé al editor de Apps Script. Arriba, en el selector de funciones, elegí **`importarCotillonAnterior`** y tocá **Ejecutar**. Si Google solicita autorización para leer una URL pública y escribir en tu hoja, completá la autorización. La función agrega categorías y productos en `categorias_cotillon` y `cotillon`.
+6. En **Registro de ejecución**, buscá `agregados: 635` y `categorias: 8`. Si la repetís, debe decir `agregados: 0`: no duplica productos ni pisa cambios que hiciste en el panel.
+7. Entrá a `/cotillon/` en Render y actualizá la página. Probá agregar dos productos, cambiar cantidades y abrir **Enviar pedido por WhatsApp**. El chat debe abrirse con el pedido completo **ya escrito**; el cliente solo presiona **Enviar**.
+
+El catálogo anterior no informa stock de **598** de esos productos ni precio de **132**. La nueva web los muestra como **“disponibilidad a confirmar”** o **“precio a consultar”**. El cliente puede agregarlos al carrito para pedir una cotización, sin que el sistema invente existencias o importes. En `/admin/`, podés completar stock y precio producto por producto. Hay **298 productos sin foto de origen**; se muestran con el aviso “Foto próximamente” hasta que cargues una imagen.
+
+Las categorías antiguas que ya existían en tu nueva hoja se **conservan en el administrador**, pero la migración las marca **ocultas en la tienda** para que el público vea solo las ocho secciones pedidas. Por ejemplo, el producto ya cargado “Espuma” no se borra: podés abrirlo en `/admin/`, asignarlo a una de las ocho categorías y volverá a verse en la tienda. Cada categoría de cotillón tiene un control **“Mostrar en la tienda”** para cambiar esto más adelante.
+
+#### Pasar las fotos disponibles a Cloudinary
+
+Hay **337 fotos de origen** para migrar. Las tres propiedades `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY` y `CLOUDINARY_API_SECRET` deben estar en **Propiedades de la secuencia de comandos** de Apps Script, no en Render.
+
+1. Después de importar los productos, elegí **`iniciarFotosCotillon`** en Apps Script y tocá **Ejecutar** una sola vez. Google puede pedirte autorizar el nuevo permiso para administrar activadores de este mismo proyecto.
+2. La primera ejecución procesa hasta diez fotos y crea un activador que continúa con otros lotes cada cinco minutos. Las fotos se suben a Cloudinary con su miniatura de 160 × 160 px; puede tardar unas horas en completar todo.
+3. Mirá **Ejecuciones** en Apps Script para controlar `procesadas`, `fallidas` y `pendientes`. Cuando `pendientes` llega a cero, el activador se elimina solo.
+4. Si hubo fallas, revisá las claves y la cuenta de Cloudinary. Ejecutá **`reintentarFotosCotillon`** y después **`iniciarFotosCotillon`**. Los productos que no tenían foto en la web anterior requieren subir una desde `/admin/`.
 
 Si el sitio ya está publicado y solo estás instalando las miniaturas, seguí los pasos cortos de [`ACTUALIZACION_MINIATURAS.md`](ACTUALIZACION_MINIATURAS.md). No necesitás nuevas propiedades ni pestañas en Sheets.
 

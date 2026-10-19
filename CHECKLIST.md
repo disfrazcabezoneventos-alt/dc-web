@@ -25,3 +25,13 @@
 - [x] Los diálogos de eliminación de categorías y condiciones mantienen el foco dentro, cierran con Escape y devuelven el foco al control anterior.
 
 La disponibilidad de disfraces por fecha se confirma manualmente. La estadística de ganancia usa los cobros y costos cargados y es una estimación, no una conciliación bancaria.
+
+## Migración de cotillón — 19/10/2026
+
+- [x] Se tomaron 635 productos vigentes de las ocho secciones públicas del sitio anterior; se excluyeron disfraces de niños y adultos, así como los productos generales fuera de esas secciones.
+- [x] El carrito es exclusivo de cotillón, permite varias líneas y cantidades, conserva la selección en el navegador y compone un mensaje detallado para WhatsApp 11 4989-7969.
+- [x] Apps Script versión 4 admite varias categorías por producto, precio/stock desconocidos y una importación repetible sin pisar registros editados.
+- [x] Las categorías antiguas se conservan en el administrador pero quedan ocultas al público tras ejecutar la importación.
+- [ ] El usuario debe publicar `Code.gs` versión 4 en la implementación existente y ejecutar `importarCotillonAnterior` en el proyecto **web-dc**.
+- [ ] El usuario debe ejecutar `iniciarFotosCotillon` con las tres propiedades privadas de Cloudinary configuradas y revisar los lotes hasta completar las 337 fotos disponibles.
+- [ ] Verificar el carrito y la carga real de los 635 productos en Render después de importar; las pruebas automatizadas usan una hoja Google simulada.

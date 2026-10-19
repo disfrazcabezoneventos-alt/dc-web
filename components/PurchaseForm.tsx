@@ -15,7 +15,7 @@ export default function PurchaseForm(){
  const dialogRef=useRef<HTMLDialogElement>(null);
 
  function chooseProduct(id:string,list=products){
-  const product=list.find(p=>p.id===id&&p.active&&p.mode!=='alquiler');
+  const product=list.find(p=>p.id===id&&p.active&&p.area==='disfraces'&&p.mode!=='alquiler');
   setQuantity(1);
   setError('');
   if(madeToOrder(product)){setProductId('');setPending(product||null)}
@@ -33,7 +33,7 @@ export default function PurchaseForm(){
   if(!pending&&dialog.open)dialog.close();
  },[pending]);
 
- const purchasable=products.filter(p=>p.active&&p.mode!=='alquiler');
+ const purchasable=products.filter(p=>p.active&&p.area==='disfraces'&&p.mode!=='alquiler');
  const selected=purchasable.find(p=>p.id===productId);
  const available=selected?purchaseLimit(selected):0;
  const canSend=!!selected&&available>0&&Number.isInteger(quantity)&&quantity>=1&&quantity<=available;
@@ -50,7 +50,7 @@ export default function PurchaseForm(){
  return <main className="section narrow">
   <span className="eyebrow">CONSULTA DE COMPRA</span>
   <h1>Ese detalle ya<br/><em>te está esperando.</em></h1>
-  <p>Completá los datos del producto. Al continuar, abriremos WhatsApp con tu consulta lista. El local confirmará disponibilidad y precio antes de cerrar la compra.</p>
+  <p>Completá los datos del disfraz. Al continuar, abriremos WhatsApp con tu consulta lista. Para comprar varios artículos de cotillón, usá el <a className="text-link" href="/cotillon/">carrito de cotillón →</a>.</p>
   {loading&&<div className="loading-state" role="status"><span className="spinner" aria-hidden="true"/>Cargando productos…</div>}
   {error&&<p className="error-banner" role="alert">{error}</p>}
   {!loading&&!loadFailed&&<form className="panel form-stack" onSubmit={send}>
