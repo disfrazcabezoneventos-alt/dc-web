@@ -7,9 +7,28 @@ import ts from 'typescript';
 
 function loadTS(file,dependencies={}){const module={exports:{}};const code=ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText;new Function('exports','require',code)(module.exports,id=>dependencies[id]);return module.exports;}
 const model=loadTS('lib/model.ts');
-const catalog=loadTS('lib/catalog.ts');
+const taxonomy=loadTS('lib/cotillon-taxonomy.ts');
+const catalog=loadTS('lib/catalog.ts',{'./cotillon-taxonomy':taxonomy});
 const cart=loadTS('lib/cotillon-cart.ts',{'./catalog':catalog,'./model':model});
 const product=(id,more={})=>({id,area:'cotillon',name:'Producto '+id,category:'Halloween',mode:'venta',price:1000,stock:4,image:'',description:'',active:true,...more});
+
+test('las cuatro categorías y sus 26 subcategorías coinciden con Apps Script',()=>{
+ const groups=taxonomy.cotillonTaxonomy;
+ assert.deepEqual(groups.map(g=>g.name),['COTILLÓN','REPOSTERÍA','FECHAS ESPECIALES','DESCARTABLES']);
+ assert.deepEqual(groups.map(g=>g.subcategories.length),[2,3,12,9]);
+ assert.equal(new Set(groups.flatMap(g=>g.subcategories)).size,26);
+ const context=vm.createContext({});vm.runInContext(fs.readFileSync('backend/Code.gs','utf8'),context);
+ const backendGroups=vm.runInContext('COTILLON_GROUPS',context);
+ assert.deepEqual(JSON.parse(JSON.stringify(backendGroups)),Object.fromEntries(groups.map(g=>[g.name,g.subcategories])));
+});
+
+test('la navegación conserva los productos sin clasificar en Todos y en la búsqueda',()=>{
+ const items=[product('clasificado',{categoryId:'nuevo',categoryIds:['viejo','nuevo'],name:'Globo rojo'}),product('pendiente',{categoryId:'viejo',categoryIds:['viejo'],name:'Molde estrella'})];
+ assert.equal(taxonomy.filterCotillonProducts(items,'','', '').length,2);
+ assert.deepEqual(taxonomy.filterCotillonProducts(items,'COTILLÓN','nuevo','').map(p=>p.id),['clasificado']);
+ assert.equal(taxonomy.filterCotillonProducts(items,'COTILLÓN','','').length,0);
+ assert.deepEqual(taxonomy.filterCotillonProducts(items,'COTILLÓN','nuevo','molde').map(p=>p.id),['pendiente']);
+});
 
 test('carrito acepta sólo cotillón activo, limita cantidad y deduplica',()=>{
  const products=[product('a'),product('b',{stockUnknown:true,stock:0}),product('c',{area:'disfraces'}),product('d',{stock:0})];
@@ -60,6 +79,32 @@ test('Apps Script importa una vez y vincula Halloween sin duplicar productos',()
  assert.equal(tables.cotillon.filter(p=>p.priceKnown===false).length,132);
  assert.ok(tables.cotillon.some(p=>p.categoryIds?.length===2));
  assert.equal(context.importarCotillonAnterior().agregados,0);
+});
+
+test('nueva jerarquía conserva productos y permite clasificar categorías anteriores sin reescribirlos',()=>{
+ const categories=[{id:'old-reposteria',area:'cotillon',name:'Repostería',storefront:true},{id:'old-halloween',area:'cotillon',name:'Halloween',storefront:true},{id:'old-cotillon',area:'cotillon',name:'cotillon',storefront:true}];
+ const products=[{id:'p1',area:'cotillon',name:'Molde',categoryId:'old-reposteria',category:'Repostería',categoryIds:['old-reposteria'],price:100,stock:5,image:'https://res.cloudinary.com/demo/image/upload/molde.jpg',active:true},{id:'p2',area:'cotillon',name:'Máscara',categoryId:'old-halloween',category:'Halloween',categoryIds:['old-halloween'],price:200,stock:2,active:true}];
+ const original=structuredClone(products),settings={};
+ const tables={categorias_cotillon:categories,cotillon:products};
+ const context=vm.createContext({console,JSON,Date,Utilities:{getUuid:()=>crypto.randomUUID()},PropertiesService:{getScriptProperties:()=>({getProperty:key=>settings[key],setProperty:(key,value)=>settings[key]=value})},SpreadsheetApp:{flush:()=>{}}});
+ vm.runInContext(fs.readFileSync('backend/Code.gs','utf8'),context);
+ context.rows_=name=>structuredClone(tables[name]||[]);
+ context.put_=(name,item)=>{const index=tables[name].findIndex(row=>row.id===item.id);if(index<0)tables[name].push(structuredClone(item));else tables[name][index]=structuredClone(item);return item};
+ context.sheet_=()=>({getLastRow:()=>tables.categorias_cotillon.length+1,getRange:()=>({setValues:values=>values.forEach(([,raw])=>tables.categorias_cotillon.push(JSON.parse(raw)))})});
+ context.recoverStock_=()=>{};context.session_=()=>{};
+ context.ensureCotillonStructure_();
+ assert.equal(settings.COTILLON_STRUCTURE_V1,'ready');
+ assert.equal(tables.categorias_cotillon.filter(c=>c.group).length,26);
+ assert.equal(tables.categorias_cotillon.find(c=>c.id==='old-halloween').group,'FECHAS ESPECIALES');
+ assert.equal(tables.categorias_cotillon.find(c=>c.id==='old-reposteria').storefront,false);
+ assert.deepEqual(products,original);
+ context.ensureCotillonStructure_();assert.equal(tables.categorias_cotillon.length,28);
+ const target=tables.categorias_cotillon.find(c=>c.name==='Accesorios');
+ const result=context.dispatch_({action:'mapLegacyCategory',id:'old-reposteria',targetId:target.id,token:'test'});
+ assert.equal(result.affected,1);
+ const listed=context.products_('cotillon').find(p=>p.id==='p1');
+ assert.equal(listed.category,'Accesorios');assert.ok(listed.categoryIds.includes(target.id));
+ assert.deepEqual(products,original);
 });
 
 test('migración de fotos firma la subida y recibe imagen más miniatura',()=>{

@@ -161,7 +161,7 @@ Para instalar la condición de venta, el aviso de disfraces a pedido y el botón
 
 **Editar** modifica el registro existente. **Visible en el catálogo** permite ocultarlo sin borrarlo. **Eliminar** pide confirmar y lo quita de Sheets. Si no estás seguro, ocultalo primero.
 
-Los precios de venta y alquiler son distintos. Las ventas se consultan por WhatsApp: no hay carrito ni cobro automático con tarjeta. El total de cada alquiler se acuerda por WhatsApp, como en el formulario original.
+Los precios de venta y alquiler son distintos. Cotillón tiene un carrito de consultas: reúne productos y cantidades y abre WhatsApp con el pedido escrito. No hay cobro automático con tarjeta. El total de cada alquiler se acuerda por WhatsApp, como en el formulario original.
 
 ## 8. Habilitar las reservas
 
@@ -258,6 +258,16 @@ La compilación, las pruebas locales y la revisión visual están hechas; las co
 | 404 al abrir una página en Render | Publish Directory debe ser `out`; no debe usarse `.next` |
 
 Apps Script, Sheets, Drive, correo y Cloudinary tienen cuotas. Esta arquitectura está pensada para un negocio de volumen moderado. Se limita el envío repetido, pero no incluye CAPTCHA ni protección distribuida contra ataques masivos. Monitoreá las ejecuciones de Apps Script y el uso de tus servicios.
+
+## Actualización 5 · cuatro mundos de Cotillón
+
+El frontend se publica automáticamente en Render cuando este repositorio llega a `main`. Para activar el backend, en el proyecto Apps Script **web-dc**, abrí `Código.gs`, seleccioná todo su contenido y pegá el archivo completo [`backend/Code.gs`](backend/Code.gs). Guardá. No cambies `Validation.gs`, `appsscript.json`, las propiedades privadas ni la URL `/exec` que ya usa Render. En **Implementar → Administrar implementaciones**, editá la implementación web existente, elegí **Nueva versión** e implementá. Al abrir esa misma URL `/exec` debe aparecer `"version":5`.
+
+No hay función de migración para ejecutar a mano. La primera visita al catálogo o al administrador crea automáticamente las 26 subcategorías dentro de la pestaña existente `categorias_cotillon`. Las cuatro categorías principales son parte de la navegación de la web. La migración reutiliza categorías cuyo nombre coincide exactamente, como Halloween, Navidad y Golosinas; conserva todas las demás filas anteriores, las oculta de la navegación y no modifica ninguna fila de productos. Por eso los artículos aún sin clasificar aparecen en **Ver todos los productos** y en el buscador.
+
+Para ordenar esos artículos sin editar cientos de productos, entrá a **Administrador → Categorías cotillón**. El aviso muestra cuántos faltan. En cada categoría marcada **Anterior**, elegí una subcategoría nueva y pulsá **Vincular**. Por ejemplo, podés vincular «Fiestas patrias» con «Patrios» solo después de revisar que esa clasificación te sirva. El vínculo puede cambiarse después; no borra la categoría anterior ni altera las fotos, precios, stock o identificadores de los productos. También podés editar un producto individual si necesitás una clasificación diferente.
+
+En la tienda pública aparecen solamente los cuatro grupos principales. Al entrar a uno aparecen sus subcategorías; al elegir una aparecen sus productos. **Volver a categorías** y **Ver todos los productos** permiten salir del filtro. El buscador consulta todo Cotillón, incluidos los productos pendientes de clasificación. El carrito y el envío del pedido completo por WhatsApp siguen funcionando.
 
 ## Documentación oficial de referencia
 

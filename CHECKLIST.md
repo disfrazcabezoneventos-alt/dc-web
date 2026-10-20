@@ -36,3 +36,12 @@ La disponibilidad de disfraces por fecha se confirma manualmente. La estadístic
 - [ ] El usuario debe publicar `Code.gs` versión 4 en la implementación existente y ejecutar `importarCotillonAnterior` en el proyecto **web-dc**.
 - [ ] El usuario debe ejecutar `iniciarFotosCotillon` con las tres propiedades privadas de Cloudinary configuradas y revisar los lotes hasta completar las 337 fotos disponibles.
 - [ ] Verificar el carrito y la carga real de los 635 productos en Render después de importar; las pruebas automatizadas usan una hoja Google simulada.
+
+## Reorganización de Cotillón — 19/10/2026
+
+- [x] Navegación pública con solo cuatro categorías principales y 26 subcategorías en el orden solicitado; permite volver, ver todos y buscar también entre artículos pendientes de clasificación.
+- [x] Migración automática e idempotente de `categorias_cotillon`: reutiliza coincidencias exactas, conserva las anteriores y no reescribe productos ni fotos, precios, stock o identificadores.
+- [x] Administrador permite vincular una categoría anterior a una subcategoría nueva sin alterar productos; muestra cuántos quedan pendientes.
+- [x] La API, el carrito y las reservas mantienen sus rutas y operaciones. La compilación estática y las pruebas automatizadas pasan localmente.
+- [ ] El usuario debe pegar `backend/Code.gs` completo en el proyecto Apps Script **web-dc** y publicar **Nueva versión** de la implementación web existente. La URL `/exec` debe indicar `version: 5`.
+- [ ] Verificar con las cuentas reales que el primer acceso a Cotillón creó las 26 subcategorías, que los 635 productos siguen en **Ver todos**, y que las categorías anteriores quedan disponibles para vincularlas.
