@@ -8,6 +8,10 @@ const COTILLON_GROUPS = {
  'FECHAS ESPECIALES':['Navidad','Halloween','Pascua','San Valentín','Patrios','Baby Shower y revelación de género','Bautismo, comunión, 1 año','Egresados, UPD y recibidas','Primavera','Mundial','Despedida de soltera','Otros...'],
  'DESCARTABLES':['Bandejas','Cubiertos','Servilletas','Platos','Vasos / Copas / Jarras','Cajas','Sobres / Bolsas','Sorbetes','Hilos y cintas']
 };
+const COTILLON_INNER = {
+ 'Fiestas':['Carnaval carioca','Anteojos','Máscaras y antifaces','Accesorios para lanzar','Pelucas y barbas','Maquillaje pinta pelo','Sombreros cascos','Vinchas y coronas','Armas bastones escudos','Accesorios','Alas y tutús','Guantes y medias','Capas','Corbatas moños cinturones y tiradores'],
+ 'Cumpleaños infantil':['Personajes','Adorno para torta','Decoración','Bolsas y piñatas']
+};
 const STATES = {pending:['correction','confirmed','rejected','cancel_requested'],correction:['pending','confirmed','rejected','cancel_requested'],confirmed:['returned','incident','cancel_requested'],incident:['returned','refund_pending'],cancel_requested:['refund_pending','confirmed','rejected'],rejected:['refund_pending'],refund_pending:['refunded'],returned:[],refunded:[]};
 function props_(){return PropertiesService.getScriptProperties();}
 function config_(key){return props_().getProperty(key)||'';}
@@ -45,11 +49,29 @@ function ensureCotillonStructure_(){
  existing.filter(c=>!c.group&&c.storefront!==false).forEach(c=>put_('categorias_cotillon',{...c,storefront:false}));
  props_().setProperty('COTILLON_STRUCTURE_V1','ready');
 }
+// Agrega solo filas nuevas de categorías. Los productos y sus vínculos actuales no se modifican.
+function ensureCotillonDepth3_(){
+ if(config_('COTILLON_DEPTH3_V1')==='ready')return;
+ ensureCotillonStructure_();
+ const existing=categories_('cotillon'),newRows=[];
+ Object.keys(COTILLON_INNER).forEach(parentName=>{
+  const parent=existing.find(c=>c.group==='COTILLÓN'&&!c.parentId&&categoryKey_(c.name)===categoryKey_(parentName));
+  need_(parent,'Falta la categoría '+parentName+'. Revisá categorías_cotillon antes de continuar.');
+  COTILLON_INNER[parentName].forEach(name=>{
+   if(existing.some(c=>c.parentId===parent.id&&categoryKey_(c.name)===categoryKey_(name)))return;
+   const category={id:Utilities.getUuid(),area:'cotillon',name,group:'COTILLÓN',parentId:parent.id,storefront:true};
+   newRows.push([category.id,JSON.stringify(category)]);existing.push(category);
+  });
+ });
+ if(newRows.length){const sheet=sheet_('categorias_cotillon');sheet.getRange(sheet.getLastRow()+1,1,newRows.length,2).setValues(newRows);SpreadsheetApp.flush();}
+ props_().setProperty('COTILLON_DEPTH3_V1','ready');
+}
 function productCategoryIds_(p){return [...new Set([p.categoryId,...(Array.isArray(p.categoryIds)?p.categoryIds:[])].filter(Boolean))];}
 function linkedCategory_(p,c){return productCategoryIds_(p).includes(c.id)||(!p.categoryId&&categoryKey_(p.category)===categoryKey_(c.name));}
-function products_(area){const categories=categories_(area);return rows_(area).map(p=>{const original=categories.find(c=>c.id===p.categoryId)||categories.find(c=>!p.categoryId&&categoryKey_(c.name)===categoryKey_(p.category));const ids=productCategoryIds_(p).filter(id=>categories.some(c=>c.id===id));if(original&&!ids.includes(original.id))ids.unshift(original.id);if(area==='cotillon')ids.slice().forEach(id=>{const source=categories.find(c=>c.id===id),target=categories.find(c=>c.id===source?.mappedToCategoryId&&c.group&&c.storefront!==false);if(target&&!ids.includes(target.id))ids.push(target.id);});const primary=area==='cotillon'&&original?.mappedToCategoryId?categories.find(c=>c.id===original.mappedToCategoryId&&c.group&&c.storefront!==false)||original:original;return {...p,categoryId:primary?primary.id:'',category:primary?primary.name:'Sin categoría',categoryIds:ids,categoryNames:ids.map(id=>categories.find(c=>c.id===id).name)};});}
-function categoryName_(name,area,ignoreId){const clean=text_(name,80);need_(clean!=='Sin categoría','Ese nombre está reservado para los productos sin categoría.');need_(!categories_(area).some(c=>c.id!==ignoreId&&categoryKey_(c.name)===categoryKey_(clean)),'Ya existe una categoría con ese nombre.');return clean;}
-function doGet(){return json_({ok:true,data:{service:'Disfraz Cabezón',version:5,catalogSchema:'cotillon-hierarchy-v1'}});}
+function categoryPath_(category,categories){if(!category)return 'Sin categoría';const parent=category.parentId?categories.find(c=>c.id===category.parentId):null;return [category.group||'Anterior',parent?.name,category.name].filter(Boolean).join(' › ');}
+function products_(area){const categories=categories_(area);return rows_(area).map(p=>{const original=categories.find(c=>c.id===p.categoryId)||categories.find(c=>!p.categoryId&&!c.parentId&&categoryKey_(c.name)===categoryKey_(p.category));const ids=productCategoryIds_(p).filter(id=>categories.some(c=>c.id===id));if(original&&!ids.includes(original.id))ids.unshift(original.id);if(area==='cotillon')ids.slice().forEach(id=>{const source=categories.find(c=>c.id===id),target=categories.find(c=>c.id===source?.mappedToCategoryId&&c.group&&c.storefront!==false);if(target&&!ids.includes(target.id))ids.push(target.id);});const primary=area==='cotillon'&&original?.mappedToCategoryId?categories.find(c=>c.id===original.mappedToCategoryId&&c.group&&c.storefront!==false)||original:original;const label=c=>area==='cotillon'?categoryPath_(c,categories):c.name;return {...p,categoryId:primary?primary.id:'',category:primary?label(primary):'Sin categoría',categoryIds:ids,categoryNames:ids.map(id=>label(categories.find(c=>c.id===id)))};});}
+function categoryName_(name,area,ignoreId,group='',parentId=''){const clean=text_(name,80);need_(clean!=='Sin categoría','Ese nombre está reservado para los productos sin categoría.');need_(!categories_(area).some(c=>c.id!==ignoreId&&categoryKey_(c.name)===categoryKey_(clean)&&(area!=='cotillon'||(c.group||'')===group&&(c.parentId||'')===parentId)),'Ya existe una categoría con ese nombre en esa sección.');return clean;}
+function doGet(){return json_({ok:true,data:{service:'Disfraz Cabezón',version:6,catalogSchema:'cotillon-hierarchy-v2'}});}
 function reply_(e,result){
  if(!e||!e.parameter||e.parameter.transport!=='frame')return json_(result);
  const id=String(e.parameter.bridgeId||'');
@@ -66,7 +88,7 @@ function reply_(e,result){
 function doPost(e){let result;try{need_(e&&e.postData&&e.postData.contents.length<47000000,'Solicitud demasiado grande.');const raw=e.parameter&&e.parameter.transport==='frame'?e.parameter.payload:e.postData.contents;const b=JSON.parse(raw);need_(b&&typeof b.action==='string','Solicitud inválida.');result={ok:true,data:lock_(()=>dispatch_(b))};}catch(error){result={ok:false,error:String(error.message||'No se pudo completar la operación.').slice(0,300)};}return reply_(e,result);}
 function dispatch_(b){
  recoverStock_();
- if(['catalog','catalogData','admin','saveCategory','saveProduct','mapLegacyCategory'].includes(b.action))ensureCotillonStructure_();
+ if(['catalog','catalogData','admin','saveCategory','saveProduct','mapLegacyCategory'].includes(b.action))ensureCotillonDepth3_();
  if(b.action==='catalog')return CATEGORY_AREAS.flatMap(a=>products_(a).filter(p=>p.active));
  if(b.action==='catalogData')return {products:CATEGORY_AREAS.flatMap(a=>products_(a).filter(p=>p.active)),categories:CATEGORY_AREAS.flatMap(categories_)};
  if(b.action==='login'){
@@ -89,9 +111,22 @@ function dispatch_(b){
  session_(b.token);
  if(b.action==='logout'){CacheService.getScriptCache().remove('session:'+hash_(b.token));return {ok:true};}
  if(b.action==='admin')return {products:CATEGORY_AREAS.flatMap(products_),categories:CATEGORY_AREAS.flatMap(categories_),requests:rows_('reservas').map(({accessHash,terms,files,...r})=>r),movements:rows_('movimientos'),cancellations:rows_('cancelaciones'),bank:bank_(),mailMode:config_('MAIL_MODE')};
- if(b.action==='saveCategory'){const area=b.area,table=categoryTable_(area),old=b.id?categories_(area).find(c=>c.id===b.id):null;need_(!b.id||old,'Categoría inexistente.');const name=categoryName_(b.name,area,b.id),group=area==='cotillon'?String(b.group||old?.group||''):'';need_(area!=='cotillon'||Object.prototype.hasOwnProperty.call(COTILLON_GROUPS,group)||old&&!group,'Elegí una categoría principal válida.');const category={...(old||{}),id:old?old.id:Utilities.getUuid(),area,name,group,storefront:area==='cotillon'?!!group&&b.storefront!==false:true};put_(table,category);if(old&&old.name!==name)rows_(area).filter(p=>p.categoryId===old.id||(!p.categoryId&&categoryKey_(p.category)===categoryKey_(old.name))).forEach(p=>put_(area,{...p,categoryId:old.id,category:name}));return category;}
+ if(b.action==='saveCategory'){
+  const area=b.area,table=categoryTable_(area),all=categories_(area),old=b.id?all.find(c=>c.id===b.id):null;
+  need_(!b.id||old,'Categoría inexistente.');
+  const group=area==='cotillon'?String(b.group||old?.group||''):'',parentId=area==='cotillon'?String(Object.prototype.hasOwnProperty.call(b,'parentId')?b.parentId||'':old?.parentId||''):'';
+  need_(area!=='cotillon'||Object.prototype.hasOwnProperty.call(COTILLON_GROUPS,group)||old&&!group,'Elegí una categoría principal válida.');
+  const parent=parentId?all.find(c=>c.id===parentId):null;
+  need_(!parentId||group==='COTILLÓN'&&parent&&parent.group==='COTILLÓN'&&!parent.parentId&&(['Fiestas','Cumpleaños infantil'].some(name=>categoryKey_(name)===categoryKey_(parent.name))||all.some(c=>c.parentId===parent.id))&&parent.id!==old?.id,'Elegí Fiestas o Cumpleaños infantil como categoría superior.');
+  need_(!old||!all.some(c=>c.parentId===old.id)||group==='COTILLÓN'&&!parentId,'No se puede mover una categoría que contiene subcategorías internas.');
+  const name=categoryName_(b.name,area,b.id,group,parentId);
+  const category={...(old||{}),id:old?old.id:Utilities.getUuid(),area,name,group,parentId,storefront:area==='cotillon'?!!group&&b.storefront!==false:true};
+  put_(table,category);
+  if(old&&old.name!==name)rows_(area).filter(p=>p.categoryId===old.id||(!p.categoryId&&categoryKey_(p.category)===categoryKey_(old.name))).forEach(p=>put_(area,{...p,categoryId:old.id,category:name}));
+  return category;
+ }
  if(b.action==='mapLegacyCategory'){const source=categories_('cotillon').find(c=>c.id===b.id&&!c.group),target=categories_('cotillon').find(c=>c.id===b.targetId&&c.group&&c.storefront!==false);need_(source,'Elegí una categoría anterior.');need_(target,'Elegí una subcategoría nueva y visible.');const updated={...source,mappedToCategoryId:target.id,storefront:false};put_('categorias_cotillon',updated);return {category:updated,affected:rows_('cotillon').filter(p=>linkedCategory_(p,source)).length};}
- if(b.action==='deleteCategory'&&b.area==='cotillon')need_(!categories_('cotillon').some(c=>c.mappedToCategoryId===b.id),'Esta subcategoría recibe productos de una categoría anterior. Cambiá primero esa vinculación.');
+ if(b.action==='deleteCategory'&&b.area==='cotillon'){const categories=categories_('cotillon');need_(!categories.some(c=>c.mappedToCategoryId===b.id),'Esta subcategoría recibe productos de una categoría anterior. Cambiá primero esa vinculación.');need_(!categories.some(c=>c.parentId===b.id),'Esta sección contiene subcategorías internas. Reorganizalas antes de eliminarla.');}
  if(b.action==='deleteCategory'){const area=b.area,table=categoryTable_(area),category=categories_(area).find(c=>c.id===b.id);need_(category,'Categoría inexistente.');const affected=rows_(area).filter(p=>linkedCategory_(p,category));need_(Number.isInteger(b.expectedCount)&&b.expectedCount===affected.length,'Cambió la cantidad de productos. Actualizá el panel y volvé a revisar.');need_(['otros','uncategorized','new'].includes(b.strategy),'Elegí qué hacer con los productos.');let target=null;if(b.strategy==='otros'){target=categories_(area).find(c=>c.id!==category.id&&categoryKey_(c.name)==='otros');if(!target){target={id:Utilities.getUuid(),area,name:'Otros'};put_(table,target);}}if(b.strategy==='new'){const name=categoryName_(b.newName,area,category.id);target={id:Utilities.getUuid(),area,name};put_(table,target);}need_(!target||target.id!==category.id,'Elegí otra categoría de destino.');affected.forEach(p=>{let ids=productCategoryIds_(p).filter(id=>id!==category.id);if(target&&!ids.includes(target.id))ids.push(target.id);const primary=p.categoryId===category.id?(ids[0]||''):p.categoryId;put_(area,{...p,categoryId:primary,categoryIds:ids,category:primary===target?.id?target.name:p.categoryId===category.id?'':p.category});});remove_(table,category.id);return {affected:affected.length,target};}
  if(b.action==='saveProduct'){const p=b.product;need_(CATEGORY_AREAS.includes(p.area),'Área inválida.');need_(['venta','alquiler','ambos'].includes(p.mode)&&(p.area!=='cotillon'||p.mode==='venta'),'Modalidad inválida.');need_(Number.isInteger(p.stock)&&p.stock>=0&&p.stock<=100000,'Stock inválido.');need_(!p.image||/^https:\/\/res\.cloudinary\.com\//.test(p.image),'Usá una imagen de Cloudinary.');need_(!p.thumbnail||/^https:\/\/res\.cloudinary\.com\//.test(p.thumbnail),'Usá una miniatura de Cloudinary.');const old=p.id?rows_(p.area).find(x=>x.id===p.id):null;need_(!p.id||old,'Producto inexistente.');const allCategories=categories_(p.area),requested=[...new Set([p.categoryId,...(p.area==='cotillon'&&Array.isArray(p.categoryIds)?p.categoryIds:[])].filter(Boolean))];need_(requested.every(id=>allCategories.some(c=>c.id===id)),'Elegí categorías existentes.');const category=allCategories.find(c=>c.id===(p.categoryId||requested[0]));const saleCondition=p.area==='disfraces'&&p.mode!=='alquiler'?String(p.saleCondition||''):'';need_(!saleCondition||['Nuevo a pedido','Nuevo Inmediato','Usado inmediato'].includes(saleCondition),'Condición de venta inválida.');const deliveryTime=saleCondition==='Nuevo a pedido'?text_(p.deliveryTime||'aproximadamente 1 mes',120):'';const orderLimit=saleCondition==='Nuevo a pedido'?(Number.isInteger(p.orderLimit)?p.orderLimit:(p.stock>0?p.stock:1)):0;need_(saleCondition!=='Nuevo a pedido'||orderLimit>=1&&orderLimit<=100000,'Límite de pedidos inválido.');return put_(p.area,{...(old||{}),id:p.id||Utilities.getUuid(),area:p.area,name:text_(p.name,150),categoryId:category?category.id:'',categoryIds:p.area==='cotillon'?requested:category?[category.id]:[],category:category?category.name:'',description:text_(p.description,2000),mode:p.mode,saleCondition,deliveryTime,orderLimit,price:p.mode==='alquiler'?0:amount_(p.price),priceKnown:p.area==='cotillon'?p.priceKnown!==false:true,rentPrice:p.mode==='venta'?0:amount_(p.rentPrice),stock:saleCondition==='Nuevo a pedido'&&p.mode==='venta'?0:p.stock,stockUnknown:p.area==='cotillon'&&p.stockUnknown===true,image:String(p.image||''),thumbnail:p.image?String(p.thumbnail||''):'',active:!!p.active,sourceId:old?.sourceId||'',sourceImage:old?.sourceImage||''});}
  if(b.action==='deleteProduct'){need_(['disfraces','cotillon'].includes(b.area),'Área inválida.');need_(!rows_('movimientos').some(m=>m.kind==='venta'&&m.area===b.area&&m.productId===b.id&&!m.voided),'No se puede eliminar este producto porque tiene ventas registradas sin anular. Ocultalo del catálogo o anulá esas ventas primero.');remove_(b.area,b.id);return {ok:true};}

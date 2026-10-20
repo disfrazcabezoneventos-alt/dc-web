@@ -45,3 +45,12 @@ La disponibilidad de disfraces por fecha se confirma manualmente. La estadístic
 - [x] La API, el carrito y las reservas mantienen sus rutas y operaciones. La compilación estática y las pruebas automatizadas pasan localmente.
 - [ ] El usuario debe pegar `backend/Code.gs` completo en el proyecto Apps Script **web-dc** y publicar **Nueva versión** de la implementación web existente. La URL `/exec` debe indicar `version: 5`.
 - [ ] Verificar con las cuentas reales que el primer acceso a Cotillón creó las 26 subcategorías, que los 635 productos siguen en **Ver todos**, y que las categorías anteriores quedan disponibles para vincularlas.
+
+## Tercer nivel de Cotillón — 20/10/2026
+
+- [x] Fiestas tiene 14 categorías internas y Cumpleaños infantil tiene 4, con IDs y `parentId` distintos; Accesorios de Fiestas no se confunde con Accesorios de Repostería.
+- [x] Migración automática y repetible en `categorias_cotillon`; en las pruebas simuladas no cambió ninguna fila de productos, foto, precio, stock ni ID.
+- [x] Navegación por tres niveles, ruta de regreso, vista de todos los productos de cada sección y búsqueda global; el administrador muestra rutas completas y productos pendientes del tercer nivel.
+- [x] Pruebas automatizadas, comprobación de TypeScript y exportación estática local aprobadas.
+- [ ] El usuario debe reemplazar **Código.gs** completo en **web-dc** y publicar una nueva versión de la implementación existente. La URL `/exec` debe indicar `version: 6`.
+- [ ] Verificar en Google Sheets y en la web real las 18 categorías internas, que los productos históricos siguen accesibles y que se puede clasificar un producto de prueba sin afectar el resto. No se dispone de escritura a esas cuentas reales durante esta verificación.

@@ -269,6 +269,16 @@ Para ordenar esos artículos sin editar cientos de productos, entrá a **Adminis
 
 En la tienda pública aparecen solamente los cuatro grupos principales. Al entrar a uno aparecen sus subcategorías; al elegir una aparecen sus productos. **Volver a categorías** y **Ver todos los productos** permiten salir del filtro. El buscador consulta todo Cotillón, incluidos los productos pendientes de clasificación. El carrito y el envío del pedido completo por WhatsApp siguen funcionando.
 
+## Actualización 6 · tercer nivel de Cotillón
+
+Esta actualización agrega **14 categorías internas dentro de Cotillón → Fiestas** y **4 dentro de Cotillón → Cumpleaños infantil**. Repostería, Fechas Especiales, Descartables y Disfraces mantienen su estructura. Para activarla, copiá el archivo **completo** [`backend/Code.gs`](backend/Code.gs) en el archivo **Código.gs** del proyecto Apps Script **web-dc** que ya usa Render. Guardá y editá la **implementación web existente** en **Implementar → Administrar implementaciones → lápiz → Nueva versión → Implementar**. Mantené la misma URL `/exec`. No reemplaces `Validation.gs` ni `appsscript.json`; no cambies las propiedades privadas.
+
+Al abrir la URL `/exec`, la respuesta debe contener `"version":6` y `"catalogSchema":"cotillon-hierarchy-v2"`. Al entrar por primera vez al catálogo o al administrador, Apps Script agrega las 18 categorías a la pestaña **categorias_cotillon** ya existente. **No hay que ejecutar ninguna función manual ni crear pestañas nuevas.** Cada categoría recibe un ID único y un `parentId` que apunta a Fiestas o Cumpleaños infantil. Si la operación se interrumpe, al repetirla reutiliza lo que ya creó. Las filas de productos, sus categorías originales, fotos, precios, stock e identificadores no se reescriben.
+
+En la web, entrá a **Cotillón → Fiestas** o **Cotillón → Cumpleaños infantil** para ver las nuevas tarjetas. Elegí una tarjeta interna para ver sus artículos. **Ver todos los productos de Fiestas/Cumpleaños infantil** incluye tanto los ya clasificados como los que todavía tengan asignado únicamente el segundo nivel. **Ver todos los productos** y el buscador global muestran también los productos que aún están en categorías anteriores. Una categoría nueva estará vacía hasta que la clasifiques: no se hizo ningún reparto automático según nombres o fotos.
+
+Para clasificar, abrí **Administrador → Cotillón → Editar** en el producto y elegí la ruta completa, por ejemplo **COTILLÓN › Fiestas › Anteojos**; guardá. Si un producto aparece en varias categorías, usá **También aparece en**. Para mover todos los productos de una categoría anterior a una interna sin cambiar las filas originales, usá **Administrador → Categorías cotillón → Vincular** y elegí la ruta completa. Revisá el resultado antes de vincular: una categoría como «Accesorios» puede existir en dos ramas con IDs distintos. El panel indica cuántos productos de Fiestas/Cumpleaños infantil aún no tienen tercer nivel.
+
 ## Documentación oficial de referencia
 
 - [Exportación estática de Next.js](https://nextjs.org/docs/app/guides/static-exports)

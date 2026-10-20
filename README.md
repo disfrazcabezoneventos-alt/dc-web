@@ -2,7 +2,7 @@
 
 Next.js con exportación estática para Render. Catálogos separados, reservas, administración y caja con backend Google Apps Script. Fotos públicas en Cloudinary; documentos personales en Drive privado.
 
-**Empezá por [GUIA_CONFIGURACION.md](GUIA_CONFIGURACION.md).** Incluye la migración del catálogo anterior y la actualización a cuatro categorías principales de Cotillón con 26 subcategorías, conservando los productos y sus fotos. Estado y límites de verificación: [CHECKLIST.md](CHECKLIST.md).
+**Empezá por [GUIA_CONFIGURACION.md](GUIA_CONFIGURACION.md).** Incluye la migración del catálogo anterior y la actualización a cuatro categorías principales de Cotillón, con un tercer nivel en Fiestas y Cumpleaños infantil sin mover productos existentes. Estado y límites de verificación: [CHECKLIST.md](CHECKLIST.md).
 
 ```sh
 npm ci
