@@ -18,8 +18,104 @@ html[data-theme="halloween"] {
 }
 
 html[data-theme="halloween"] body {
+  position: relative;
+  isolation: isolate;
   background: #0d0c14 url('/halloween-environment-desktop.webp') center center / cover no-repeat fixed;
 }
+
+/* The photograph stays behind the shop. The mist and bats move with scroll,
+   while the side artwork belongs to the page and passes by at normal speed. */
+.halloween-atmosphere,
+.halloween-rails { display: none; }
+
+html[data-theme="halloween"] .site-shell {
+  position: relative;
+  z-index: 1;
+}
+
+html[data-theme="halloween"] .halloween-atmosphere {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+html[data-theme="halloween"] .halloween-atmosphere > div {
+  position: absolute;
+  pointer-events: none;
+  transition: opacity .8s ease;
+}
+
+html[data-theme="halloween"] .halloween-atmosphere__far {
+  inset: -12% -14%;
+  background:
+    radial-gradient(ellipse 30% 12% at 16% 26%, #bda6c857, transparent 80%),
+    radial-gradient(ellipse 42% 15% at 79% 38%, #cf9aa94a, transparent 82%),
+    radial-gradient(ellipse 46% 15% at 35% 76%, #a999bf43, transparent 84%);
+  filter: blur(16px);
+  opacity: .54;
+  transform: translate3d(var(--h-far-x, 0px), var(--h-far-y, 0px), 0);
+}
+
+html[data-theme="halloween"] .halloween-atmosphere__near {
+  inset: -12% -18%;
+  background:
+    radial-gradient(ellipse 41% 12% at 6% 90%, #d7b5c765, transparent 83%),
+    radial-gradient(ellipse 42% 13% at 73% 87%, #b7a7cf5e, transparent 86%),
+    radial-gradient(ellipse 37% 10% at 54% 55%, #9d829f39, transparent 80%);
+  filter: blur(21px);
+  opacity: .48;
+  transform: translate3d(var(--h-near-x, 0px), var(--h-near-y, 0px), 0);
+}
+
+html[data-theme="halloween"] .halloween-atmosphere__bats {
+  top: 9%;
+  left: 42%;
+  width: min(56vw, 780px);
+  height: 33vh;
+  background: url('/halloween-bats.svg') center / contain no-repeat;
+  opacity: .32;
+  transform: translate3d(var(--h-bat-x, 0px), var(--h-bat-y, 0px), 0);
+}
+
+html[data-theme="halloween"] .halloween-atmosphere__shade {
+  inset: 0;
+  background: linear-gradient(90deg, #08060d30, transparent 24%, #08060d24 58%, transparent 83%, #08060d30);
+  opacity: .6;
+}
+
+html[data-theme="halloween"] .halloween-atmosphere[data-zone="catalog"] .halloween-atmosphere__far { opacity: .29; }
+html[data-theme="halloween"] .halloween-atmosphere[data-zone="catalog"] .halloween-atmosphere__near { opacity: .33; }
+html[data-theme="halloween"] .halloween-atmosphere[data-zone="catalog"] .halloween-atmosphere__bats { opacity: .16; }
+html[data-theme="halloween"] .halloween-atmosphere[data-zone="closing"] .halloween-atmosphere__far { opacity: .72; }
+html[data-theme="halloween"] .halloween-atmosphere[data-zone="closing"] .halloween-atmosphere__near { opacity: .68; }
+html[data-theme="halloween"] .halloween-atmosphere[data-zone="closing"] .halloween-atmosphere__shade { opacity: .82; }
+
+html[data-theme="halloween"] .halloween-rails {
+  display: block;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+html[data-theme="halloween"] .halloween-rails::before,
+html[data-theme="halloween"] .halloween-rails::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: clamp(180px, 15vw, 300px);
+  background: url('/halloween-rail.svg') left top / 100% auto repeat-y;
+  opacity: .66;
+  mask-image: linear-gradient(90deg, #000 35%, #0009 68%, transparent);
+}
+
+html[data-theme="halloween"] .halloween-rails::before { left: 0; }
+html[data-theme="halloween"] .halloween-rails::after { right: 0; transform: scaleX(-1); }
 
 html[data-theme="halloween"] ::selection {
   background: #ad643e;
@@ -67,6 +163,16 @@ html[data-theme="halloween"] .wordmark {
   flex: none;
 }
 
+html[data-theme="halloween"] .wordmark::before {
+  content: '';
+  position: absolute;
+  inset: -6px -15px;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(ellipse, #ef99544d, #8c52b12d 39%, transparent 72%);
+  filter: blur(13px);
+}
+
 html[data-theme="halloween"] .wordmark .brand-mark {
   width: 164px;
   height: 144px;
@@ -102,6 +208,19 @@ html[data-theme="halloween"] .hero::before {
     linear-gradient(0deg, #0b0a13a8, transparent 45%),
     url('/halloween-environment-desktop.webp') center 38% / cover no-repeat;
   opacity: 1;
+}
+
+html[data-theme="halloween"] .hero::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0;
+  height: 28%;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 72% 65% at 12% 100%, #b59ab947, transparent 76%),
+    radial-gradient(ellipse 68% 72% at 88% 100%, #b9a7bc38, transparent 79%),
+    linear-gradient(0deg, #120d1b80, transparent);
 }
 
 html[data-theme="halloween"] .hero .eyebrow,
@@ -140,6 +259,9 @@ html[data-theme="halloween"] .ticker span { color: #f8dfd0; }
 
 html[data-theme="halloween"] .worlds,
 html[data-theme="halloween"] .catalog { position: relative; }
+html[data-theme="halloween"] .worlds {
+  background: linear-gradient(180deg, #17101b31, #2115274f 50%, #100d1891);
+}
 html[data-theme="halloween"] .section-heading h2,
 html[data-theme="halloween"] .catalog h2 { color: #fff1e6; text-shadow: 0 3px 25px #0009; }
 html[data-theme="halloween"] .section-heading > p { color: #e0ced8; }
@@ -172,7 +294,9 @@ html[data-theme="halloween"] .world:hover { border-color: #ffc282; box-shadow: 0
 
 html[data-theme="halloween"] .catalog {
   border-top: 1px solid #8c606a;
-  background: linear-gradient(180deg, #20152668, #0d0c1400 21rem);
+  background:
+    radial-gradient(ellipse 70% 23rem at 50% 0, #5c35454d, transparent 83%),
+    linear-gradient(180deg, #1b12229c, #120f1ba8 28rem, #110e18bc);
 }
 html[data-theme="halloween"] .product-card {
   padding: 9px 9px 0;
@@ -202,6 +326,8 @@ html[data-theme="halloween"] .product-arrow { background: #f4a763; color: #28161
 html[data-theme="halloween"] .page-title,
 html[data-theme="halloween"] .page-title.peach,
 html[data-theme="halloween"] .page-title.lilac {
+  position: relative;
+  overflow: hidden;
   display: flex;
   min-height: 326px;
   flex-direction: column;
@@ -214,6 +340,15 @@ html[data-theme="halloween"] .page-title.lilac {
     url('/halloween-environment-desktop.webp') center 34% / cover no-repeat;
   box-shadow: 0 28px 65px #030207a6;
 }
+html[data-theme="halloween"] .page-title::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0;
+  height: 30%;
+  pointer-events: none;
+  background: linear-gradient(0deg, #1a11249c, transparent);
+}
+html[data-theme="halloween"] .page-title > * { position: relative; z-index: 1; }
 html[data-theme="halloween"] .page-title h1 { color: #fff4e9; text-shadow: 0 2px 22px #000a; }
 html[data-theme="halloween"] .page-title h1 em { color: #ffc387; }
 html[data-theme="halloween"] .page-title p { max-width: 620px; color: #f1dce2; }
@@ -324,13 +459,26 @@ html[data-theme="halloween"] .error-banner { background: #4b2635; border-color: 
 
 html[data-theme="halloween"] .site-footer {
   position: relative;
+  isolation: isolate;
+  overflow: hidden;
   max-width: none;
   padding-inline: max(5%, calc((100vw - 1296px) / 2));
   border-top: 1px solid #9c707e;
   background:
     linear-gradient(0deg, #0b0a12ed, #1c1523bd 75%),
     url('/halloween-environment-desktop.webp') center 65% / cover no-repeat;
-  box-shadow: 0 -18px 55px #05030a6e;
+  box-shadow: 0 -18px 55px #05030a6e, 0 -1px 25px #f3a36736;
+}
+html[data-theme="halloween"] .site-footer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(0deg, #09070de0, transparent 76%),
+    url('/halloween-cemetery.svg') center bottom / cover no-repeat;
+  opacity: .74;
 }
 html[data-theme="halloween"] .site-footer .brand-mark {
   width: 190px;
@@ -346,6 +494,11 @@ html[data-theme="halloween"] .floating-wa {
   box-shadow: 0 8px 25px #000a, 0 0 18px #61c48b45;
 }
 
+@media (max-width: 1500px) {
+  html[data-theme="halloween"] .halloween-rails::before,
+  html[data-theme="halloween"] .halloween-rails::after { opacity: .32; }
+}
+
 @media (max-width: 760px) {
   html[data-theme="halloween"] body {
     background-image: url('/halloween-environment-mobile.webp');
@@ -353,6 +506,17 @@ html[data-theme="halloween"] .floating-wa {
     background-size: cover;
     background-attachment: fixed;
   }
+  html[data-theme="halloween"] .halloween-rails { display: none; }
+  html[data-theme="halloween"] .halloween-atmosphere__far,
+  html[data-theme="halloween"] .halloween-atmosphere__near { filter: blur(9px); }
+  html[data-theme="halloween"] .halloween-atmosphere__bats {
+    top: 8%;
+    left: 12%;
+    width: 80%;
+    height: 23vh;
+    opacity: .17;
+  }
+  html[data-theme="halloween"] .halloween-atmosphere__shade { opacity: .38; }
   html[data-theme="halloween"] .site-header {
     min-height: 124px;
     padding: 4px 6%;
@@ -390,4 +554,5 @@ html[data-theme="halloween"] .floating-wa {
 
 @media (prefers-reduced-motion: reduce) {
   html[data-theme="halloween"] .product-card { transition: none; }
+  html[data-theme="halloween"] .halloween-atmosphere > div { transition: none; }
 }
