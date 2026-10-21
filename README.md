@@ -4,6 +4,8 @@ Next.js con exportación estática para Render. Catálogos separados, reservas, 
 
 **Empezá por [GUIA_CONFIGURACION.md](GUIA_CONFIGURACION.md).** Incluye la migración del catálogo anterior y la actualización a cuatro categorías principales de Cotillón, con un tercer nivel en Fiestas y Cumpleaños infantil sin mover productos existentes. Estado y límites de verificación: [CHECKLIST.md](CHECKLIST.md).
 
+Para instalar y usar los temas predeterminado/Halloween, seguí [backend/GUIA_TEMAS.md](backend/GUIA_TEMAS.md).
+
 ```sh
 npm ci
 npm run dev

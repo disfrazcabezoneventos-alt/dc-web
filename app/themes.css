@@ -1,0 +1,194 @@
+/* La elección se guarda en Apps Script; estas variables no contienen datos comerciales. */
+:root {
+  color-scheme: light;
+  --ink: #1b2c52;
+  --muted: #53617c;
+  --paper: #f8fbff;
+  --lilac: #eadfff;
+  --purple: #6635a9;
+  --mint: #dcf5f3;
+  --peach: #f8e5f3;
+  --line: #dce4f2;
+  --surface: #fff;
+  --surface-soft: #edf5ff;
+  --accent: #6635a9;
+  --accent-hover: #4e248b;
+  --cyan: #0d9bc9;
+  --glow: #9cebf6;
+  --shadow: 0 18px 44px #23396712;
+}
+html[data-theme="halloween"] {
+  color-scheme: dark;
+  --ink: #f7f1ff;
+  --muted: #c8bdd5;
+  --paper: #100f19;
+  --lilac: #332440;
+  --purple: #d0a5ff;
+  --mint: #21413b;
+  --peach: #412a30;
+  --line: #52435f;
+  --surface: #211d2d;
+  --surface-soft: #2d263c;
+  --accent: #ffaf66;
+  --accent-hover: #ffd092;
+  --cyan: #91d6c5;
+  --glow: #8159aa;
+  --shadow: 0 18px 48px #05030b66;
+}
+body {
+  background: radial-gradient(circle at 6% 3%, #dff5ff 0, transparent 24rem), radial-gradient(circle at 98% 24%, #f0e8ff 0, transparent 31rem), var(--paper);
+}
+.topbar { background: linear-gradient(100deg,#392270,#6540b6,#087ba8); color: #fff; }
+.topbar span { color: #edfaff; }
+.site-header { max-width: none; position: sticky; top: 0; z-index: 90; padding: 10px max(5%,calc((100vw - 1296px)/2)); background: #f9fbfff2; backdrop-filter: blur(18px); box-shadow: 0 9px 28px #2847830a; }
+.wordmark { gap: 8px; color: var(--ink); font-size: 12px; line-height: 1; }
+.wordmark img { width: 70px; height: 70px; object-fit: contain; flex: none; }
+.wordmark strong { font-size: 23px; letter-spacing: -.9px; color: var(--purple); margin-top: 4px; }
+.site-header nav>a:not(.nav-contact) { position: relative; }
+.site-header nav>a:not(.nav-contact)::after { content: ''; position: absolute; left: 0; right: 100%; bottom: -6px; height: 2px; background: var(--cyan); transition: right .22s ease; }
+.site-header nav>a:not(.nav-contact):hover::after { right: 0; }
+.nav-contact { background: var(--surface); border-color: var(--line); box-shadow: 0 5px 16px #2d509115; }
+.hero { position: relative; align-items: center; min-height: 640px; background: radial-gradient(circle at 72% 32%, #b9f2fb 0, #e7f5ff 29%, transparent 58%), linear-gradient(130deg,#fdfdff,#efeaff 78%); border-radius: 0 0 36px 36px; }
+.hero h1 { color: #1b2c52; }
+.hero h1 em { color: #673ab6; }
+.hero-copy { position: relative; z-index: 2; }
+.hero-circle { background: radial-gradient(circle at 34% 25%,#c1faff,#70c9ed 48%,#8863d5 100%); box-shadow: 0 0 80px #6bc8ef66; }
+.photo-card { border-radius: 19px; box-shadow: 0 28px 55px #2739612c; overflow: hidden; }
+.photo-card img { border-radius: 10px; }
+.round-seal { background: #d6fff5; }
+.art-star { text-shadow: 0 0 25px #5bb9ff; }
+.ticker { background: linear-gradient(90deg,#def9fc,#e5d9fb,#d4f4fc); color: #774eb5; }
+.ticker span { color: #23395e; }
+.world { border-radius: 22px; border: 1px solid #ffffffd0; box-shadow: var(--shadow); transition: transform .22s ease,box-shadow .22s ease; }
+.world:hover { transform: translateY(-4px); box-shadow: 0 25px 45px #263a661c; }
+.world.lilac { background: linear-gradient(150deg,#e7d9ff,#f7eefe); }
+.world.peach { background: linear-gradient(150deg,#fee8f6,#ffeedb); }
+.world.mint { background: linear-gradient(150deg,#d4fbf4,#e7f5ff); }
+.world .circle-arrow { background: #fff; border-color: #fff; color: #6236a5; }
+.page-title { border-radius: 0 0 30px 30px; background: linear-gradient(110deg,#e4f8ff,#f1e8ff); }
+.page-title.peach { background: linear-gradient(110deg,#fff0fa,#e0f6ff); }
+.page-title.lilac { background: linear-gradient(110deg,#eee5ff,#dff6ff); }
+.reservation-banner { background: linear-gradient(115deg,#e4f7ff,#e9dcff); border: 1px solid #d7e6f8; border-radius: 25px; box-shadow: var(--shadow); }
+.button,.btn,.filter-chips button,.admin-tabs button { transition: background .2s,color .2s,border-color .2s,transform .2s; }
+.button.dark,.btn.primary,.filter-chips button.active,.admin-tabs button.active { background: linear-gradient(110deg,#6736b0,#305bc1); color: #fff; border-color: transparent; }
+.button.dark:hover,.btn.primary:hover { background: linear-gradient(110deg,#4f238f,#244a9f); }
+.button:not(.dark),.btn:not(.primary) { background: var(--surface); border-color: var(--line); color: var(--ink); }
+.product-photo { background: #eff7ff; border-radius: 16px; border: 1px solid #e0eaf8; }
+.product-tag,.product-arrow { background: var(--surface); color: var(--ink); }
+.panel,.form-card,.reservation-card,.stat,.receipt-card,.terms-modal,.bank-card,.cart-panel,.product-dialog>div { background: var(--surface); border-color: var(--line); box-shadow: var(--shadow); }
+.panel,.form-card,.reservation-card,.stat,.receipt-card { border-radius: 17px; }
+.search,input:not([type=checkbox]):not([type=radio]),select,textarea,.money-input { background: var(--surface); border-color: var(--line); color: var(--ink); }
+.filter-chips button,.admin-tabs button,.cotillon-navigation-actions button,.cotillon-subcategory-grid button,.cotillon-section-all { background: var(--surface); color: var(--ink); border-color: var(--line); }
+.cotillon-category-card { border-radius: 19px; border: 1px solid #fff; box-shadow: var(--shadow); }
+.cotillon-category-card.tone-0 { background: #e5f5ff; }
+.cotillon-category-card.tone-1 { background: #f3e7ff; }
+.cotillon-category-card.tone-2 { background: #e5f7f3; }
+.cotillon-category-card.tone-3 { background: #fff0f6; }
+.cotillon-subcategory-grid button { border-radius: 13px; }
+.cotillon-subcategory-grid button:hover,.cotillon-section-all.active,.cotillon-subcategory-grid button.active { background: #e9ddff; border-color: var(--purple); color: #4f277f; }
+.form-actions,.empty-costumes,.costume-item,.final-summary,.payment-amount,.upload-zone,.photo-placeholder,.rental-product-note,.cart-intro,.cart-item img,.cart-item-placeholder { background: var(--surface-soft); border-color: var(--line); }
+.notice,.loading-state,.demo-note,.sale-condition-chip { background: #eee8ff; color: #4e2c80; border-color: #d8c3f3; }
+.empty-state { background: var(--surface-soft); color: var(--muted); }
+.error-banner,.field-error { color: #9a1f31; }
+.table-scroll,th,td,table { border-color: var(--line); }
+table { background: var(--surface); }
+th { background: #edf3ff; }
+.site-footer { background: transparent; }
+.footer-brand img { width: 92px; height: 92px; }
+.floating-wa { background: #16634e; color: #fff; }
+.theme-options { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; margin: 28px 0; }
+.theme-option { display: flex; align-items: flex-start; flex-direction: column; gap: 8px; min-height: 190px; padding: 22px; border: 2px solid var(--line); border-radius: 19px; text-align: left; box-shadow: var(--shadow); }
+.theme-option.selected { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb,var(--accent) 20%,transparent); }
+.theme-option strong { font: 800 19px Manrope,sans-serif; }
+.theme-option small { font-size: 12px; }
+.theme-option-default { background: linear-gradient(130deg,#e5faff,#eadaff); color: #19325c; }
+.theme-option-halloween { background: linear-gradient(130deg,#171222,#473052); color: #fff2e8; }
+.theme-option .theme-swatch { display: grid; place-items: center; width: 45px; height: 45px; border-radius: 50%; font-size: 26px; background: #ffffff99; }
+.theme-option-halloween .theme-swatch { background: #ffab6040; color: #ffc179; }
+
+/* Halloween: la misma interfaz y los mismos datos, con una identidad distinta. */
+html[data-theme="halloween"] body { background: radial-gradient(circle at 80% 10%,#382548 0,transparent 33rem),radial-gradient(circle at 5% 44%,#222039 0,transparent 40rem),var(--paper); }
+html[data-theme="halloween"] .topbar { background: linear-gradient(90deg,#17121e,#3a2342,#6a3728); color: #ffe4c5; }
+html[data-theme="halloween"] .topbar span { color: #dfc7e8; }
+html[data-theme="halloween"] .site-header { background: #171321f2; box-shadow: 0 12px 38px #05030a88; }
+html[data-theme="halloween"] .site-header::before { content: ''; position: absolute; right: 0; top: 0; width: 160px; height: 100%; pointer-events: none; opacity: .26; background: repeating-radial-gradient(circle at 100% 0,transparent 0 16px,#b89ecb 17px 18px,transparent 19px 30px); mask-image: linear-gradient(230deg,#000,transparent 80%); }
+html[data-theme="halloween"] .wordmark img { border-radius: 50%; box-shadow: 0 0 0 3px #604776,0 0 18px #b47be155; background: #f9f4ff; }
+html[data-theme="halloween"] .wordmark strong { color: #dfa7ff; }
+html[data-theme="halloween"] .nav-contact { background: #382a48; border-color: #715a7b; color: #fff0dc; }
+html[data-theme="halloween"] .site-header nav>a:not(.nav-contact)::after { background: var(--accent); }
+html[data-theme="halloween"] .hero { isolation: isolate; background: #171323; border: 1px solid #594161; }
+html[data-theme="halloween"] .hero::before { content: ''; position: absolute; inset: 0; z-index: -1; background: url('/halloween-scene.svg') center / cover no-repeat; opacity: .65; pointer-events: none; }
+html[data-theme="halloween"] .hero h1 { color: #fff7eb; text-shadow: 0 4px 24px #08040b; }
+html[data-theme="halloween"] .hero h1 em { color: #ffb979; }
+html[data-theme="halloween"] .hero-copy>p { color: #f0dfe9; text-shadow: 0 2px 10px #100b18; }
+html[data-theme="halloween"] .hero-circle { background: radial-gradient(circle at 36% 28%,#5d426f,#20142d 72%); box-shadow: 0 0 80px #ef8d4c2d; }
+html[data-theme="halloween"] .photo-card { background: #2b2135; border-color: #725582; color: #fff4e9; }
+html[data-theme="halloween"] .photo-card img { background: #292432; }
+html[data-theme="halloween"] .round-seal { background: #5c362d; box-shadow: 0 0 0 5px #1d1729; color: #ffe9ce; }
+html[data-theme="halloween"] .art-star { color: #ffbe7c; text-shadow: 0 0 20px #f48e57; }
+html[data-theme="halloween"] .ticker { background: linear-gradient(90deg,#271a32,#603b38,#271a32); color: #f5ba7d; }
+html[data-theme="halloween"] .ticker span { color: #f7e9df; }
+html[data-theme="halloween"] .world { border-color: #74587a; }
+html[data-theme="halloween"] .world.lilac { background: linear-gradient(145deg,#433153,#24192f); }
+html[data-theme="halloween"] .world.peach { background: linear-gradient(145deg,#6a3833,#2b1d2a); }
+html[data-theme="halloween"] .world.mint { background: linear-gradient(145deg,#315047,#1d2630); }
+html[data-theme="halloween"] .world img { mix-blend-mode: normal; filter: saturate(.9); }
+html[data-theme="halloween"] .world .circle-arrow { background: #ffb366; border-color: #ffb366; color: #2a192d; }
+html[data-theme="halloween"] .page-title,html[data-theme="halloween"] .page-title.peach,html[data-theme="halloween"] .page-title.lilac { background: linear-gradient(110deg,#211828,#49304c 66%,#2c242e); border-bottom: 1px solid #6b506c; }
+html[data-theme="halloween"] .page-title em { color: #ffbd79; }
+html[data-theme="halloween"] .reservation-banner { background: linear-gradient(115deg,#2c2435,#493144); border-color: #715677; }
+html[data-theme="halloween"] .button.dark,html[data-theme="halloween"] .btn.primary,html[data-theme="halloween"] .filter-chips button.active,html[data-theme="halloween"] .admin-tabs button.active { background: linear-gradient(110deg,#ec8d48,#b46337); color: #25151e; border-color: #fbb675; }
+html[data-theme="halloween"] .button.dark:hover,html[data-theme="halloween"] .btn.primary:hover { background: #ffc27d; }
+html[data-theme="halloween"] .button:not(.dark),html[data-theme="halloween"] .btn:not(.primary) { background: #2b2438; color: #f8f0ff; border-color: #725a80; }
+html[data-theme="halloween"] .product-photo { background: #2a2633; border-color: #50435b; }
+html[data-theme="halloween"] .product-photo img { mix-blend-mode: normal; }
+html[data-theme="halloween"] .product-tag,html[data-theme="halloween"] .product-arrow { background: #34253d; color: #ffe0b8; }
+html[data-theme="halloween"] .product-info strong { color: #ffe1b4; }
+html[data-theme="halloween"] .cotillon-category-card { border-color: #6a4e70; }
+html[data-theme="halloween"] .cotillon-category-card.tone-0 { background: #45314d; }
+html[data-theme="halloween"] .cotillon-category-card.tone-1 { background: #553836; }
+html[data-theme="halloween"] .cotillon-category-card.tone-2 { background: #28433e; }
+html[data-theme="halloween"] .cotillon-category-card.tone-3 { background: #393044; }
+html[data-theme="halloween"] .cotillon-category-card svg,html[data-theme="halloween"] .cotillon-category-card small { color: #efd1e4; }
+html[data-theme="halloween"] .cotillon-category-card.active { color: var(--ink); border-color: #ffb66d; box-shadow: 0 0 0 2px #ffb66d66; }
+html[data-theme="halloween"] .cotillon-navigation-actions button,html[data-theme="halloween"] .cotillon-subcategory-grid button,html[data-theme="halloween"] .cotillon-section-all,html[data-theme="halloween"] .filter-chips button,html[data-theme="halloween"] .admin-tabs button { background: #2a2236; color: #f7efff; border-color: #6b5278; }
+html[data-theme="halloween"] .cotillon-subcategory-grid button.active,html[data-theme="halloween"] .cotillon-subcategory-grid button:hover,html[data-theme="halloween"] .cotillon-section-all.active { background: #523057; border-color: #f3aa69; color: #fff5e9; }
+html[data-theme="halloween"] .cotillon-section-all small { background: #5d4266; color: #fff; }
+html[data-theme="halloween"] .panel,html[data-theme="halloween"] .form-card,html[data-theme="halloween"] .reservation-card,html[data-theme="halloween"] .stat,html[data-theme="halloween"] .receipt-card,html[data-theme="halloween"] .terms-modal,html[data-theme="halloween"] .bank-card,html[data-theme="halloween"] .cart-panel,html[data-theme="halloween"] .product-dialog>div { background: var(--surface); color: var(--ink); border-color: var(--line); }
+html[data-theme="halloween"] .search,html[data-theme="halloween"] input:not([type=checkbox]):not([type=radio]),html[data-theme="halloween"] select,html[data-theme="halloween"] textarea,html[data-theme="halloween"] .money-input { background: #292337; color: #f8f1ff; border-color: #735f82; }
+html[data-theme="halloween"] input::placeholder,html[data-theme="halloween"] textarea::placeholder { color: #bdb0c9; opacity: 1; }
+html[data-theme="halloween"] .form-actions,html[data-theme="halloween"] .empty-costumes,html[data-theme="halloween"] .costume-item,html[data-theme="halloween"] .final-summary,html[data-theme="halloween"] .payment-amount,html[data-theme="halloween"] .upload-zone,html[data-theme="halloween"] .photo-placeholder,html[data-theme="halloween"] .rental-product-note,html[data-theme="halloween"] .cart-intro,html[data-theme="halloween"] .cart-item img,html[data-theme="halloween"] .cart-item-placeholder { background: #2b2639; color: var(--ink); border-color: var(--line); }
+html[data-theme="halloween"] .notice,html[data-theme="halloween"] .loading-state,html[data-theme="halloween"] .demo-note,html[data-theme="halloween"] .sale-condition-chip { background: #3d3050; color: #f6eaff; border-color: #6e5884; }
+html[data-theme="halloween"] .error-banner,html[data-theme="halloween"] .field-error { background: #4a2535; color: #ffe0e7; border-color: #a75b69; }
+html[data-theme="halloween"] .notice.aqua,html[data-theme="halloween"] .notice.amber { background: #35443f; color: #f1fff2; }
+html[data-theme="halloween"] .radio-cards label.selected,html[data-theme="halloween"] .upload-icon,html[data-theme="halloween"] .step-number,html[data-theme="halloween"] .close-dialog { background: #4d3a60; color: #f5eaff; }
+html[data-theme="halloween"] .stepper .current .step-number,html[data-theme="halloween"] .stepper .complete .step-number { background: #ffb366; color: #241521; }
+html[data-theme="halloween"] .stepper,html[data-theme="halloween"] .radio-cards label,html[data-theme="halloween"] .canvas-wrap { background: var(--surface); border-color: var(--line); }
+html[data-theme="halloween"] .admin input:disabled { background: #332a3a; color: #b6aaba; }
+html[data-theme="halloween"] .admin-list-thumb,html[data-theme="halloween"] .rental-item-thumbnail,html[data-theme="halloween"] .product-note-with-image img { background: #30293d; border-color: var(--line); }
+html[data-theme="halloween"] .admin-list-placeholder,html[data-theme="halloween"] .photo-placeholder { background: #30293d; color: var(--muted); }
+html[data-theme="halloween"] table { background: var(--surface); color: var(--ink); }
+html[data-theme="halloween"] th { background: #362a43; }
+html[data-theme="halloween"] .site-footer { background: linear-gradient(180deg,#191521,#271a31); border-color: #6c5175; }
+html[data-theme="halloween"] .site-footer .wordmark img { background: #faf5ff; }
+html[data-theme="halloween"] .cart-trigger span { background: #331f3e; color: #fff; }
+html[data-theme="halloween"] .cart-close,html[data-theme="halloween"] .cart-quantity button { background: #33283f; color: #f9f1ff; border-color: var(--line); }
+html[data-theme="halloween"] .floating-wa { background: #236a50; color: #fff; }
+html[data-theme="halloween"] .cart-overlay,html[data-theme="halloween"] .modal-overlay,html[data-theme="halloween"] .category-overlay { background: #08050bc7; }
+html[data-theme="halloween"] .sale-condition-dialog { background: var(--surface); color: var(--ink); }
+html[data-theme="halloween"] .sale-condition-dialog::backdrop { background: #08050bc7; }
+html[data-theme="halloween"] .spinner { border-color: #695477; border-top-color: #ffb46f; }
+html[data-theme="halloween"] .theme-option.selected { border-color: #ffb469; }
+@media (max-width: 760px) {
+  .site-header { padding: 8px 5%; }
+  .wordmark img { width: 55px; height: 55px; }
+  .wordmark strong { font-size: 19px; }
+  .site-header nav { background: var(--surface); box-shadow: var(--shadow); }
+  html[data-theme="halloween"] .site-header nav { background: #211a2e; }
+  .hero { border-radius: 0 0 22px 22px; }
+  .theme-options { grid-template-columns: 1fr; }
+  .theme-option { min-height: 150px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .world,.button,.btn,.photo-card { transition: none; }
+}

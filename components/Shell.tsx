@@ -1,5 +1,20 @@
 'use client';
-import {useState} from 'react';
-import {Menu,X,MessageCircle,ArrowUpRight,PartyPopper} from 'lucide-react';
-import {whatsapp} from '@/lib/api';
-export default function Shell({children}:{children:React.ReactNode}){const[open,setOpen]=useState(false);return <><div className="topbar">DISFRACES, COTILLÓN Y MUCHAS GANAS DE FESTEJAR <span>✦ Av. Rivadavia 3314 · CABA</span></div><header className="site-header"><a className="wordmark" href="/" aria-label="Disfraz Cabezón, inicio"><PartyPopper/><span>disfraz<strong>cabezón<span>✦</span></strong></span></a><button className="menu-button" aria-label={open?'Cerrar menú':'Abrir menú'} aria-expanded={open} onClick={()=>setOpen(!open)}>{open?<X/>:<Menu/>}</button><nav className={open?'open':''} onClick={()=>setOpen(false)}><a href="/disfraces/">Disfraces</a><a href="/cotillon/">Cotillón</a><a href="/reservas/">Reservá tu disfraz</a><a className="nav-contact" href={whatsapp()} target="_blank" rel="noreferrer">Hablemos <ArrowUpRight size={17}/></a></nav></header>{children}<footer className="site-footer"><div><a className="wordmark" href="/">disfraz <strong>cabezón ✦</strong></a><p>Hay un personaje para cada historia.<br/>Y una fiesta esperando la tuya.</p></div><div><strong>Nos encontramos acá</strong><p>Av. Rivadavia 3314, CABA<br/><a href={whatsapp()}>WhatsApp · 11 4989-7969</a></p></div><div><a href="/condiciones/">Condiciones y privacidad</a><a href="/arrepentimiento/">Solicitud de arrepentimiento</a><a href="/admin/">Acceso administrador</a></div><small>© {new Date().getFullYear()} Disfraz Cabezón · Hecho para celebrar.</small></footer><a className="floating-wa" href={whatsapp()} target="_blank" rel="noreferrer" aria-label="Consultar por WhatsApp"><MessageCircle/><span>¿Te ayudamos?</span></a></>}
+import {useEffect,useState} from 'react';
+import {Menu,X,MessageCircle,ArrowUpRight} from 'lucide-react';
+import {api,demo,whatsapp} from '@/lib/api';
+import {applySiteTheme,isSiteTheme} from '@/lib/theme';
+export default function Shell({children}:{children:React.ReactNode}){
+ const[open,setOpen]=useState(false);
+ useEffect(()=>{
+  if(demo)return;
+  let alive=true;
+  const sync=()=>api('siteTheme').then(result=>{if(alive&&isSiteTheme(result?.theme)&&document.documentElement.dataset.themePreview!=='true')applySiteTheme(result.theme)}).catch(()=>{});
+  sync();
+  const onVisible=()=>{if(document.visibilityState==='visible')sync()};
+  const onStorage=(event:StorageEvent)=>{if(event.key==='dc-site-theme'&&isSiteTheme(event.newValue)&&document.documentElement.dataset.themePreview!=='true')document.documentElement.dataset.theme=event.newValue};
+  document.addEventListener('visibilitychange',onVisible);
+  window.addEventListener('storage',onStorage);
+  return()=>{alive=false;document.removeEventListener('visibilitychange',onVisible);window.removeEventListener('storage',onStorage)};
+ },[]);
+ return <><div className="topbar">DISFRACES, COTILLÓN Y MUCHAS GANAS DE FESTEJAR <span>✦ Av. Rivadavia 3314 · CABA</span></div><header className="site-header"><a className="wordmark" href="/" aria-label="Disfraz Cabezón, inicio"><img src="/brand-logo.png" width="72" height="72" alt=""/><span>Disfraz<strong>Cabezón</strong></span></a><button className="menu-button" aria-label={open?'Cerrar menú':'Abrir menú'} aria-expanded={open} onClick={()=>setOpen(!open)}>{open?<X/>:<Menu/>}</button><nav className={open?'open':''} onClick={()=>setOpen(false)}><a href="/disfraces/">Disfraces</a><a href="/cotillon/">Cotillón</a><a href="/reservas/">Reservá tu disfraz</a><a className="nav-contact" href={whatsapp()} target="_blank" rel="noreferrer">Hablemos <ArrowUpRight size={17}/></a></nav></header>{children}<footer className="site-footer"><div><a className="wordmark footer-brand" href="/"><img src="/brand-logo.png" width="92" height="92" alt=""/><span>Disfraz<strong>Cabezón</strong></span></a><p>Hay un personaje para cada historia.<br/>Y una fiesta esperando la tuya.</p></div><div><strong>Nos encontramos acá</strong><p>Av. Rivadavia 3314, CABA<br/><a href={whatsapp()}>WhatsApp · 11 4989-7969</a></p></div><div><a href="/condiciones/">Condiciones y privacidad</a><a href="/arrepentimiento/">Solicitud de arrepentimiento</a><a href="/admin/">Acceso administrador</a></div><small>© {new Date().getFullYear()} Disfraz Cabezón · Hecho para celebrar.</small></footer><a className="floating-wa" href={whatsapp()} target="_blank" rel="noreferrer" aria-label="Consultar por WhatsApp"><MessageCircle/><span>¿Te ayudamos?</span></a></>;
+}
