@@ -48,6 +48,15 @@ html[data-theme="halloween"] .halloween-atmosphere > div {
   transition: opacity .8s ease;
 }
 
+html[data-theme="halloween"] .halloween-atmosphere__catalog-scene {
+  inset: 0;
+  background: url('/halloween-catalog-desktop.webp') center / cover no-repeat;
+  opacity: 0;
+}
+
+html[data-theme="halloween"] .halloween-atmosphere[data-zone="catalog"] .halloween-atmosphere__catalog-scene { opacity: .88; }
+html[data-theme="halloween"] .halloween-atmosphere[data-zone="closing"] .halloween-atmosphere__catalog-scene { opacity: .36; }
+
 html[data-theme="halloween"] .halloween-atmosphere__far {
   inset: -12% -14%;
   background:
@@ -295,8 +304,8 @@ html[data-theme="halloween"] .world:hover { border-color: #ffc282; box-shadow: 0
 html[data-theme="halloween"] .catalog {
   border-top: 1px solid #8c606a;
   background:
-    radial-gradient(ellipse 70% 23rem at 50% 0, #5c35454d, transparent 83%),
-    linear-gradient(180deg, #1b12229c, #120f1ba8 28rem, #110e18bc);
+    radial-gradient(ellipse 70% 23rem at 50% 0, #5c354538, transparent 83%),
+    linear-gradient(180deg, #1b12227a, #120f1b78 28rem, #110e187a);
 }
 html[data-theme="halloween"] .product-card {
   padding: 9px 9px 0;
@@ -507,6 +516,9 @@ html[data-theme="halloween"] .floating-wa {
     background-attachment: fixed;
   }
   html[data-theme="halloween"] .halloween-rails { display: none; }
+  html[data-theme="halloween"] .halloween-atmosphere__catalog-scene {
+    background-image: url('/halloween-catalog-mobile.webp');
+  }
   html[data-theme="halloween"] .halloween-atmosphere__far,
   html[data-theme="halloween"] .halloween-atmosphere__near { filter: blur(9px); }
   html[data-theme="halloween"] .halloween-atmosphere__bats {

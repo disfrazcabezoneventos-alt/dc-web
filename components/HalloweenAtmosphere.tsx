@@ -20,9 +20,10 @@ export default function HalloweenAtmosphere() {
 
       const distance = window.scrollY;
       const endIsNear = footer ? footer.getBoundingClientRect().top < window.innerHeight * 1.25 : false;
-      element.dataset.zone = distance < Math.max(380, window.innerHeight * .55)
+      const zone = distance < Math.max(380, window.innerHeight * .55)
         ? 'intro'
         : endIsNear ? 'closing' : 'catalog';
+      if (element.dataset.zone !== zone) element.dataset.zone = zone;
 
       if (preference.matches) {
         element.style.setProperty('--h-far-x', '0px');
@@ -64,6 +65,7 @@ export default function HalloweenAtmosphere() {
 
   return <>
     <div className="halloween-atmosphere" data-zone="intro" aria-hidden="true" ref={scene}>
+      <div className="halloween-atmosphere__catalog-scene" />
       <div className="halloween-atmosphere__far" />
       <div className="halloween-atmosphere__bats" />
       <div className="halloween-atmosphere__near" />
