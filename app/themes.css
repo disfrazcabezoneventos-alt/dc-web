@@ -42,7 +42,7 @@ body {
 .topbar span { color: #edfaff; }
 .site-header { max-width: none; position: sticky; top: 0; z-index: 90; padding: 10px max(5%,calc((100vw - 1296px)/2)); background: #f9fbfff2; backdrop-filter: blur(18px); box-shadow: 0 9px 28px #2847830a; }
 .wordmark { gap: 8px; color: var(--ink); font-size: 12px; line-height: 1; }
-.wordmark img { width: 70px; height: 70px; object-fit: contain; flex: none; }
+.wordmark .brand-mark { display: block; width: 70px; height: 70px; flex: none; background: url('/brand-logo.png') center / contain no-repeat; }
 .wordmark strong { font-size: 23px; letter-spacing: -.9px; color: var(--purple); margin-top: 4px; }
 .site-header nav>a:not(.nav-contact) { position: relative; }
 .site-header nav>a:not(.nav-contact)::after { content: ''; position: absolute; left: 0; right: 100%; bottom: -6px; height: 2px; background: var(--cyan); transition: right .22s ease; }
@@ -94,7 +94,7 @@ body {
 table { background: var(--surface); }
 th { background: #edf3ff; }
 .site-footer { background: transparent; }
-.footer-brand img { width: 92px; height: 92px; }
+.footer-brand .brand-mark { width: 92px; height: 92px; }
 .floating-wa { background: #16634e; color: #fff; }
 .theme-options { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; margin: 28px 0; }
 .theme-option { display: flex; align-items: flex-start; flex-direction: column; gap: 8px; min-height: 190px; padding: 22px; border: 2px solid var(--line); border-radius: 19px; text-align: left; box-shadow: var(--shadow); }
@@ -112,7 +112,7 @@ html[data-theme="halloween"] .topbar { background: linear-gradient(90deg,#17121e
 html[data-theme="halloween"] .topbar span { color: #dfc7e8; }
 html[data-theme="halloween"] .site-header { background: #171321f2; box-shadow: 0 12px 38px #05030a88; }
 html[data-theme="halloween"] .site-header::before { content: ''; position: absolute; right: 0; top: 0; width: 160px; height: 100%; pointer-events: none; opacity: .26; background: repeating-radial-gradient(circle at 100% 0,transparent 0 16px,#b89ecb 17px 18px,transparent 19px 30px); mask-image: linear-gradient(230deg,#000,transparent 80%); }
-html[data-theme="halloween"] .wordmark img { border-radius: 50%; box-shadow: 0 0 0 3px #604776,0 0 18px #b47be155; background: #f9f4ff; }
+html[data-theme="halloween"] .wordmark .brand-mark { background-image: url('/brand-logo-halloween.png'); }
 html[data-theme="halloween"] .wordmark strong { color: #dfa7ff; }
 html[data-theme="halloween"] .nav-contact { background: #382a48; border-color: #715a7b; color: #fff0dc; }
 html[data-theme="halloween"] .site-header nav>a:not(.nav-contact)::after { background: var(--accent); }
@@ -170,7 +170,7 @@ html[data-theme="halloween"] .admin-list-placeholder,html[data-theme="halloween"
 html[data-theme="halloween"] table { background: var(--surface); color: var(--ink); }
 html[data-theme="halloween"] th { background: #362a43; }
 html[data-theme="halloween"] .site-footer { background: linear-gradient(180deg,#191521,#271a31); border-color: #6c5175; }
-html[data-theme="halloween"] .site-footer .wordmark img { background: #faf5ff; }
+html[data-theme="halloween"] .site-footer .wordmark .brand-mark { background-image: url('/brand-logo-halloween.png'); }
 html[data-theme="halloween"] .cart-trigger span { background: #331f3e; color: #fff; }
 html[data-theme="halloween"] .cart-close,html[data-theme="halloween"] .cart-quantity button { background: #33283f; color: #f9f1ff; border-color: var(--line); }
 html[data-theme="halloween"] .floating-wa { background: #236a50; color: #fff; }
@@ -181,7 +181,7 @@ html[data-theme="halloween"] .spinner { border-color: #695477; border-top-color:
 html[data-theme="halloween"] .theme-option.selected { border-color: #ffb469; }
 @media (max-width: 760px) {
   .site-header { padding: 8px 5%; }
-  .wordmark img { width: 55px; height: 55px; }
+  .wordmark .brand-mark { width: 55px; height: 55px; }
   .wordmark strong { font-size: 19px; }
   .site-header nav { background: var(--surface); box-shadow: var(--shadow); }
   html[data-theme="halloween"] .site-header nav { background: #211a2e; }

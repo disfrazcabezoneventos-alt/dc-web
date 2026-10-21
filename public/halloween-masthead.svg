@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 720" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+  <defs>
+    <radialGradient id="sky" cx="72%" cy="30%" r="78%"><stop stop-color="#553852"/><stop offset=".33" stop-color="#282037"/><stop offset=".72" stop-color="#15131f"/><stop offset="1" stop-color="#0a0c14"/></radialGradient>
+    <radialGradient id="halo"><stop stop-color="#dfae73" stop-opacity=".37"/><stop offset=".54" stop-color="#b78c83" stop-opacity=".17"/><stop offset="1" stop-color="#b78c83" stop-opacity="0"/></radialGradient>
+    <radialGradient id="moon" cx="34%" cy="27%"><stop stop-color="#fff4d8"/><stop offset=".55" stop-color="#e8ceb3"/><stop offset="1" stop-color="#bca6ab"/></radialGradient>
+    <linearGradient id="mist"><stop stop-color="#b2a4b5" stop-opacity="0"/><stop offset=".47" stop-color="#b2a4b5" stop-opacity=".21"/><stop offset="1" stop-color="#b2a4b5" stop-opacity="0"/></linearGradient>
+    <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#1c1927"/><stop offset="1" stop-color="#090a12"/></linearGradient>
+  </defs>
+  <rect width="1600" height="720" fill="url(#sky)"/>
+  <ellipse cx="1197" cy="218" rx="350" ry="329" fill="url(#halo)"/>
+  <circle cx="1197" cy="218" r="128" fill="url(#moon)" opacity=".88"/>
+  <g fill="#8a7388" opacity=".14"><circle cx="1141" cy="184" r="13"/><circle cx="1259" cy="251" r="22"/><circle cx="1195" cy="280" r="10"/><circle cx="1238" cy="164" r="7"/></g>
+  <g fill="#e8c7a9" opacity=".48"><circle cx="346" cy="87" r="1.5"/><circle cx="724" cy="55" r="1.5"/><circle cx="907" cy="148" r="1"/><circle cx="1481" cy="68" r="1.5"/><circle cx="1420" cy="315" r="1"/></g>
+
+  <!-- Arquitectura gótica lejana: torres, tejados, ventanas y reja. -->
+  <g fill="#161722" opacity=".77"><path d="M895 503V395l26-22v-64l17-13 18 13v62l23 21v-90l31-29 30 28v58l19-17 21 17v141H895Z"/><path d="m871 404 67-63 65 48 50-54 40 62-12 9-30-40-48 51-65-48-54 48z"/><path d="M932 301v-64l7-17 8 18v64m66-28v-80l10-21 11 22v80"/></g>
+  <g fill="#d99458" opacity=".27"><path d="M918 432h13v29h-13zm35-17h14v34h-14zm52-29h13v32h-13zm40 30h14v34h-14zM978 466q13-34 26 0v37h-26z"/></g>
+  <g fill="#191923" opacity=".74"><path d="M0 546q210-41 410 12t409-6q180-63 351 1 218 69 430-4v171H0Z"/><path d="M0 591q225-51 424 11 227 78 461-8 278-64 715 12v114H0Z"/></g>
+  <g fill="url(#floor)"><path d="M0 632q272-60 530 11 284 77 542-15 273-58 528 9v83H0Z"/></g>
+  <g stroke="#120f1c" stroke-linecap="round" fill="none" opacity=".86"><path stroke-width="19" d="M0 458q129-28 204 63 45 56 60 153M1600 422q-164 37-241 157-39 61-47 143"/><path stroke-width="10" d="M109 460q-41-67-28-147m96 188q83-20 118-104m-62 142q57 0 85 57M1484 471q23-68 7-135m-94 176q-69-26-115-101m70 174q-51-3-87 45"/><path stroke-width="5" d="M76 345q34-28 32-68M72 349q-39-24-48-66M282 405q24-56 17-97m4 92q41-15 55-52m918 58q-26-36-30-85m32 94q41-37 48-70m188-8q-40-35-39-89m-8 128q30-44 25-81"/></g>
+  <g fill="none" stroke="#a894a7" stroke-width="1.5" opacity=".31"><path d="M0 0q127 36 254 209M0 0q58 132 64 279M0 0q147 111 321 129m-287-79q93 35 133 111m-104-54q66 36 99 83M1600 0q-100 71-187 192M1600 0q-38 153-32 260M1600 0q-111 116-278 167m163-64q-67 41-97 88"/></g>
+  <g fill="#13101d" opacity=".9"><path d="M1070 87q18-9 30 0 6-17 25-17-13 10-15 25-17-12-40-8Zm295 272q17-9 26-1 4-14 21-14-10 9-12 21-12-9-35-6ZM726 214q12-7 21-1 5-11 18-11-9 7-11 17-12-8-28-5Z"/></g>
+  <ellipse cx="777" cy="601" rx="751" ry="65" fill="url(#mist)"/>
+  <ellipse cx="340" cy="673" rx="401" ry="49" fill="url(#mist)"/>
+  <ellipse cx="1348" cy="657" rx="315" ry="47" fill="url(#mist)"/>
+</svg>

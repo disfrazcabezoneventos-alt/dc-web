@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1200" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+  <defs>
+    <radialGradient id="violet" cx="50%" cy="50%" r="50%"><stop stop-color="#4b315b" stop-opacity=".62"/><stop offset="1" stop-color="#4b315b" stop-opacity="0"/></radialGradient>
+    <radialGradient id="ember" cx="50%" cy="50%" r="50%"><stop stop-color="#b55a36" stop-opacity=".28"/><stop offset="1" stop-color="#b55a36" stop-opacity="0"/></radialGradient>
+    <linearGradient id="fog" x1="0" x2="1"><stop stop-color="#90829d" stop-opacity="0"/><stop offset=".5" stop-color="#90829d" stop-opacity=".17"/><stop offset="1" stop-color="#90829d" stop-opacity="0"/></linearGradient>
+    <pattern id="grain" width="112" height="106" patternUnits="userSpaceOnUse"><circle cx="14" cy="42" r=".8" fill="#cbb6cb" opacity=".24"/><circle cx="70" cy="10" r=".7" fill="#9d729e" opacity=".3"/><circle cx="101" cy="86" r=".75" fill="#a27c7e" opacity=".22"/><path d="m55 64 3 1-3 1-2 3-1-3-3-1 3-1 1-3z" fill="#c49e81" opacity=".22"/></pattern>
+  </defs>
+  <rect width="1600" height="1200" fill="url(#grain)"/>
+  <ellipse cx="167" cy="253" rx="370" ry="380" fill="url(#violet)"/>
+  <ellipse cx="1467" cy="806" rx="333" ry="360" fill="url(#ember)"/>
+
+  <!-- Las telarañas tienen una trama irregular y quedan sobre los márgenes. -->
+  <g fill="none" stroke="#b9a4bb" stroke-linecap="round" opacity=".36">
+    <g stroke-width="2.3"><path d="M0 18 374 281M0 18 295 412M0 18 149 420M0 18 25 300M0 18 341 123M0 18 184 24"/><path d="M1600 56 1280 330M1600 56 1327 438M1600 56 1455 433M1600 56 1574 303M1600 56 1323 163M1600 56 1422 61"/></g>
+    <g stroke-width="1.35"><path d="M41 47q112-8 197 96M88 83q84-7 147 78M128 115q57-3 98 58M13 88q90 0 171 119M20 138q78 9 131 105M9 192q68 18 102 108M43 243q61 13 85 74M79 295q51 17 62 45M157 68q89 5 137 108M201 104q81 7 109 101M254 147q50 3 72 72"/><path d="M1561 89q-98 5-176 109M1520 126q-75 7-126 92M1475 164q-57 5-87 67M1582 134q-79 18-140 119M1573 194q-75 22-115 105M1557 254q-60 20-87 91M1506 305q-46 20-55 64M1432 105q-82 11-131 115M1385 143q-60 13-94 98"/></g>
+  </g>
+  <g stroke="#8a7693" stroke-width="1.3" opacity=".53"><path d="M267 207v157"/><path d="M1427 288v133"/></g>
+  <g fill="#17121f" opacity=".9"><ellipse cx="267" cy="380" rx="8" ry="11"/><circle cx="267" cy="368" r="5"/><ellipse cx="1427" cy="434" rx="7" ry="10"/><circle cx="1427" cy="423" r="4"/></g>
+  <g stroke="#302237" stroke-width="2" fill="none" stroke-linecap="round"><path d="m260 379-15 12m13-19-17 0m21 22-15 15m29-30 14 11m-16-17 16-1m-19 22 15 14m1152 24-13 10m11-16-15 0m18 19-13 13m28-24 13 10m-14-17 14-1m-17 23 13 12"/></g>
+
+  <!-- Ramas secas y grietas: presencia, sin competir con títulos o producto. -->
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <g stroke="#32283a" opacity=".75"><path stroke-width="13" d="M0 884Q106 862 177 928Q240 984 264 1102"/><path stroke-width="7" d="M105 872q-1-93-70-156M165 914q86-14 143-91M200 945q69 8 120 65M210 964q-11-89-56-132"/><path stroke-width="4" d="M40 726q5-54-22-84M48 733q54-47 60-89M283 837q56-54 63-113M294 840q38 4 70-19M291 1010q48-33 86-29M166 841q-31-45-33-90"/></g>
+    <g stroke="#272132" opacity=".82"><path stroke-width="15" d="M1600 652q-132 28-215 137-58 76-89 169"/><path stroke-width="8" d="M1480 716q-45-76-22-181M1402 781q-58-15-120-72M1374 816q-69 7-110 54M1329 886q-18-84-87-127"/><path stroke-width="4" d="M1459 542q32-34 29-85M1453 577q-50-32-60-95M1282 706q-22-44-68-61M1264 871q-59-14-104 8M1246 760q-9-49-40-77"/></g>
+    <g stroke="#693c49" stroke-width="2" opacity=".33"><path d="m409 82 10 36-16 25 14 29-25 36m880 300-16 19 8 33-21 26 3 26m-919 383 15-31-9-26 26-40"/><path d="m410 114 38 13m-34 46 27 12m827 377 35 13m-971 387-20 18"/></g>
+  </g>
+
+  <!-- Una silueta lejana en la parte baja de cada tramo largo. -->
+  <g fill="#171620" opacity=".48"><path d="M1143 1199v-108l24-13v-38l15-12 14 13v38l24 14v-94l27-22 27 22v49l18-19 17 21v143h-166Z"/><path d="m1124 1096 99-53 88 56-9 9-80-45-89 44z"/><path d="M1184 1047v-52h12v51zm64-66v-62h15v62z"/></g>
+  <g fill="#e28d52" opacity=".17"><path d="M1235 1078h12v19h-12zm38 9h10v16h-10zm-85 16h11v14h-11z"/></g>
+  <g fill="#251c30" opacity=".53"><path d="M111 498q24-11 38 1 6-18 30-18-14 12-16 25-18-12-52-8Zm1268 115q18-9 28 0 7-16 24-16-11 9-13 21-17-10-39-5ZM832 73q15-8 23-1 5-12 18-13-8 9-10 17-11-7-31-3Z"/></g>
+  <ellipse cx="818" cy="1180" rx="853" ry="94" fill="url(#fog)"/>
+  <ellipse cx="380" cy="732" rx="377" ry="74" fill="url(#fog)"/>
+  <ellipse cx="1333" cy="333" rx="242" ry="56" fill="url(#fog)"/>
+</svg>
