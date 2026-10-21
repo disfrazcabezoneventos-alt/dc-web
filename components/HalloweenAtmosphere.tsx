@@ -65,7 +65,7 @@ export default function HalloweenAtmosphere() {
 
   return <>
     <div className="halloween-atmosphere" data-zone="intro" aria-hidden="true" ref={scene}>
-      <div className="halloween-atmosphere__catalog-scene" />
+      <div className="halloween-atmosphere__texture" />
       <div className="halloween-atmosphere__far" />
       <div className="halloween-atmosphere__bats" />
       <div className="halloween-atmosphere__near" />

@@ -25,9 +25,7 @@
     <g stroke="#693c49" stroke-width="2" opacity=".33"><path d="m409 82 10 36-16 25 14 29-25 36m880 300-16 19 8 33-21 26 3 26m-919 383 15-31-9-26 26-40"/><path d="m410 114 38 13m-34 46 27 12m827 377 35 13m-971 387-20 18"/></g>
   </g>
 
-  <!-- Una silueta lejana en la parte baja de cada tramo largo. -->
-  <g fill="#171620" opacity=".48"><path d="M1143 1199v-108l24-13v-38l15-12 14 13v38l24 14v-94l27-22 27 22v49l18-19 17 21v143h-166Z"/><path d="m1124 1096 99-53 88 56-9 9-80-45-89 44z"/><path d="M1184 1047v-52h12v51zm64-66v-62h15v62z"/></g>
-  <g fill="#e28d52" opacity=".17"><path d="M1235 1078h12v19h-12zm38 9h10v16h-10zm-85 16h11v14h-11z"/></g>
+  <!-- Negative space in the centre is intentional: products and text stay dominant. -->
   <g fill="#251c30" opacity=".53"><path d="M111 498q24-11 38 1 6-18 30-18-14 12-16 25-18-12-52-8Zm1268 115q18-9 28 0 7-16 24-16-11 9-13 21-17-10-39-5ZM832 73q15-8 23-1 5-12 18-13-8 9-10 17-11-7-31-3Z"/></g>
   <ellipse cx="818" cy="1180" rx="853" ry="94" fill="url(#fog)"/>
   <ellipse cx="380" cy="732" rx="377" ry="74" fill="url(#fog)"/>
