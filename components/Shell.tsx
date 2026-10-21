@@ -2,13 +2,13 @@
 import {useEffect,useState} from 'react';
 import {Menu,X,MessageCircle,ArrowUpRight} from 'lucide-react';
 import {api,demo,whatsapp} from '@/lib/api';
-import {applySiteTheme,isSiteTheme} from '@/lib/theme';
+import {applySiteTheme,isSiteTheme,readSiteTheme} from '@/lib/theme';
 export default function Shell({children}:{children:React.ReactNode}){
  const[open,setOpen]=useState(false);
  useEffect(()=>{
   if(demo)return;
   let alive=true;
-  const sync=()=>api('siteTheme').then(result=>{if(alive&&isSiteTheme(result?.theme)&&document.documentElement.dataset.themePreview!=='true')applySiteTheme(result.theme)}).catch(()=>{});
+  const sync=()=>api('siteTheme').then(result=>{const theme=readSiteTheme(result);if(alive&&theme&&document.documentElement.dataset.themePreview!=='true')applySiteTheme(theme)}).catch(()=>{});
   sync();
   const onVisible=()=>{if(document.visibilityState==='visible')sync()};
   const onStorage=(event:StorageEvent)=>{if(event.key==='dc-site-theme'&&isSiteTheme(event.newValue)&&document.documentElement.dataset.themePreview!=='true')document.documentElement.dataset.theme=event.newValue};
