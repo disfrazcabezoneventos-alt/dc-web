@@ -1,0 +1,83 @@
+/* Catálogo: la búsqueda, los rubros y las fotos reciben prioridad visual. */
+.cotillon-landing{padding-top:30px;padding-bottom:31px}
+.cotillon-landing .eyebrow{margin-bottom:9px}
+.cotillon-landing h1{font-size:clamp(31px,3.5vw,51px);line-height:1.08;margin:0 0 10px;max-width:850px}
+.cotillon-landing p{font-size:14px;max-width:680px;line-height:1.5}
+.cotillon-catalog{padding-top:24px}
+.cotillon-catalog .catalog-controls{margin:0 0 20px;align-items:stretch}
+.cotillon-catalog .search{min-height:54px}
+.cotillon-catalog .search input{min-width:0;width:100%}
+.cotillon-catalog .cart-trigger{min-height:54px}
+.cotillon-catalog .cotillon-navigation{margin-top:16px}
+.catalog-notice{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.catalog-notice .text-link{flex:none}
+
+.campaign-highlight{position:relative;overflow:hidden;display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,.9fr);gap:25px;align-items:center;min-height:225px;padding:29px 34px;border-radius:22px;background:linear-gradient(110deg,#2c1c44,#4f2a4c 60%,#8f4d4b);color:#fff6ef;box-shadow:0 18px 40px #27203725}
+.campaign-highlight::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 91% 6%,#ffcaa344,transparent 29%),url('/halloween-rail.svg') right top / 160px auto no-repeat;opacity:.6}
+.campaign-highlight-copy,.campaign-picks{position:relative;z-index:1}
+.campaign-highlight .eyebrow{margin:0 0 10px;color:#ffce9c}
+.campaign-highlight h2{font-size:clamp(27px,2.6vw,38px);margin:0 0 7px;color:#fff6ef}
+.campaign-highlight p{font-size:13px;line-height:1.45;max-width:420px;margin:0 0 16px;color:#f4e2e9}
+.campaign-highlight .campaign-cta{background:#f6bf8c!important;border:1px solid #ffe1ae!important;color:#2a172d!important;padding:10px 17px}
+.campaign-picks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.campaign-picks button{min-width:0;border:1px solid #ffe0d950;border-radius:13px;background:#f9f5f0;color:#221c24;padding:7px;text-align:left;transition:transform .2s}
+.campaign-picks button:hover{transform:translateY(-3px)}
+.campaign-picks img{width:100%;height:108px;object-fit:contain;background:#fff;border-radius:8px}
+.campaign-picks span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;padding:7px 3px 1px;font-size:10px;font-weight:700;line-height:1.25;min-height:34px}
+
+.product-card{min-width:0;overflow:hidden;border:1px solid var(--line);border-radius:15px;background:var(--surface,#fff);box-shadow:0 10px 26px #241d2a0a;display:flex;flex-direction:column}
+.product-grid{scroll-margin-top:110px}
+.product-open{display:block;width:100%;padding:0;border:0;background:none;color:inherit;text-align:left;flex:1}
+.product-photo{aspect-ratio:4/4.7;border:0;border-radius:0;background:#f7f6f4;display:grid;place-items:center}
+.product-photo img{mix-blend-mode:normal;object-fit:contain;object-position:center;padding:16px;width:100%;height:100%}
+.product-info{padding:12px 14px 8px}
+.product-info>span{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:1;overflow:hidden}
+.product-info h3{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;min-height:2.5em;font-size:15px;line-height:1.25;margin:5px 0 8px}
+.product-info p{font-size:12px;margin:0 0 3px}
+.product-info strong{font-size:16px}
+.product-quick{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 13px 13px;padding:10px 13px;border:1px solid var(--line);border-radius:9px;background:var(--paper);color:var(--ink);font-size:11px;font-weight:800;text-align:left}
+.product-quick:hover{border-color:var(--purple);color:var(--purple)}
+.cart-option{width:100%;display:grid;gap:6px;font-size:12px;font-weight:700}
+.cart-option input{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:8px}
+
+html[data-theme="halloween"] .site-header{min-height:94px;padding-top:4px;padding-bottom:4px}
+html[data-theme="halloween"] .site-header .brand-mark{width:100px;height:86px}
+html[data-theme="halloween"] .page-title.peach.cotillon-landing{min-height:0;padding-top:29px;padding-bottom:29px}
+html[data-theme="halloween"] .catalog{background:radial-gradient(ellipse 50% 17rem at 50% 0,#5c35452e,transparent 83%),linear-gradient(180deg,#1b12227a,#110e187a)}
+html[data-theme="halloween"] .campaign-highlight{border:1px solid #b87e68;background:radial-gradient(ellipse at 82% 12%,#8b4e51a8,transparent 52%),linear-gradient(112deg,#1b1426,#392336 65%,#512d34);box-shadow:0 20px 48px #0302079a}
+html[data-theme="halloween"] .product-card{padding:0;border:1px solid #70546b;border-radius:15px;background:#211a27;box-shadow:0 12px 30px #03020780}
+html[data-theme="halloween"] .product-card:hover,html[data-theme="halloween"] .product-card:focus-within{border-color:#edaa77;box-shadow:0 17px 34px #030207a0;transform:translateY(-2px)}
+html[data-theme="halloween"] .product-photo{border:0;border-radius:0;background:#f6f1e9}
+html[data-theme="halloween"] .product-photo img{mix-blend-mode:normal}
+html[data-theme="halloween"] .product-info{padding:12px 14px 8px}
+html[data-theme="halloween"] .product-quick{background:#42304c;color:#fff1e5;border-color:#a1747e}
+html[data-theme="halloween"] .product-quick:hover{background:#62415b;border-color:#f6b27e;color:#fff}
+html[data-theme="halloween"] .catalog .cotillon-navigation{position:relative}
+html[data-theme="halloween"] .catalog .cotillon-navigation::before{content:"";position:absolute;right:-2%;top:-18px;width:115px;height:150px;background:url('/halloween-rail.svg') right top / 115px auto no-repeat;opacity:.47;pointer-events:none}
+
+@media(max-width:760px){
+ .cotillon-landing{padding:22px 6% 20px}
+ .cotillon-landing h1{font-size:clamp(30px,8vw,39px)}
+ .cotillon-landing p{font-size:12px;margin:0}
+ .cotillon-catalog{padding-top:16px}
+ .cotillon-catalog .catalog-controls{flex-direction:row;gap:8px;margin-bottom:14px}
+ .cotillon-catalog .cart-trigger{padding:10px 12px;gap:5px;font-size:11px;white-space:nowrap}
+ .cotillon-catalog .search{min-width:0;min-height:48px;padding:0 10px}
+ .cotillon-catalog .search input{font-size:12px}
+ .campaign-highlight{grid-template-columns:1fr;gap:15px;min-height:0;padding:20px;border-radius:16px}
+ .campaign-highlight h2{font-size:26px}
+ .campaign-highlight p{font-size:12px}
+ .campaign-picks img{height:72px}
+ .campaign-picks span{font-size:9px;min-height:32px}
+ .product-info{padding:10px 11px 7px}
+ .product-info h3{font-size:13px}
+ .product-photo img{padding:10px}
+ .product-quick{margin:0 10px 10px;padding:9px;font-size:10px}
+ html[data-theme="halloween"] .site-header{min-height:78px;padding:4px 6%}
+ html[data-theme="halloween"] .site-header .brand-mark{width:89px;height:72px}
+ html[data-theme="halloween"] .page-title.peach.cotillon-landing{min-height:0;padding:22px 6% 20px}
+ html[data-theme="halloween"] .product-card{padding:0;border-radius:11px}
+ html[data-theme="halloween"] .product-info{padding:10px 11px 7px}
+}
+@media(max-width:360px){.cotillon-catalog .cart-trigger{font-size:0;gap:4px}.cotillon-catalog .cart-trigger span{font-size:10px}.campaign-picks{gap:5px}.campaign-picks button{padding:4px}}
+@media(prefers-reduced-motion:reduce){.campaign-picks button,html[data-theme="halloween"] .product-card{transition:none;transform:none!important}}

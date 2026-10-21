@@ -3,7 +3,7 @@ export type Category={id:string;area:Area;name:string;storefront?:boolean;group?
 import {cotillonTaxonomy,cotillonInnerCategories} from './cotillon-taxonomy';
 export const saleConditions=['Nuevo a pedido','Nuevo Inmediato','Usado inmediato'] as const;
 export type SaleCondition=typeof saleConditions[number];
-export type Product={id:string;area:Area;name:string;categoryId?:string;categoryIds?:string[];categoryNames?:string[];category:string;mode:'alquiler'|'venta'|'ambos';saleCondition?:SaleCondition|'';deliveryTime?:string;orderLimit?:number;price:number;priceKnown?:boolean;rentPrice:number;stock:number;stockUnknown?:boolean;image:string;thumbnail?:string;description:string;active:boolean;sourceId?:string;sourceImage?:string};
+export type Product={id:string;area:Area;name:string;categoryId?:string;categoryIds?:string[];categoryNames?:string[];catalogGroups?:string[];category:string;mode:'alquiler'|'venta'|'ambos';saleCondition?:SaleCondition|'';deliveryTime?:string;orderLimit?:number;price:number;priceKnown?:boolean;stockUnknown?:boolean;rentPrice:number;stock:number;image:string;thumbnail?:string;description:string;active:boolean;sourceId?:string;sourceImage?:string};
 export function purchaseLimit(product:Product):number {
  if(product.area==='cotillon'&&product.stockUnknown)return 99;
  if(product.area==='disfraces'&&product.saleCondition==='Nuevo a pedido'){

@@ -16,6 +16,7 @@ const STATES = {pending:['correction','confirmed','rejected','cancel_requested']
 function props_(){return PropertiesService.getScriptProperties();}
 function config_(key){return props_().getProperty(key)||'';}
 function siteTheme_(){return config_('SITE_THEME')==='halloween'?'halloween':'default';}
+function siteCampaign_(){return {halloween:config_('CAMPAIGN_HALLOWEEN')!=='off'};}
 function hex_(bytes){return bytes.map(b=>('0'+((b+256)%256).toString(16)).slice(-2)).join('');}
 function hash_(text){return hex_(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256,text,Utilities.Charset.UTF_8));}
 function equal_(a,b){if(typeof a!=='string'||typeof b!=='string'||a.length!==b.length)return false;let v=0;for(let i=0;i<a.length;i++)v|=a.charCodeAt(i)^b.charCodeAt(i);return v===0;}
@@ -69,10 +70,10 @@ function ensureCotillonDepth3_(){
 }
 function productCategoryIds_(p){return [...new Set([p.categoryId,...(Array.isArray(p.categoryIds)?p.categoryIds:[])].filter(Boolean))];}
 function linkedCategory_(p,c){return productCategoryIds_(p).includes(c.id)||(!p.categoryId&&categoryKey_(p.category)===categoryKey_(c.name));}
-function categoryPath_(category,categories){if(!category)return 'Sin categoría';const parent=category.parentId?categories.find(c=>c.id===category.parentId):null;return [category.group||'Anterior',parent?.name,category.name].filter(Boolean).join(' › ');}
+function categoryPath_(category,categories){if(!category)return 'Sin categoría';const parent=category.parentId?categories.find(c=>c.id===category.parentId):null;return [category.group,parent?.name,category.name].filter(Boolean).join(' › ');}
 function products_(area){const categories=categories_(area);return rows_(area).map(p=>{const original=categories.find(c=>c.id===p.categoryId)||categories.find(c=>!p.categoryId&&!c.parentId&&categoryKey_(c.name)===categoryKey_(p.category));const ids=productCategoryIds_(p).filter(id=>categories.some(c=>c.id===id));if(original&&!ids.includes(original.id))ids.unshift(original.id);if(area==='cotillon')ids.slice().forEach(id=>{const source=categories.find(c=>c.id===id),target=categories.find(c=>c.id===source?.mappedToCategoryId&&c.group&&c.storefront!==false);if(target&&!ids.includes(target.id))ids.push(target.id);});const primary=area==='cotillon'&&original?.mappedToCategoryId?categories.find(c=>c.id===original.mappedToCategoryId&&c.group&&c.storefront!==false)||original:original;const label=c=>area==='cotillon'?categoryPath_(c,categories):c.name;return {...p,categoryId:primary?primary.id:'',category:primary?label(primary):'Sin categoría',categoryIds:ids,categoryNames:ids.map(id=>label(categories.find(c=>c.id===id)))};});}
 function categoryName_(name,area,ignoreId,group='',parentId=''){const clean=text_(name,80);need_(clean!=='Sin categoría','Ese nombre está reservado para los productos sin categoría.');need_(!categories_(area).some(c=>c.id!==ignoreId&&categoryKey_(c.name)===categoryKey_(clean)&&(area!=='cotillon'||(c.group||'')===group&&(c.parentId||'')===parentId)),'Ya existe una categoría con ese nombre en esa sección.');return clean;}
-function doGet(){return json_({ok:true,data:{service:'Disfraz Cabezón',version:7,catalogSchema:'cotillon-hierarchy-v2',theme:siteTheme_()}});}
+function doGet(){return json_({ok:true,data:{service:'Disfraz Cabezón',version:8,catalogSchema:'cotillon-hierarchy-v2',theme:siteTheme_(),campaign:siteCampaign_()}});}
 function reply_(e,result){
  if(!e||!e.parameter||e.parameter.transport!=='frame')return json_(result);
  const id=String(e.parameter.bridgeId||'');
@@ -92,7 +93,7 @@ function dispatch_(b){
  recoverStock_();
  if(['catalog','catalogData','admin','saveCategory','saveProduct','mapLegacyCategory'].includes(b.action))ensureCotillonDepth3_();
  if(b.action==='catalog')return CATEGORY_AREAS.flatMap(a=>products_(a).filter(p=>p.active));
- if(b.action==='catalogData')return {products:CATEGORY_AREAS.flatMap(a=>products_(a).filter(p=>p.active)),categories:CATEGORY_AREAS.flatMap(categories_)};
+ if(b.action==='catalogData')return {products:CATEGORY_AREAS.flatMap(a=>products_(a).filter(p=>p.active)),categories:CATEGORY_AREAS.flatMap(categories_),campaign:siteCampaign_()};
  if(b.action==='login'){
   limit_('login-global',60,900);limit_('login:'+String(b.username).toLowerCase(),8,900);
   need_(config_('ADMIN_PASSWORD').length>=12,'Configurá una contraseña de al menos 12 caracteres.');
@@ -112,8 +113,9 @@ function dispatch_(b){
  if(b.action==='cancel'){const d=b.data;need_(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email),'Correo inválido.');limit_('cancel:'+d.email,5,3600);const id=Utilities.getUuid();const r={id,code:'ARR-'+id.slice(0,8).toUpperCase(),name:text_(d.name,150),email:text_(d.email,200),reference:String(d.reference||'').slice(0,100),note:String(d.note||'').slice(0,2000),createdAt:now_(),resolved:false};put_('cancelaciones',r);return {code:r.code};}
  session_(b.token);
  if(b.action==='logout'){CacheService.getScriptCache().remove('session:'+hash_(b.token));return {ok:true};}
- if(b.action==='admin')return {products:CATEGORY_AREAS.flatMap(products_),categories:CATEGORY_AREAS.flatMap(categories_),requests:rows_('reservas').map(({accessHash,terms,files,...r})=>r),movements:rows_('movimientos'),cancellations:rows_('cancelaciones'),bank:bank_(),mailMode:config_('MAIL_MODE'),siteTheme:siteTheme_()};
+ if(b.action==='admin')return {products:CATEGORY_AREAS.flatMap(products_),categories:CATEGORY_AREAS.flatMap(categories_),requests:rows_('reservas').map(({accessHash,terms,files,...r})=>r),movements:rows_('movimientos'),cancellations:rows_('cancelaciones'),bank:bank_(),mailMode:config_('MAIL_MODE'),siteTheme:siteTheme_(),campaign:siteCampaign_()};
  if(b.action==='setSiteTheme'){need_(['default','halloween'].includes(b.theme),'Tema inválido.');props_().setProperty('SITE_THEME',b.theme);return {theme:siteTheme_()};}
+ if(b.action==='setHalloweenCampaign'){need_(typeof b.enabled==='boolean','Estado de campaña inválido.');props_().setProperty('CAMPAIGN_HALLOWEEN',b.enabled?'on':'off');return siteCampaign_();}
  if(b.action==='saveCategory'){
   const area=b.area,table=categoryTable_(area),all=categories_(area),old=b.id?all.find(c=>c.id===b.id):null;
   need_(!b.id||old,'Categoría inexistente.');

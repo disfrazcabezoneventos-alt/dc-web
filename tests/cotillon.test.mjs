@@ -35,10 +35,46 @@ test('la navegación conserva los productos sin clasificar en Todos y en la bús
  assert.deepEqual(taxonomy.filterCotillonProducts(items,categories,'COTILLÓN','fiestas','anteojos',false,'sombrero').map(p=>p.id),['sombrero']);
 });
 
+test('catálogo real heredado: Freddy aparece en Máscaras y Halloween sin alterar su registro',()=>{
+ const categories=[
+  {id:'old-access',area:'cotillon',name:'Accesorios disfraz',storefront:false},
+  {id:'old-pastry',area:'cotillon',name:'Repostería',storefront:false},
+  {id:'old-patrios',area:'cotillon',name:'Fiestas patrias',storefront:false},
+  {id:'fiestas',area:'cotillon',name:'Fiestas',group:'COTILLÓN',storefront:true},
+  {id:'masks',area:'cotillon',name:'Máscaras y antifaces',group:'COTILLÓN',parentId:'fiestas',storefront:true},
+  {id:'pastry-access',area:'cotillon',name:'Accesorios',group:'REPOSTERÍA',storefront:true},
+  {id:'patrios',area:'cotillon',name:'Patrios',group:'FECHAS ESPECIALES',storefront:true},
+  {id:'halloween',area:'cotillon',name:'Halloween',group:'FECHAS ESPECIALES',storefront:true}
+ ];
+ const items=[product('freddy',{name:'Careta De Freddy Krugger',category:'Anterior › Accesorios disfraz',categoryId:'old-access',categoryIds:['old-access','halloween']}),product('molde',{name:'Molde Silicona Budin 24cm X1',categoryId:'old-pastry',categoryIds:['old-pastry']}),product('harry',{name:'Gorro Seleccionador Harry Potter',categoryId:'old-patrios',categoryIds:['old-patrios']})];
+ const original=structuredClone(items),resolved=taxonomy.resolveCotillonCatalog(items,categories);
+ assert.deepEqual(items,original);
+ assert.equal(resolved[0].category,'COTILLÓN › Fiestas › Máscaras y antifaces');
+ assert.ok(resolved[0].categoryIds.includes('halloween'));
+ assert.deepEqual(taxonomy.filterCotillonProducts(resolved,categories,'COTILLÓN','fiestas','masks',false,'').map(p=>p.id),['freddy']);
+ assert.equal(resolved.filter(p=>p.catalogGroups.includes('COTILLÓN')).length,1);
+ assert.equal(resolved[1].category,'REPOSTERÍA › Accesorios');
+ assert.ok(!resolved[2].categoryIds.includes('patrios'));
+ assert.ok(resolved.every(p=>!p.category.includes('Anterior')));
+ const manuallyAssigned=taxonomy.resolveCotillonCatalog([{...items[0],categoryId:'halloween'}],categories)[0];
+ assert.equal(manuallyAssigned.category,'FECHAS ESPECIALES › Halloween');
+});
+
 test('carrito acepta sólo cotillón activo, limita cantidad y deduplica',()=>{
  const products=[product('a'),product('b',{stockUnknown:true,stock:0}),product('c',{area:'disfraces'}),product('d',{stock:0})];
  const result=cart.normalizeCart([{id:'a',quantity:40},{id:'a',quantity:2},{id:'b',quantity:120},{id:'c',quantity:1},{id:'d',quantity:1},{id:'inexistente',quantity:1}],products);
  assert.deepEqual(result,[{id:'a',quantity:4},{id:'b',quantity:99}]);
+});
+
+test('opciones distintas conservan el detalle y comparten el límite de stock',()=>{
+ const p=product('colores',{name:'Gorro varios colores',stock:3});
+ assert.equal(cart.requiresChoice(p),true);
+ const lines=cart.normalizeCart([{id:p.id,quantity:2,option:'Rojo'},{id:p.id,quantity:2,option:'Azul'}],[p]);
+ assert.deepEqual(lines,[{id:p.id,quantity:2,option:'Rojo'},{id:p.id,quantity:1,option:'Azul'}]);
+ const message=cart.cartMessage(lines,[p]);
+ assert.match(message,/Rojo/);
+ assert.match(message,/Azul/);
+ assert.match(message,/3\.000/);
 });
 
 test('mensaje de WhatsApp llega detallado con cantidades y precios a consultar',()=>{
