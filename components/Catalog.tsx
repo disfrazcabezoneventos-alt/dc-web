@@ -11,6 +11,9 @@ import CotillonCart from './CotillonCart';
 import CotillonNavigation from './CotillonNavigation';
 import {filterCotillonProducts,resolveCotillonCatalog} from '@/lib/cotillon-taxonomy';
 
+// La vidriera anterior se retira mientras se prepara la nueva carga masiva.
+const COTILLON_PUBLICATIONS_PAUSED = true;
+
 export default function Catalog({area,featured=false}:{area?:Product['area'];featured?:boolean}){
  const [products,setProducts]=useState<Product[]>(demo?seed:[]);
  const [categories,setCategories]=useState<Category[]>(demo?seedCategories:[]);
@@ -22,11 +25,12 @@ export default function Catalog({area,featured=false}:{area?:Product['area'];fea
  const [cart,setCart]=useState<CartItem[]>([]),[cartReady,setCartReady]=useState(false),[cartOpen,setCartOpen]=useState(false);
  const [visible,setVisible]=useState(36),[notice,setNotice]=useState('');
  const dialogRef=useRef<HTMLDialogElement>(null);
- const publicProducts=useMemo(()=>resolveCotillonCatalog(products,categories),[products,categories]);
+ const publicProducts=useMemo(()=>resolveCotillonCatalog(COTILLON_PUBLICATIONS_PAUSED?products.filter(p=>p.area!=='cotillon'):products,categories),[products,categories]);
 
  useEffect(()=>{if(!demo)catalogData().then(data=>{setProducts(data.products);setCategories(data.categories);setCampaignHalloween(data.campaign?.halloween!==false)}).catch(e=>setError(e.message)).finally(()=>setLoading(false));},[]);
  useEffect(()=>{if(loading||error||cartReady)return;try{setCart(normalizeCart(JSON.parse(localStorage.getItem(CART_KEY)||'[]'),publicProducts))}catch{setCart([])}setCartReady(true)},[loading,error,cartReady,publicProducts]);
  useEffect(()=>{if(cartReady)localStorage.setItem(CART_KEY,JSON.stringify(cart))},[cart,cartReady]);
+ useEffect(()=>{if(COTILLON_PUBLICATIONS_PAUSED&&area==='cotillon')localStorage.removeItem(CART_KEY)},[area]);
  useEffect(()=>{if(!selected)return;const dialog=dialogRef.current;if(dialog&&!dialog.open)dialog.showModal();const close=(event:KeyboardEvent)=>{if(event.key==='Escape')setSelected(null)};window.addEventListener('keydown',close);return()=>window.removeEventListener('keydown',close)},[selected]);
  useEffect(()=>setVisible(36),[query,category,mode,mainCategory,subCategory,innerCategory,sectionAll]);
 
@@ -63,6 +67,8 @@ export default function Catalog({area,featured=false}:{area?:Product['area'];fea
  }
  function openProduct(product:Product){setNotice('');setDetailQuantity(1);setOptionNote('');setSelected(product)}
  function chooseHalloween(){setMainCategory('FECHAS ESPECIALES');setSubCategory(halloweenId||'');setInnerCategory('');setSectionAll(false);setQuery('');setTimeout(()=>document.querySelector('.product-grid')?.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'}),0)}
+
+ if(COTILLON_PUBLICATIONS_PAUSED&&area==='cotillon')return <section className="section catalog cotillon-catalog" id="catalogo"><div className="empty-state" role="status"><h2>Estamos renovando Cotillón.</h2><p>Retiramos las publicaciones anteriores para preparar el nuevo catálogo. Pronto vas a poder elegir tus productos acá.</p><a className="button" href="/disfraces/">Ver disfraces</a></div></section>;
 
  return <section className={'section catalog'+(area==='cotillon'?' cotillon-catalog':'')} id="catalogo">
   {area!=='cotillon'&&<div className="section-heading"><div><span className="eyebrow">{featured?'UN POCO DE INSPIRACIÓN':'ENCONTRÁ ESO QUE BUSCÁS'}</span><h2>{featured?'Hay fiesta para todos.':'Elegí tu próxima versión.'}</h2></div>{featured&&<a className="text-link" href="/disfraces/">Explorar disfraces <ArrowUpRight size={20}/></a>}</div>}
