@@ -53,7 +53,7 @@ export function resolveCotillonCatalog(products:Product[],categories:Category[])
   const original=ids.map(id=>byId.get(id)).filter((c):c is Category=>!!c);
   const legacy=original.filter(c=>!c.group);
   const inferred:Category[]=[];
-  const groups=new Set(original.filter(c=>c.group).map(c=>c.group!));
+  const groups=new Set([...(product.catalogGroups||[]),...original.filter(c=>c.group).map(c=>c.group!)]);
   const add=(group:string,name:string,parent?:string)=>{const found=find(group,name,parent);if(found&&!ids.includes(found.id)){ids.push(found.id);inferred.push(found)}if(found)groups.add(group)};
   for(const source of legacy){
    const old=normalize(source.name),name=normalize(product.name);
@@ -81,7 +81,8 @@ export function resolveCotillonCatalog(products:Product[],categories:Category[])
   const explicitPrimary=byId.get(product.categoryId||'');
   const primary=explicitPrimary?.group&&explicitPrimary.storefront!==false?explicitPrimary:inferred.find(c=>!!c.parentId)||inferred.find(c=>!!c.group)||assigned.find(c=>!!c.parentId)||assigned[0];
   const paths=Array.from(new Set(assigned.map(c=>categoryPath(c,categories))));
-  const labels=paths.length?paths:groups.size?Array.from(groups).map(g=>g==='COTILLÓN'?'Cotillón':g):legacy.map(c=>c.name);
+  const displayGroup=(name:string)=>({'COTILLÓN':'Cotillón','REPOSTERÍA':'Repostería','FECHAS ESPECIALES':'Fechas especiales','DESCARTABLES':'Descartables'} as Record<string,string>)[name]||name;
+  const labels=paths.length?paths:groups.size?Array.from(groups).map(displayGroup):legacy.map(c=>c.name);
   return {...product,categoryId:primary?.id||product.categoryId,categoryIds:ids,category:primary?categoryPath(primary,categories):labels[0]||'Sin categoría',categoryNames:labels,catalogGroups:Array.from(groups)};
  });
 }

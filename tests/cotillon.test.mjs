@@ -35,6 +35,15 @@ test('la navegación conserva los productos sin clasificar en Todos y en la bús
  assert.deepEqual(taxonomy.filterCotillonProducts(items,categories,'COTILLÓN','fiestas','anteojos',false,'sombrero').map(p=>p.id),['sombrero']);
 });
 
+test('un producto asignado sólo a Descartables aparece en ese grupo y en Todos',()=>{
+ const item=product('mantel',{name:'Mantel Friselina',category:'Descartables',categoryId:'',categoryIds:[],catalogGroups:['DESCARTABLES']});
+ const resolved=taxonomy.resolveCotillonCatalog([item],[]);
+ assert.equal(resolved[0].category,'Descartables');
+ assert.deepEqual(resolved[0].catalogGroups,['DESCARTABLES']);
+ assert.equal(taxonomy.filterCotillonProducts(resolved,[],'DESCARTABLES','','',false,'').length,1);
+ assert.equal(taxonomy.filterCotillonProducts(resolved,[],'','','',false,'mantel').length,1);
+});
+
 test('catálogo real heredado: Freddy aparece en Máscaras y Halloween sin alterar su registro',()=>{
  const categories=[
   {id:'old-access',area:'cotillon',name:'Accesorios disfraz',storefront:false},
