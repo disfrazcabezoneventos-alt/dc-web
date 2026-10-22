@@ -73,7 +73,7 @@ function linkedCategory_(p,c){return productCategoryIds_(p).includes(c.id)||(!p.
 function categoryPath_(category,categories){if(!category)return 'Sin categoría';const parent=category.parentId?categories.find(c=>c.id===category.parentId):null;return [category.group,parent?.name,category.name].filter(Boolean).join(' › ');}
 function products_(area){const categories=categories_(area);return rows_(area).map(p=>{const original=categories.find(c=>c.id===p.categoryId)||categories.find(c=>!p.categoryId&&!c.parentId&&categoryKey_(c.name)===categoryKey_(p.category));const ids=productCategoryIds_(p).filter(id=>categories.some(c=>c.id===id));if(original&&!ids.includes(original.id))ids.unshift(original.id);if(area==='cotillon')ids.slice().forEach(id=>{const source=categories.find(c=>c.id===id),target=categories.find(c=>c.id===source?.mappedToCategoryId&&c.group&&c.storefront!==false);if(target&&!ids.includes(target.id))ids.push(target.id);});const primary=area==='cotillon'&&original?.mappedToCategoryId?categories.find(c=>c.id===original.mappedToCategoryId&&c.group&&c.storefront!==false)||original:original;const label=c=>area==='cotillon'?categoryPath_(c,categories):c.name;return {...p,categoryId:primary?primary.id:'',category:primary?label(primary):area==='cotillon'&&p.catalogGroups?.length?p.category||p.catalogGroups[0]:'Sin categoría',categoryIds:ids,categoryNames:ids.map(id=>label(categories.find(c=>c.id===id)))};});}
 function categoryName_(name,area,ignoreId,group='',parentId=''){const clean=text_(name,80);need_(clean!=='Sin categoría','Ese nombre está reservado para los productos sin categoría.');need_(!categories_(area).some(c=>c.id!==ignoreId&&categoryKey_(c.name)===categoryKey_(clean)&&(area!=='cotillon'||(c.group||'')===group&&(c.parentId||'')===parentId)),'Ya existe una categoría con ese nombre en esa sección.');return clean;}
-function doGet(){return json_({ok:true,data:{service:'Disfraz Cabezón',version:9,catalogSchema:'cotillon-excel-2026-v1',cotillonImportReady:config_('COTILLON_EXCEL_2026_STATE')==='ready',theme:siteTheme_(),campaign:siteCampaign_()}});}
+function doGet(){return json_({ok:true,data:{service:'Disfraz Cabezón',version:10,catalogSchema:'cotillon-excel-2026-v2',cotillonImportReady:config_('COTILLON_EXCEL_2026_STATE')==='ready',theme:siteTheme_(),campaign:siteCampaign_()}});}
 function reply_(e,result){
  if(!e||!e.parameter||e.parameter.transport!=='frame')return json_(result);
  const id=String(e.parameter.bridgeId||'');
@@ -92,8 +92,8 @@ function dispatch_(b){
   if(b.action==='siteTheme')return {theme:siteTheme_()};
  recoverStock_();
  if(['catalog','catalogData','admin','saveCategory','saveProduct','mapLegacyCategory'].includes(b.action))ensureCotillonDepth3_();
- if(b.action==='catalog')return CATEGORY_AREAS.flatMap(a=>products_(a).filter(p=>p.active));
- if(b.action==='catalogData')return {products:CATEGORY_AREAS.flatMap(a=>products_(a).filter(p=>p.active)),categories:CATEGORY_AREAS.flatMap(categories_),campaign:siteCampaign_(),cotillonImportReady:config_('COTILLON_EXCEL_2026_STATE')==='ready'};
+ if(b.action==='catalog')return CATEGORY_AREAS.flatMap(a=>products_(a).filter(p=>a==='cotillon'||p.active));
+ if(b.action==='catalogData')return {products:CATEGORY_AREAS.flatMap(a=>products_(a).filter(p=>a==='cotillon'||p.active)),categories:CATEGORY_AREAS.flatMap(categories_),campaign:siteCampaign_(),cotillonImportReady:config_('COTILLON_EXCEL_2026_STATE')==='ready'};
  if(b.action==='login'){
   limit_('login-global',60,900);limit_('login:'+String(b.username).toLowerCase(),8,900);
   need_(config_('ADMIN_PASSWORD').length>=12,'Configurá una contraseña de al menos 12 caracteres.');
@@ -330,6 +330,7 @@ function procesarFotosCotillonExcel2026(){return lock_(()=>{
    const published=data.map((row,index)=>{const p=updated.get(index+2)||JSON.parse(row[1]);if(p.importBatch===COTILLON_EXCEL_2026_BATCH)p.active=true;return [p.id,JSON.stringify(p)];});
    sheet.getRange(2,1,published.length,2).setValues(published);SpreadsheetApp.flush();
    props_().setProperty('COTILLON_EXCEL_2026_STATE','ready');
+   if(config_('COTILLON_AGOTADOS_2026_STATE')==='waiting')iniciarFotosAgotadosCotillon_();
   }
  }
  const status={...result,...cotillonExcel2026Status_()};console.log(JSON.stringify(status));return status;
@@ -344,3 +345,88 @@ function reintentarFotosCotillonExcel2026(){
   return {reintentosHabilitados:count};
  });console.log(JSON.stringify(reset));return reset;
 }
+
+// Segunda carga: conserva las 790 filas y agrega las 416 sin stock como fichas
+// públicas agotadas. La falta de stock o active=false nunca permite agregarlas al carrito.
+const COTILLON_AGOTADOS_2026_URL='https://raw.githubusercontent.com/disfrazcabezoneventos-alt/dc-web/main/backend/import-cotillon-agotados-2026.json';
+const COTILLON_AGOTADOS_2026_SHA256='9a169615865c3b4da1634ef9f8efc016c4bea9a83a5a9f261d5ab2f0543c64fb';
+const COTILLON_AGOTADOS_2026_BATCH='cotillon-agotados-excel-2026';
+function cotillonAgotados2026Source_(){
+ const response=UrlFetchApp.fetch(COTILLON_AGOTADOS_2026_URL,{muteHttpExceptions:true,followRedirects:true});
+ need_(response.getResponseCode()===200,'No se pudo descargar la segunda parte del catálogo. No se modificó la hoja.');
+ const raw=response.getContentText('UTF-8');
+ need_(hash_(raw)===COTILLON_AGOTADOS_2026_SHA256,'El archivo de agotados cambió o está incompleto. No se modificó la hoja.');
+ const source=JSON.parse(raw);
+ need_(source.version===1&&Array.isArray(source.products)&&source.products.length===416,'Se esperaban exactamente 416 productos agotados.');
+ const ids=new Set();
+ source.products.forEach(p=>{
+  need_(typeof p.sourceId==='string'&&/^[A-Za-z0-9_-]{3,40}$/.test(p.sourceId)&&!ids.has(p.sourceId),'Identificador agotado duplicado o inválido.');ids.add(p.sourceId);
+  need_(typeof p.name==='string'&&p.name.trim().length>0&&p.name.length<=150&&typeof p.description==='string'&&p.description.length<=2000,'Nombre o descripción inválidos.');
+  need_(typeof p.price==='number'&&Number.isFinite(p.price)&&p.price>0&&p.price<=100000000&&p.stock===0,'Un producto agotado tiene precio o stock inválido.');
+  need_(typeof p.sourceImage==='string'&&/^https:\/\/images\.rappi\.com\.ar\/products\/[^\s]+$/.test(p.sourceImage),'Foto agotada inválida.');
+  const group=Object.keys(COTILLON_GROUPS).find(name=>categoryKey_(name)===categoryKey_(p.group));need_(group,'Categoría principal desconocida.');
+  need_(p.section===''&&group==='REPOSTERÍA'&&p.excelRow===142||COTILLON_GROUPS[group].includes(p.section),'Subcategoría desconocida.');
+  need_(!p.inner||group==='COTILLÓN'&&Array.isArray(COTILLON_INNER[p.section])&&COTILLON_INNER[p.section].includes(p.inner),'Categoría interna desconocida.');
+ });
+ return source.products;
+}
+function agotadosCotillon2026Status_(){
+ const batch=rows_('cotillon').filter(p=>p.importBatch===COTILLON_AGOTADOS_2026_BATCH);
+ return {estado:config_('COTILLON_AGOTADOS_2026_STATE')||'sin_iniciar',productosAgotados:batch.length,conFoto:batch.filter(p=>!!p.image&&!!p.thumbnail).length,pendientes:batch.filter(p=>p.sourceImage&&(!p.image||!p.thumbnail)&&!p.imageImportError).length,fallidas:batch.filter(p=>!!p.imageImportError).length,visiblesComoAgotados:batch.length,errores:batch.filter(p=>p.imageImportError).slice(0,5).map(p=>({nombre:p.name,error:p.imageImportError}))};
+}
+function estadoAgotadosCotillonExcel2026(){const result=agotadosCotillon2026Status_();console.log(JSON.stringify(result));return result;}
+function iniciarFotosAgotadosCotillon_(){
+ if(!ScriptApp.getProjectTriggers().some(t=>t.getHandlerFunction()==='procesarFotosAgotadosCotillonExcel2026'))ScriptApp.newTrigger('procesarFotosAgotadosCotillonExcel2026').timeBased().everyMinutes(5).create();
+ props_().setProperty('COTILLON_AGOTADOS_2026_STATE','photos');
+}
+function importarAgotadosCotillonExcel2026(){
+ need_(config_('SPREADSHEET_ID'),'Falta SPREADSHEET_ID en Propiedades del script.');
+ need_(config_('CLOUDINARY_CLOUD_NAME')&&config_('CLOUDINARY_API_KEY')&&config_('CLOUDINARY_API_SECRET'),'Faltan las propiedades de Cloudinary.');
+ const source=cotillonAgotados2026Source_();
+ return lock_(()=>{
+  ensureCotillonDepth3_();
+  const sheet=sheet_('cotillon'),all=rows_('cotillon'),initial=all.filter(p=>p.importBatch===COTILLON_EXCEL_2026_BATCH);
+  need_(initial.length===790,'Primero debe estar completa la carga original de 790 productos.');
+  const existing=new Map(all.map(p=>[p.id,p])),categories=categories_('cotillon'),add=[];
+  source.forEach(p=>{
+   const id='excel-'+p.sourceId,old=existing.get(id);
+   if(old){need_(old.importBatch===COTILLON_AGOTADOS_2026_BATCH,'El ID '+id+' ya pertenece a otro producto.');return;}
+   const group=Object.keys(COTILLON_GROUPS).find(name=>categoryKey_(name)===categoryKey_(p.group));
+   const section=categories.find(c=>c.group===group&&!c.parentId&&c.name===p.section&&c.storefront!==false);
+   need_(!p.section||section,'Falta la categoría '+group+' › '+p.section+'.');
+   const inner=p.inner?categories.find(c=>c.parentId===section.id&&c.name===p.inner&&c.storefront!==false):null;
+   need_(!p.inner||inner,'Falta la categoría interna '+p.inner+'.');
+   const category=inner||section;
+   const product={id,area:'cotillon',name:p.name,description:p.description,categoryId:category?.id||'',categoryIds:category?[...new Set([category.id,...(inner?[section.id]:[])])]:[],category:category?categoryPath_(category,categories):group==='REPOSTERÍA'?'Repostería':group,catalogGroups:[group],mode:'venta',price:p.price,priceKnown:true,rentPrice:0,stock:0,stockUnknown:false,image:'',thumbnail:'',active:false,sourceId:p.sourceId,sourceImage:p.sourceImage,sku:p.sku||'',excelRow:p.excelRow,importBatch:COTILLON_AGOTADOS_2026_BATCH};
+   need_(JSON.stringify(product).length<48000,'Producto demasiado grande: '+p.name);
+   add.push([id,JSON.stringify(product)]);existing.set(id,product);
+  });
+  if(add.length){sheet.getRange(sheet.getLastRow()+1,1,add.length,2).setValues(add);SpreadsheetApp.flush();}
+  need_(rows_('cotillon').filter(p=>p.importBatch===COTILLON_AGOTADOS_2026_BATCH).length===416,'La segunda carga quedó incompleta. Repetí esta función; no duplica productos.');
+  if(['','waiting','photos'].includes(config_('COTILLON_AGOTADOS_2026_STATE'))&&config_('COTILLON_EXCEL_2026_STATE')==='ready')iniciarFotosAgotadosCotillon_();
+  else if(!config_('COTILLON_AGOTADOS_2026_STATE'))props_().setProperty('COTILLON_AGOTADOS_2026_STATE','waiting');
+  const result={agregados:add.length,totalCotillon:rows_('cotillon').length,...agotadosCotillon2026Status_()};console.log(JSON.stringify(result));return result;
+ });
+}
+function procesarFotosAgotadosCotillonExcel2026(){return lock_(()=>{
+ if(config_('COTILLON_AGOTADOS_2026_STATE')==='ready')return agotadosCotillon2026Status_();
+ need_(config_('COTILLON_AGOTADOS_2026_STATE')==='photos','Esta carga no está en la etapa de fotos.');
+ const sheet=sheet_('cotillon'),data=sheet.getRange(2,1,sheet.getLastRow()-1,2).getValues();
+ const batch=data.map((row,index)=>({row:index+2,product:JSON.parse(row[1])})).filter(item=>item.product.importBatch===COTILLON_AGOTADOS_2026_BATCH);
+ need_(batch.length===416,'La segunda carga está incompleta.');
+ const pending=batch.filter(item=>item.product.sourceImage&&(!item.product.image||!item.product.thumbnail)&&!item.product.imageImportError).slice(0,10);
+ const result={procesadas:0,fallidas:0};
+ pending.forEach(item=>{const p=item.product;try{Object.assign(p,subirFotoCotillon_(p.sourceImage,'excel-agotado-2026-'+p.sourceId));result.procesadas++;}catch(error){p.imageImportError=String(error.message||error).slice(0,200);result.fallidas++;}sheet.getRange(item.row,1,1,2).setValues([[p.id,JSON.stringify(p)]]);});
+ SpreadsheetApp.flush();
+ if(!batch.some(item=>item.product.sourceImage&&(!item.product.image||!item.product.thumbnail)&&!item.product.imageImportError)){
+  ScriptApp.getProjectTriggers().filter(t=>t.getHandlerFunction()==='procesarFotosAgotadosCotillonExcel2026').forEach(t=>ScriptApp.deleteTrigger(t));
+  props_().setProperty('COTILLON_AGOTADOS_2026_STATE',batch.some(item=>item.product.imageImportError)?'photo_errors':'ready');
+ }
+ const status={...result,...agotadosCotillon2026Status_()};console.log(JSON.stringify(status));return status;
+});}
+function reintentarFotosAgotadosCotillonExcel2026(){return lock_(()=>{
+ need_(config_('COTILLON_AGOTADOS_2026_STATE')==='photo_errors','No hay fotos fallidas en la segunda carga.');
+ const sheet=sheet_('cotillon'),data=sheet.getRange(2,1,sheet.getLastRow()-1,2).getValues();let count=0;
+ data.forEach((row,index)=>{const p=JSON.parse(row[1]);if(p.importBatch!==COTILLON_AGOTADOS_2026_BATCH||!p.imageImportError)return;delete p.imageImportError;sheet.getRange(index+2,1,1,2).setValues([[p.id,JSON.stringify(p)]]);count++;});
+ SpreadsheetApp.flush();iniciarFotosAgotadosCotillon_();const result={reintentosHabilitados:count};console.log(JSON.stringify(result));return result;
+});}

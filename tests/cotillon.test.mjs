@@ -70,8 +70,8 @@ test('catálogo real heredado: Freddy aparece en Máscaras y Halloween sin alter
 });
 
 test('carrito acepta sólo cotillón activo, limita cantidad y deduplica',()=>{
- const products=[product('a'),product('b',{stockUnknown:true,stock:0}),product('c',{area:'disfraces'}),product('d',{stock:0})];
- const result=cart.normalizeCart([{id:'a',quantity:40},{id:'a',quantity:2},{id:'b',quantity:120},{id:'c',quantity:1},{id:'d',quantity:1},{id:'inexistente',quantity:1}],products);
+ const products=[product('a'),product('b',{stockUnknown:true,stock:0}),product('c',{area:'disfraces'}),product('d',{stock:0}),product('e',{active:false,stock:4})];
+ const result=cart.normalizeCart([{id:'a',quantity:40},{id:'a',quantity:2},{id:'b',quantity:120},{id:'c',quantity:1},{id:'d',quantity:1},{id:'e',quantity:1},{id:'inexistente',quantity:1}],products);
  assert.deepEqual(result,[{id:'a',quantity:4},{id:'b',quantity:99}]);
 });
 

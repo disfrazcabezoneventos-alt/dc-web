@@ -7,6 +7,8 @@ import crypto from 'node:crypto';
 const source=fs.readFileSync('backend/Code.gs','utf8');
 const snapshot=fs.readFileSync('backend/import-cotillon-excel-2026.json','utf8');
 const imported=JSON.parse(snapshot).products;
+const soldoutSnapshot=fs.readFileSync('backend/import-cotillon-agotados-2026.json','utf8');
+const soldoutImported=JSON.parse(soldoutSnapshot).products;
 
 function setup({tampered=false,failPhoto=false,failSwap=false}={}){
  const settings={SPREADSHEET_ID:'private-sheet',COTILLON_STRUCTURE_V1:'ready',COTILLON_DEPTH3_V1:'ready',CLOUDINARY_CLOUD_NAME:'cloud',CLOUDINARY_API_KEY:'key',CLOUDINARY_API_SECRET:'secret'};
@@ -34,10 +36,12 @@ function setup({tampered=false,failPhoto=false,failSwap=false}={}){
  }
  const initial=[{id:'legacy-old-1',name:'Viejo producto',area:'cotillon',active:true},{id:'legacy-old-2',name:'Otro producto',area:'cotillon',active:true}];
  sheets.set('cotillon',new Sheet('cotillon',[['id','registro_json'],...initial.map(p=>[p.id,JSON.stringify(p)])]));
+ sheets.set('disfraces',new Sheet('disfraces',[['id','registro_json']]));
+ sheets.set('categorias_disfraces',new Sheet('categorias_disfraces',[['id','registro_json']]));
  sheets.set('categorias_cotillon',new Sheet('categorias_cotillon',[['id','registro_json'],...categories.map(c=>[c.id,JSON.stringify(c)])]));
  sheets.set('movimientos',new Sheet('movimientos',[['id','registro_json']]));
  const spreadsheet={getSheetByName:name=>sheets.get(name)||null,insertSheet:name=>{assert.ok(!sheets.has(name));const sheet=new Sheet(name);sheets.set(name,sheet);return sheet}};
- const context=vm.createContext({console:{log(){}},Date,JSON,Set,Map,PropertiesService:{getScriptProperties:()=>({getProperty:key=>settings[key]||'',setProperty:(key,value)=>settings[key]=value,setProperties:values=>Object.assign(settings,values)})},Utilities:{Charset:{UTF_8:'UTF-8'},DigestAlgorithm:{SHA_256:'sha256'},computeDigest:(_algorithm,text)=>[...crypto.createHash('sha256').update(text,'utf8').digest()],getUuid:()=>crypto.randomUUID(),formatDate:()=> '20261022_120000'},UrlFetchApp:{fetch:()=>({getResponseCode:()=>200,getContentText:()=>tampered?snapshot+' ':snapshot})},SpreadsheetApp:{openById:id=>{assert.equal(id,'private-sheet');return spreadsheet},flush(){}},ScriptApp:{getProjectTriggers:()=>triggers,newTrigger:name=>({timeBased:()=>({everyMinutes:minutes=>({create:()=>{assert.equal(minutes,5);const trigger={getHandlerFunction:()=>name};triggers.push(trigger);return trigger}})})}),deleteTrigger:trigger=>{triggers.splice(triggers.indexOf(trigger),1)}},LockService:{getScriptLock:()=>({tryLock:()=>true,releaseLock(){}})}});
+ const context=vm.createContext({console:{log(){}},Date,JSON,Set,Map,PropertiesService:{getScriptProperties:()=>({getProperty:key=>settings[key]||'',setProperty:(key,value)=>settings[key]=value,setProperties:values=>Object.assign(settings,values)})},Utilities:{Charset:{UTF_8:'UTF-8'},DigestAlgorithm:{SHA_256:'sha256'},computeDigest:(_algorithm,text)=>[...crypto.createHash('sha256').update(text,'utf8').digest()],getUuid:()=>crypto.randomUUID(),formatDate:()=> '20261022_120000'},UrlFetchApp:{fetch:url=>({getResponseCode:()=>200,getContentText:()=>url.includes('import-cotillon-agotados-2026')?soldoutSnapshot:tampered?snapshot+' ':snapshot})},SpreadsheetApp:{openById:id=>{assert.equal(id,'private-sheet');return spreadsheet},flush(){}},ScriptApp:{getProjectTriggers:()=>triggers,newTrigger:name=>({timeBased:()=>({everyMinutes:minutes=>({create:()=>{assert.equal(minutes,5);const trigger={getHandlerFunction:()=>name};triggers.push(trigger);return trigger}})})}),deleteTrigger:trigger=>{triggers.splice(triggers.indexOf(trigger),1)}},LockService:{getScriptLock:()=>({tryLock:()=>true,releaseLock(){}})}});
  vm.runInContext(source,context);
  let failedOnce=false;
  context.subirFotoCotillon_=(url,id)=>{if(failPhoto&&!failedOnce){failedOnce=true;throw Error('temporary Cloudinary error')}return {image:`https://res.cloudinary.com/demo/image/upload/${id}.jpg`,thumbnail:`https://res.cloudinary.com/demo/image/upload/c_limit,h_160,w_160/${id}.jpg`}};
@@ -56,11 +60,19 @@ test('el archivo sólo incluye los 790 visibles y las dos decisiones de clasific
  assert.equal(mantel.group,'DESCARTABLES');assert.equal(mantel.section,'');
 });
 
+test('el segundo archivo conserva los 416 agotados y la clasificación pendiente',()=>{
+ assert.equal(soldoutImported.length,416);
+ assert.equal(new Set(soldoutImported.map(p=>p.sourceId)).size,416);
+ assert.ok(soldoutImported.every(p=>p.stock===0&&p.price>0&&p.sourceImage.startsWith('https://images.rappi.com.ar/products/')));
+ assert.deepEqual(soldoutImported.filter(p=>!p.section).map(p=>p.name),['Bowl Blanco']);
+ assert.equal(new Set([...imported,...soldoutImported].map(p=>p.sourceId)).size,1206);
+});
+
 test('checksum inválido impide tocar el catálogo viejo',()=>{
  const {context,sheets,settings}=setup({tampered:true});
  assert.throws(()=>context.iniciarImportacionCotillonExcel2026(),/catálogo publicado cambió/);
  assert.equal(sheets.get('cotillon').getLastRow(),3);
- assert.equal(sheets.size,3);
+ assert.equal(sheets.size,5);
  assert.equal(settings.COTILLON_EXCEL_2026_STATE,undefined);
 });
 
@@ -108,4 +120,33 @@ test('un fallo al intercambiar las pestañas recupera cotillon anterior',()=>{
  assert.throws(()=>context.iniciarImportacionCotillonExcel2026(),/swap failed/);
  assert.equal(sheets.get('cotillon').getLastRow(),3);
  assert.equal(settings.COTILLON_EXCEL_2026_STATE,'preparando');
+});
+
+test('los 416 agotados se agregan sin alterar los 790 y sus fotos se procesan por separado',()=>{
+ const {context,settings,products,triggers}=setup();
+ context.iniciarImportacionCotillonExcel2026();
+ const before=JSON.stringify(products());
+ const importedSecond=context.importarAgotadosCotillonExcel2026();
+ assert.equal(importedSecond.agregados,416);
+ assert.equal(importedSecond.totalCotillon,1206);
+ assert.equal(importedSecond.estado,'waiting');
+ assert.equal(JSON.stringify(products().slice(0,790)),before);
+ assert.equal(products().filter(p=>p.importBatch==='cotillon-agotados-excel-2026').length,416);
+ assert.ok(products().slice(790).every(p=>p.active===false&&p.stock===0));
+ assert.equal(products().find(p=>p.name==='Bowl Blanco').category,'Repostería');
+ assert.equal(context.importarAgotadosCotillonExcel2026().agregados,0);
+ for(let i=0;i<79;i++)context.procesarFotosCotillonExcel2026();
+ assert.equal(settings.COTILLON_EXCEL_2026_STATE,'ready');
+ assert.equal(settings.COTILLON_AGOTADOS_2026_STATE,'photos');
+ assert.deepEqual(triggers.map(t=>t.getHandlerFunction()),['procesarFotosAgotadosCotillonExcel2026']);
+ assert.equal(products().filter(p=>p.active).length,790);
+ for(let i=0;i<42;i++)context.procesarFotosAgotadosCotillonExcel2026();
+ assert.equal(settings.COTILLON_AGOTADOS_2026_STATE,'ready');
+ assert.equal(context.estadoAgotadosCotillonExcel2026().conFoto,416);
+ assert.equal(products().filter(p=>p.active).length,790);
+ assert.equal(products().filter(p=>!p.active&&p.stock===0).length,416);
+ const catalog=context.dispatch_({action:'catalogData'});
+ assert.equal(catalog.products.length,1206);
+ assert.equal(catalog.products.filter(p=>p.area==='cotillon'&&!p.active&&p.stock===0).length,416);
+ assert.equal(triggers.length,0);
 });
