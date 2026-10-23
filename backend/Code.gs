@@ -73,7 +73,7 @@ function linkedCategory_(p,c){return productCategoryIds_(p).includes(c.id)||(!p.
 function categoryPath_(category,categories){if(!category)return 'Sin categoría';const parent=category.parentId?categories.find(c=>c.id===category.parentId):null;return [category.group,parent?.name,category.name].filter(Boolean).join(' › ');}
 function products_(area){const categories=categories_(area);return rows_(area).map(p=>{const original=categories.find(c=>c.id===p.categoryId)||categories.find(c=>!p.categoryId&&!c.parentId&&categoryKey_(c.name)===categoryKey_(p.category));const ids=productCategoryIds_(p).filter(id=>categories.some(c=>c.id===id));if(original&&!ids.includes(original.id))ids.unshift(original.id);if(area==='cotillon')ids.slice().forEach(id=>{const source=categories.find(c=>c.id===id),target=categories.find(c=>c.id===source?.mappedToCategoryId&&c.group&&c.storefront!==false);if(target&&!ids.includes(target.id))ids.push(target.id);});const primary=area==='cotillon'&&original?.mappedToCategoryId?categories.find(c=>c.id===original.mappedToCategoryId&&c.group&&c.storefront!==false)||original:original;const label=c=>area==='cotillon'?categoryPath_(c,categories):c.name;return {...p,categoryId:primary?primary.id:'',category:primary?label(primary):area==='cotillon'&&p.catalogGroups?.length?p.category||p.catalogGroups[0]:'Sin categoría',categoryIds:ids,categoryNames:ids.map(id=>label(categories.find(c=>c.id===id)))};});}
 function categoryName_(name,area,ignoreId,group='',parentId=''){const clean=text_(name,80);need_(clean!=='Sin categoría','Ese nombre está reservado para los productos sin categoría.');need_(!categories_(area).some(c=>c.id!==ignoreId&&categoryKey_(c.name)===categoryKey_(clean)&&(area!=='cotillon'||(c.group||'')===group&&(c.parentId||'')===parentId)),'Ya existe una categoría con ese nombre en esa sección.');return clean;}
-function doGet(){return json_({ok:true,data:{service:'Disfraz Cabezón',version:10,catalogSchema:'cotillon-excel-2026-v2',cotillonImportReady:config_('COTILLON_EXCEL_2026_STATE')==='ready',theme:siteTheme_(),campaign:siteCampaign_()}});}
+function doGet(){return json_({ok:true,data:{service:'Disfraz Cabezón',version:11,catalogSchema:'cotillon-excel-2026-v2',cotillonImportReady:config_('COTILLON_EXCEL_2026_STATE')==='ready',theme:siteTheme_(),campaign:siteCampaign_()}});}
 function reply_(e,result){
  if(!e||!e.parameter||e.parameter.transport!=='frame')return json_(result);
  const id=String(e.parameter.bridgeId||'');
@@ -430,3 +430,49 @@ function reintentarFotosAgotadosCotillonExcel2026(){return lock_(()=>{
  data.forEach((row,index)=>{const p=JSON.parse(row[1]);if(p.importBatch!==COTILLON_AGOTADOS_2026_BATCH||!p.imageImportError)return;delete p.imageImportError;sheet.getRange(index+2,1,1,2).setValues([[p.id,JSON.stringify(p)]]);count++;});
  SpreadsheetApp.flush();iniciarFotosAgotadosCotillon_();const result={reintentosHabilitados:count};console.log(JSON.stringify(result));return result;
 });}
+
+// Las fichas recuperadas se agregan ocultas, con stock y precio de alquiler en cero.
+// La carga no reemplaza disfraces que el equipo ya haya creado o editado.
+const DISFRACES_WEB_2026_URL='https://raw.githubusercontent.com/disfrazcabezoneventos-alt/dc-web/main/backend/import-disfraces-web-2026.json';
+const DISFRACES_WEB_2026_SHA256='6a0ee2f2028483600a45268aefed8a20d5132a0005857a594979b0965530c0ea';
+const DISFRACES_WEB_2026_BATCH='disfraces-web-2026';
+function disfracesWeb2026Snapshot_(){
+ const response=UrlFetchApp.fetch(DISFRACES_WEB_2026_URL,{muteHttpExceptions:true,followRedirects:true});
+ need_(response.getResponseCode()===200,'No se pudo leer el respaldo de disfraces en GitHub.');
+ const raw=response.getContentText();need_(hash_(raw)===DISFRACES_WEB_2026_SHA256,'El respaldo de disfraces publicado cambió. No se importó nada.');
+ const data=JSON.parse(raw);need_(Array.isArray(data.products)&&data.products.length===447,'El respaldo debe tener 447 publicaciones.');
+ const valid=new Set(SUGGESTED_COSTUME_CATEGORIES),ids=new Set(),pages=new Set();
+ data.products.forEach(p=>{
+  need_(/^web2026-[a-f0-9]{20}$/.test(p.sourceId)&&!ids.has(p.sourceId),'ID de disfraz inválido o repetido.');ids.add(p.sourceId);
+  need_(typeof p.name==='string'&&p.name.trim()&&p.name.length<=150,'Nombre de disfraz inválido.');
+  need_(Array.isArray(p.categoryNames)&&p.categoryNames.length>0&&p.categoryNames.every(c=>valid.has(c)),'Categoría de disfraz inválida.');
+  need_(typeof p.sourcePage==='string'&&/^https:\/\/www\.disfrazcabezon\.com\.ar\/disfraz\/[^\s]+$/.test(p.sourcePage)&&!pages.has(p.sourcePage),'Publicación repetida o inválida.');pages.add(p.sourcePage);
+  need_(typeof p.sourceImage==='string'&&/^https:\/\/www\.disfrazcabezon\.com\.ar\/img\/admin\/disfraces\/[^\s]+$/.test(p.sourceImage),'URL de foto inválida.');
+ });return data;
+}
+function importarDisfracesWeb2026(){prepararConfiguracion();const source=disfracesWeb2026Snapshot_();return lock_(()=>{
+ const categories=categories_('disfraces'),newCategories=[];
+ SUGGESTED_COSTUME_CATEGORIES.forEach(name=>{if(categories.some(c=>categoryKey_(c.name)===categoryKey_(name)))return;const c={id:Utilities.getUuid(),area:'disfraces',name};categories.push(c);newCategories.push([c.id,JSON.stringify(c)]);});
+ if(newCategories.length){const sheet=sheet_('categorias_disfraces');sheet.getRange(sheet.getLastRow()+1,1,newCategories.length,2).setValues(newCategories);SpreadsheetApp.flush();}
+ const existing=rows_('disfraces'),ids=new Set(existing.map(p=>p.sourceId).filter(Boolean)),names=new Set(existing.map(p=>categoryKey_(p.name))),newRows=[],conflicts=[];
+ source.products.forEach(p=>{
+  if(ids.has(p.sourceId))return;
+  if(names.has(categoryKey_(p.name))){conflicts.push(p.name);return;}
+  const linked=[...new Set(p.categoryNames.map(name=>categories.find(c=>categoryKey_(c.name)===categoryKey_(name)).id))],primary=categories.find(c=>c.id===linked[0]);
+  const product={id:'rescate-'+p.sourceId,area:'disfraces',name:p.name.trim(),description:p.name.trim(),categoryId:primary.id,categoryIds:linked,category:primary.name,mode:'alquiler',price:0,priceKnown:true,rentPrice:0,stock:0,stockUnknown:false,image:'',thumbnail:'',active:false,sourceId:p.sourceId,sourceImage:p.sourceImage,sourcePage:p.sourcePage,backupFile:p.backupFile,importBatch:DISFRACES_WEB_2026_BATCH};
+  newRows.push([product.id,JSON.stringify(product)]);ids.add(p.sourceId);names.add(categoryKey_(p.name));
+ });
+ if(newRows.length){const sheet=sheet_('disfraces');sheet.getRange(sheet.getLastRow()+1,1,newRows.length,2).setValues(newRows);SpreadsheetApp.flush();}
+ const result={agregados:newRows.length,yaExistian:source.products.length-newRows.length-conflicts.length,conflictos:conflicts.length,ejemplos:conflicts.slice(0,15),categoriasNuevas:newCategories.length,ocultos:true};console.log(JSON.stringify(result));return result;
+});}
+function estadoDisfracesWeb2026(){const items=rows_('disfraces').filter(p=>p.importBatch===DISFRACES_WEB_2026_BATCH);return {importados:items.length,conFoto:items.filter(p=>p.image&&p.thumbnail).length,pendientes:items.filter(p=>p.sourceImage&&!p.image&&!p.imageImportError).length,fallidas:items.filter(p=>p.imageImportError).length,visibles:items.filter(p=>p.active).length,errores:items.filter(p=>p.imageImportError).slice(0,10).map(p=>({nombre:p.name,error:p.imageImportError}))};}
+function procesarFotosDisfracesWeb2026(){return lock_(()=>{
+ const sheet=sheet_('disfraces'),data=sheet.getLastRow()<2?[]:sheet.getRange(2,1,sheet.getLastRow()-1,2).getValues();
+ const batch=data.map((row,index)=>({row:index+2,product:JSON.parse(row[1])})).filter(item=>item.product.importBatch===DISFRACES_WEB_2026_BATCH);
+ const pending=batch.filter(item=>item.product.sourceImage&&!item.product.image&&!item.product.imageImportError).slice(0,8),result={procesadas:0,fallidas:0};
+ pending.forEach(item=>{const p=item.product;try{Object.assign(p,subirFotoCotillon_(p.sourceImage,'disfraz-'+p.sourceId));result.procesadas++;}catch(error){p.imageImportError=String(error.message||error).slice(0,200);result.fallidas++;}sheet.getRange(item.row,1,1,2).setValues([[p.id,JSON.stringify(p)]]);});SpreadsheetApp.flush();
+ if(!batch.some(item=>item.product.sourceImage&&!item.product.image&&!item.product.imageImportError))ScriptApp.getProjectTriggers().filter(t=>t.getHandlerFunction()==='procesarFotosDisfracesWeb2026').forEach(t=>ScriptApp.deleteTrigger(t));
+ const status={...result,...estadoDisfracesWeb2026()};console.log(JSON.stringify(status));return status;
+});}
+function iniciarFotosDisfracesWeb2026(){need_(config_('CLOUDINARY_CLOUD_NAME')&&config_('CLOUDINARY_API_KEY')&&config_('CLOUDINARY_API_SECRET'),'Configurá Cloudinary antes de subir fotos.');need_(estadoDisfracesWeb2026().pendientes>0,'No hay fotos pendientes.');if(!ScriptApp.getProjectTriggers().some(t=>t.getHandlerFunction()==='procesarFotosDisfracesWeb2026'))ScriptApp.newTrigger('procesarFotosDisfracesWeb2026').timeBased().everyMinutes(5).create();return procesarFotosDisfracesWeb2026();}
+function reintentarFotosDisfracesWeb2026(){return lock_(()=>{const sheet=sheet_('disfraces'),data=sheet.getLastRow()<2?[]:sheet.getRange(2,1,sheet.getLastRow()-1,2).getValues();let count=0;data.forEach((row,index)=>{const p=JSON.parse(row[1]);if(p.importBatch!==DISFRACES_WEB_2026_BATCH||!p.imageImportError)return;delete p.imageImportError;sheet.getRange(index+2,1,1,2).setValues([[p.id,JSON.stringify(p)]]);count++;});SpreadsheetApp.flush();return {reintentosHabilitados:count};});}
