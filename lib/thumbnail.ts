@@ -14,5 +14,5 @@ export function catalogImageUrl(image:string):string {
  const marker='/image/upload/';
  const index=image.indexOf(marker);
  if(index<0)return image;
- return image.slice(0,index+marker.length)+'c_limit,w_640,h_800,f_auto,q_auto/'+image.slice(index+marker.length);
+ return image.slice(0,index+marker.length)+'c_limit,w_480,h_600,f_auto,q_auto/'+image.slice(index+marker.length);
 }
