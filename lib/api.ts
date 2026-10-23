@@ -1,5 +1,10 @@
 import type {Category,Product} from './catalog';
-export const endpoint = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL || '';
+const configuredEndpoint=process.env.NEXT_PUBLIC_APPS_SCRIPT_URL || '';
+const retiredDeployment='https://script.google.com/macros/s/AKfycbzg5m5PsnI33gaB2QpyWqqqlSp4fBBJoPV36tbe6QfA2wW81IZd98A44sAT0ZnmRZRz/exec';
+const activeDeployment='https://script.google.com/macros/s/AKfycbynyGN99GuijF2x9NWz-cEDIUa7_0tKhi21c09YqSfeLnklND5bVIcMp2aKqFvzUPlZ/exec';
+// Render todavía conserva la URL de la implementación retirada. Permite migrar
+// el frontend sin interrumpir el catálogo mientras se corrige la variable allí.
+export const endpoint = configuredEndpoint===retiredDeployment?activeDeployment:configuredEndpoint;
 export const demo = !endpoint;
 const CATALOG_CACHE_KEY='dc-public-catalog-v1';
 const CATALOG_CACHE_MS=60000;
