@@ -110,6 +110,77 @@ test('con almacenamiento bloqueado conserva la selección durante la navegación
  await expect(page.getByRole('dialog',{name:'Carrito de cotillón'})).toContainText('Máscara de fiesta');
 });
 
+test('reintentar el catálogo conserva la búsqueda y no recarga toda la página',async({page})=>{
+ let attempts=0;
+ await page.route('https://script.google.com/macros/s/mock/exec',async route=>{
+  const fields=new URLSearchParams(route.request().postData()||'');
+  const action=JSON.parse(fields.get('payload')||'{}').action;
+  const result=action==='catalogData'&&++attempts===1?{ok:false,error:'Sin conexión temporal'}:{ok:true,data:action==='catalogData'?{products,categories,cotillonImportReady:true}:{siteTheme:'default'}};
+  await route.fulfill({status:200,contentType:'text/html; charset=utf-8',body:`<!doctype html><meta charset="utf-8"><script>parent.postMessage(${JSON.stringify({type:'dc-apps-result',id:fields.get('bridgeId'),result})},${JSON.stringify(fields.get('origin'))})</script>`});
+ });
+ await page.goto('/cotillon/');
+ await expect(page.locator('.catalog .error-banner')).toContainText('Sin conexión temporal');
+ await page.getByRole('textbox',{name:'Buscar productos'}).fill('Máscara');
+ await page.evaluate(()=>window.__keepPage=true);
+ await page.getByRole('button',{name:'Reintentar sin perder mi búsqueda'}).click();
+ await expect(page.locator('.product-card')).toHaveCount(1);
+ await expect(page.getByRole('textbox',{name:'Buscar productos'})).toHaveValue('Máscara');
+ expect(await page.evaluate(()=>window.__keepPage)).toBe(true);
+});
+
+test('una ruta inexistente muestra una salida clara al inicio',async({page})=>{
+ await page.goto('/ruta-que-no-existe/');
+ await expect(page.getByRole('heading',{name:'Esta página no está disponible.'})).toBeVisible();
+ await page.getByRole('link',{name:'Ir al inicio'}).click();
+ await expect(page).toHaveURL(/\/$/);
+});
+
+test('la consulta de compra permite reintentar y recupera el disfraz elegido',async({page})=>{
+ const costume={...products[0],id:'costume-1',area:'disfraces',name:'Disfraz de prueba',category:'Personajes',mode:'venta',saleCondition:'Nuevo inmediato'};
+ let attempts=0;
+ await page.route('https://script.google.com/macros/s/mock/exec',async route=>{
+  const fields=new URLSearchParams(route.request().postData()||'');
+  const action=JSON.parse(fields.get('payload')||'{}').action;
+  const result=action==='catalogData'&&++attempts===1?{ok:false,error:'Servicio temporalmente no disponible'}:{ok:true,data:action==='catalogData'?{products:[costume],categories:[],cotillonImportReady:true}:{siteTheme:'default'}};
+  await route.fulfill({status:200,contentType:'text/html; charset=utf-8',body:`<!doctype html><meta charset="utf-8"><script>parent.postMessage(${JSON.stringify({type:'dc-apps-result',id:fields.get('bridgeId'),result})},${JSON.stringify(fields.get('origin'))})</script>`});
+ });
+ await page.goto('/comprar/?producto=costume-1');
+ await expect(page.locator('.error-banner')).toContainText('Servicio temporalmente no disponible');
+ await page.getByRole('button',{name:'Reintentar sin perder mis datos'}).click();
+ await expect(page.getByRole('combobox',{name:'Producto'})).toHaveValue('costume-1');
+ await expect(page.getByText('Disfraz de prueba').last()).toBeVisible();
+});
+
+test('abrir el carrito consulta stock y precio nuevos aunque exista caché reciente',async({page})=>{
+ await page.addInitScript(({oldProducts,categories})=>{
+  localStorage.setItem('dc-cotillon-cart-v1',JSON.stringify([{id:'mask-1',quantity:1,unitPrice:1500,priceKnown:true}]));
+  sessionStorage.setItem('dc-public-catalog-v1',JSON.stringify({at:Date.now(),data:{products:oldProducts,categories,cotillonImportReady:true}}));
+ },{oldProducts:products,categories});
+ await mockBackend(page,{products:[{...products[0],price:1800}],categories,cotillonImportReady:true});
+ await page.goto('/cotillon/');
+ await expect(page.locator('.product-card').first()).toContainText('1.500');
+ await page.getByRole('button',{name:/Abrir carrito de cotillón, 1 productos/}).click();
+ await expect(page.getByText(/Cambió el precio, la cantidad disponible/)).toBeVisible();
+ await page.getByRole('button',{name:'Actualizar mi carrito'}).click();
+ const href=await page.getByRole('link',{name:/Enviar pedido por WhatsApp/}).getAttribute('href');
+ expect(decodeURIComponent(href)).toContain('1.800');
+});
+
+test('un disfraz conserva su selección al ir a comprar y a reservar',async({page})=>{
+ const costume={...products[0],id:'costume-1',area:'disfraces',name:'Disfraz de prueba',category:'Personajes',categoryId:'personajes',mode:'ambos',rentPrice:1000,saleCondition:'Nuevo inmediato'};
+ await mockBackend(page,{products:[costume],categories:[{id:'personajes',area:'disfraces',name:'Personajes'}],cotillonImportReady:true});
+ await page.goto('/disfraces/');
+ await page.getByRole('button',{name:'Ver detalle de Disfraz de prueba'}).click();
+ await page.getByRole('link',{name:/Quiero comprar/}).click();
+ await expect(page).toHaveURL(/\/comprar\/\?producto=costume-1/);
+ await expect(page.getByRole('combobox',{name:'Producto'})).toHaveValue('costume-1');
+ await page.goto('/disfraces/');
+ await page.getByRole('button',{name:'Ver detalle de Disfraz de prueba'}).click();
+ await page.getByRole('link',{name:/Quiero alquilar/}).click();
+ await expect(page).toHaveURL(/\/reservas\/\?producto=costume-1/);
+ await expect(page.locator('.rental-product-note')).toContainText('Disfraz de prueba');
+});
+
 test('el carrito conserva controles táctiles cómodos sin desbordar la pantalla',async({page})=>{
  await mockBackend(page);
  await page.goto('/cotillon/');

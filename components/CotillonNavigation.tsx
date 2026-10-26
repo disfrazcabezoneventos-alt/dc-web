@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import {CakeSlice,Gift,PartyPopper,ShoppingBag} from 'lucide-react';
 import {Category,Product} from '@/lib/catalog';
 import {cotillonChildren,cotillonSectionIds,cotillonTaxonomy} from '@/lib/cotillon-taxonomy';
@@ -21,7 +22,7 @@ export default function CotillonNavigation({categories,products,group,sectionId,
  const back=inner?()=>onSection(sectionId):section?()=>onGroup(group):group?onAll:null;
  return <div className="cotillon-navigation">
   <nav className="cotillon-breadcrumb" aria-label="Ruta del catálogo">
-   <a href="/">Inicio</a><span aria-hidden="true">›</span>
+   <Link href="/">Inicio</Link><span aria-hidden="true">›</span>
    {group?<><button type="button" onClick={onAll}>Mercadería</button><span aria-hidden="true">›</span><button type="button" onClick={()=>onGroup(group)} aria-current={!section?'page':undefined}>{group==='COTILLÓN'?'Cotillón':group}</button></>:<span aria-current="page">Cotillón / Mercadería</span>}
    {section&&<><span aria-hidden="true">›</span><button type="button" onClick={()=>onSection(section.id)} aria-current={!inner?'page':undefined}>{section.name}</button></>}
    {inner&&<><span aria-hidden="true">›</span><span aria-current="page">{inner.name}</span></>}
