@@ -42,7 +42,7 @@ body {
 .topbar span { color: #edfaff; }
 .site-header { max-width: none; position: sticky; top: 0; z-index: 90; padding: 10px max(5%,calc((100vw - 1296px)/2)); background: #f9fbfff2; backdrop-filter: blur(18px); box-shadow: 0 9px 28px #2847830a; }
 .wordmark { gap: 8px; color: var(--ink); font-size: 12px; line-height: 1; }
-.wordmark .brand-mark { display: block; width: 70px; height: 70px; flex: none; background: url('/brand-logo.png') center / contain no-repeat; }
+.wordmark .brand-mark { display: block; width: 70px; height: 70px; flex: none; background: url('/brand-logo.webp') center / contain no-repeat; }
 .wordmark strong { font-size: 23px; letter-spacing: -.9px; color: var(--purple); margin-top: 4px; }
 .site-header nav>a:not(.nav-contact) { position: relative; }
 .site-header nav>a:not(.nav-contact)::after { content: ''; position: absolute; left: 0; right: 100%; bottom: -6px; height: 2px; background: var(--cyan); transition: right .22s ease; }
