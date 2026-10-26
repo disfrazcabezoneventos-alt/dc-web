@@ -51,7 +51,7 @@ export default function CartProvider({children}:{children:ReactNode}){
   if(demo){setProducts(seed.filter(p=>p.area==='cotillon'));return}
   setLoading(true);setError('');
   try{
-   const data=await catalogData();
+   const data=await catalogData(true);
    if(data.cotillonImportReady===false)throw new Error('El catálogo de Cotillón todavía no está disponible. Conservamos tu selección.');
    setProducts(data.products.filter(p=>p.area==='cotillon'));
   }catch(cause){setError((cause as Error).message)}
