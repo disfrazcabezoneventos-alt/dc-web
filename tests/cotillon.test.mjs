@@ -75,6 +75,17 @@ test('carrito acepta sólo cotillón activo, limita cantidad y deduplica',()=>{
  assert.deepEqual(result,[{id:'a',quantity:4},{id:'b',quantity:99}]);
 });
 
+test('un carrito guardado corrupto no impide recuperar una selección válida',()=>{
+ assert.deepEqual(cart.parseStoredCart('{roto'),[]);
+ assert.deepEqual(cart.parseStoredCart(JSON.stringify([
+  {id:'a',quantity:2,unitPrice:1500,priceKnown:true},
+  {id:'a',quantity:2},
+  {id:'b',quantity:-1},
+  {id:'c',quantity:Infinity},
+  {id:'d',quantity:1,option:'Rojo\nAzul'}
+ ])),[{id:'a',quantity:2,unitPrice:1500,priceKnown:true},{id:'d',quantity:1,option:'Rojo Azul'}]);
+});
+
 test('opciones distintas conservan el detalle y comparten el límite de stock',()=>{
  const p=product('colores',{name:'Gorro varios colores',stock:3});
  assert.equal(cart.requiresChoice(p),true);
