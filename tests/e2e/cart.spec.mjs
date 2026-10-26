@@ -22,14 +22,16 @@ test('el carrito sobrevive al logo, a otras páginas, a recargar y al botón Atr
  await page.getByRole('button',{name:'Agregar al carrito'}).first().click();
  await expect(page.getByRole('button',{name:/Abrir carrito de cotillón, 1 productos/})).toBeVisible();
  await page.locator('.site-header .wordmark').click();
- await expect(page).toHaveURL(/\/$/);
+ await expect(page).toHaveURL('http://127.0.0.1:3017/');
  await page.getByRole('button',{name:/Abrir carrito de cotillón, 1 productos/}).click();
  await expect(page.getByRole('dialog',{name:'Carrito de cotillón'})).toContainText('Máscara de fiesta');
  await page.getByRole('button',{name:'Cerrar carrito'}).click();
  if(await page.getByRole('button',{name:'Abrir menú'}).isVisible())await page.getByRole('button',{name:'Abrir menú'}).click();
  await page.locator('.site-header nav').getByRole('link',{name:'Disfraces',exact:true}).click();
+ await expect(page).toHaveURL('http://127.0.0.1:3017/disfraces/');
  await expect(page.getByRole('button',{name:/Abrir carrito de cotillón, 1 productos/})).toBeVisible();
  await page.goBack();
+ await expect(page).toHaveURL('http://127.0.0.1:3017/');
  await expect(page.getByRole('button',{name:/Abrir carrito de cotillón, 1 productos/})).toBeVisible();
  await page.reload();
  await expect(page.getByRole('button',{name:/Abrir carrito de cotillón, 1 productos/})).toBeVisible();
@@ -106,4 +108,23 @@ test('con almacenamiento bloqueado conserva la selección durante la navegación
  await page.getByRole('button',{name:/Abrir carrito de cotillón, 1 productos/}).click();
  await expect(page.getByText(/Tu navegador no permite guardar el carrito/)).toBeVisible();
  await expect(page.getByRole('dialog',{name:'Carrito de cotillón'})).toContainText('Máscara de fiesta');
+});
+
+test('el carrito conserva controles táctiles cómodos sin desbordar la pantalla',async({page})=>{
+ await mockBackend(page);
+ await page.goto('/cotillon/');
+ await page.getByRole('button',{name:'Agregar al carrito'}).first().click();
+ const cartButton=await page.locator('.floating-cart').boundingBox();
+ const whatsappButton=await page.locator('.floating-wa').boundingBox();
+ expect(cartButton.y+cartButton.height<=whatsappButton.y||whatsappButton.y+whatsappButton.height<=cartButton.y).toBe(true);
+ await page.getByRole('button',{name:/Abrir carrito de cotillón, 1 productos/}).click();
+ await expect(page.getByRole('dialog',{name:'Carrito de cotillón'})).toContainText('Máscara de fiesta');
+ for(const button of await page.locator('.cart-close,.cart-quantity button').all()){
+  const box=await button.boundingBox();
+  expect(box.width).toBeGreaterThanOrEqual(44);
+  expect(box.height).toBeGreaterThanOrEqual(44);
+ }
+ const overflow=await page.evaluate(()=>document.querySelector('.cart-panel').scrollWidth>document.querySelector('.cart-panel').clientWidth);
+ expect(overflow).toBe(false);
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth>window.innerWidth)).toBe(false);
 });

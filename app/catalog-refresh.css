@@ -39,6 +39,10 @@
 .product-quick:hover{border-color:var(--purple);color:var(--purple)}
 .cart-option{width:100%;display:grid;gap:6px;font-size:12px;font-weight:700}
 .cart-option input{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:8px}
+.cart-close,.cart-quantity button{min-width:44px;min-height:44px}
+.cart-quantity button{width:44px;height:44px}
+.cart-quantity .cart-remove{min-width:44px;min-height:44px;padding:8px}
+@media(max-width:760px){.cart-quantity{gap:6px}}
 
 html[data-theme="halloween"] .site-header{min-height:94px;padding-top:4px;padding-bottom:4px}
 html[data-theme="halloween"] .site-header .brand-mark{width:100px;height:86px}
