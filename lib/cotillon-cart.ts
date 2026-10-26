@@ -1,8 +1,28 @@
 import {Product,purchaseLimit} from './catalog';
 import {money} from './model';
 
-export type CartItem={id:string;quantity:number;option?:string};
+export type CartItem={id:string;quantity:number;option?:string;unitPrice?:number;priceKnown?:boolean};
 export const CART_KEY='dc-cotillon-cart-v1';
+
+// Read saved selections before the catalog responds. A slow or failed request must
+// never replace the customer's cart with an empty list.
+export function parseStoredCart(raw:string|null):CartItem[]{
+ let value:unknown;
+ if(raw&&raw.length>100000)return [];
+ try{value=JSON.parse(raw||'[]')}catch{return []}
+ if(!Array.isArray(value))return [];
+ const seen=new Set<string>();
+ return value.slice(0,200).flatMap((entry:unknown)=>{
+  if(!entry||typeof entry!=='object')return [];
+  const {id,quantity,option,unitPrice,priceKnown}=entry as Record<string,unknown>;
+  if(typeof id!=='string'||!id||id.length>150||!Number.isInteger(quantity)||Number(quantity)<1||Number(quantity)>99)return [];
+  const choice=typeof option==='string'?option.replace(/[\r\n\t]+/g,' ').trim().slice(0,100):'';
+  const key=id+'\u0000'+choice;
+  if(seen.has(key))return [];
+  seen.add(key);
+  return [{id,quantity:Number(quantity),...(choice?{option:choice}:{}),...(typeof unitPrice==='number'&&Number.isFinite(unitPrice)&&unitPrice>=0?{unitPrice}:{}),...(typeof priceKnown==='boolean'?{priceKnown}:{})}];
+ });
+}
 
 export function cartProduct(product:Product){return product.area==='cotillon'&&product.active&&product.mode==='venta'&&purchaseLimit(product)>0;}
 export function requiresChoice(product:Product){return /\b(varios? (?:colores?|modelos?|tonos?|talles?)|colores? a elecci[oó]n|modelos? a elecci[oó]n|talles? a elecci[oó]n|surtidos?|a elecci[oó]n)\b/i.test(product.name+' '+product.description);}
@@ -14,7 +34,7 @@ export function normalizeCart(value:unknown,products:Product[]):CartItem[]{
  const used=new Map<string,number>();
  return value.flatMap((entry:unknown)=>{
   if(!entry||typeof entry!=='object')return [];
-  const {id,quantity,option}=entry as Record<string,unknown>;
+  const {id,quantity,option,unitPrice,priceKnown}=entry as Record<string,unknown>;
   const chosen=typeof option==='string'?option.replace(/[\r\n\t]+/g,' ').trim().slice(0,100):'';
   const key=id+'\u0000'+chosen;
   if(typeof id!=='string'||seen.has(key)||!byId.has(id)||!Number.isInteger(quantity)||Number(quantity)<1)return [];
@@ -23,7 +43,7 @@ export function normalizeCart(value:unknown,products:Product[]):CartItem[]{
   const accepted=Math.min(Number(quantity),available);
   if(accepted<1)return [];
   used.set(id,(used.get(id)||0)+accepted);
-  return [{id,quantity:accepted,...(chosen?{option:chosen}:{})}];
+  return [{id,quantity:accepted,...(chosen?{option:chosen}:{}),...(typeof unitPrice==='number'&&Number.isFinite(unitPrice)&&unitPrice>=0?{unitPrice}:{}),...(typeof priceKnown==='boolean'?{priceKnown}:{})}];
  });
 }
 
