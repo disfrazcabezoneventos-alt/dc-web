@@ -121,7 +121,13 @@ function cotillonInc27Apply_(spreadsheetId,mode){return lock_(()=>{
  chosen.forEach(item=>{
   let product=item.product;
   if(mode==='production'&&item.kind==='new'){
-   try{product={...product,...subirFotoCotillon_(product.sourceImage,'incremental-20261027-'+product.sourceId),active:true};}
+   try{
+    if(product.sourceId==='2115454079'){
+     const photo=UrlFetchApp.fetch(product.sourceImage,{muteHttpExceptions:true,followRedirects:true});
+     need_(photo.getResponseCode()===200&&hex_(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256,photo.getContent()))==='3ad62bbad1660350471754f1603c2bca07050823aedd7fce4c92dd5381a1b786','La foto local de Sorbetes Halloween cambió o no está disponible.');
+    }
+    product={...product,...subirFotoCotillon_(product.sourceImage,'incremental-20261027-'+product.sourceId),active:true};
+   }
    catch(error){failedSet.add(product.sourceId);photoFailures++;return;}
   }
   const row=item.kind==='new'?plan.sheet.getLastRow()+1:item.row;

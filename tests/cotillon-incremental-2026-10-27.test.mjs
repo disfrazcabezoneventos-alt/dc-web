@@ -46,8 +46,8 @@ function setup(){
  const spreadsheet={getSheetByName:name=>sheets.get(name)||null};
  const context=vm.createContext({console:{log(){}},Date,JSON,Map,Set,
   PropertiesService:{getScriptProperties:()=>({getProperty:key=>settings[key]??'',setProperty:(key,value)=>settings[key]=value,deleteProperty:key=>delete settings[key]})},
-  Utilities:{Charset:{UTF_8:'UTF-8'},DigestAlgorithm:{SHA_256:'sha256'},computeDigest:(_algorithm,text)=>[...crypto.createHash('sha256').update(text,'utf8').digest()]},
-  UrlFetchApp:{fetch:()=>({getResponseCode:()=>200,getContentText:()=>raw})},
+  Utilities:{Charset:{UTF_8:'UTF-8'},DigestAlgorithm:{SHA_256:'sha256'},computeDigest:(_algorithm,value)=>[...crypto.createHash('sha256').update(Array.isArray(value)?Buffer.from(value):value).digest()]},
+  UrlFetchApp:{fetch:url=>url.endsWith('sorbetes-halloween__2115454079.jpg')?({getResponseCode:()=>200,getContent:()=>[...fs.readFileSync('backend/import-images/cotillon-2026-10-27/sorbetes-halloween__2115454079.jpg')]}):({getResponseCode:()=>200,getContentText:()=>raw})},
   SpreadsheetApp:{openById:id=>{assert.equal(id,settings.COTILLON_INC_20261027_TEST_ID);return spreadsheet;},flush(){}},
   LockService:{getScriptLock:()=>({tryLock:()=>true,releaseLock(){}})}
  });
@@ -168,4 +168,16 @@ test('la función de producción exige aprobación explícita',()=>{
  const before=JSON.stringify(sheets.get('cotillon').rows);
  assert.throws(()=>context.aplicarLoteCotillon27Produccion(),/Falta aprobación/);
  assert.equal(JSON.stringify(sheets.get('cotillon').rows),before);
+});
+
+test('Sorbetes no se publica si la foto local difiere de su SHA-256 revisado',()=>{
+ const {context,settings,products}=setup();
+ settings.SPREADSHEET_ID=settings.COTILLON_INC_20261027_TEST_ID;
+ settings.COTILLON_INC_20261027_APPROVED=crypto.createHash('sha256').update(raw).digest('hex');
+ settings.CLOUDINARY_CLOUD_NAME='test';settings.CLOUDINARY_API_KEY='test';settings.CLOUDINARY_API_SECRET='test';
+ context.UrlFetchApp.fetch=url=>url.endsWith('sorbetes-halloween__2115454079.jpg')?({getResponseCode:()=>200,getContent:()=>[1,2,3]}):({getResponseCode:()=>200,getContentText:()=>raw});
+ context.subirFotoCotillon_=(url,id)=>({image:`https://res.cloudinary.com/test/image/upload/${id}.jpg`,thumbnail:`https://res.cloudinary.com/test/image/upload/w_160/${id}.jpg`});
+ context.aplicarLoteCotillon27Produccion();
+ assert.equal(products().some(p=>p.sourceId==='2115454079'),false);
+ assert.equal(context.previsualizarCotillon27Produccion().fotosFallidas,1);
 });
