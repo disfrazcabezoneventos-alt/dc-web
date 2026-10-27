@@ -146,6 +146,7 @@ def main():
             'sku': str(row['Código'] or ''),
             'baselinePrice': baseline['price'] if baseline else None,
             'baselineStock': baseline['stock'] if baseline else None,
+            **({'reactivate': {'image': old['image'], 'thumbnail': old['thumbnail']}} if old and old.get('active') is False else {}),
         })
 
     if reasons:
@@ -154,6 +155,8 @@ def main():
         raise ValueError('El lote no contiene exactamente 661 IDs únicos visibles de General.')
     if sum(p['sourceId'] in by_id for p in payload) != 554:
         raise ValueError('El cruce con la copia no coincide con los 554 existentes esperados.')
+    if sum('reactivate' in p for p in payload) != 14:
+        raise ValueError('La lista de 14 fichas inactivas con stock repuesto cambió.')
     extra_web = [r['nombre'] for r in visible_web if r['nombre'] not in {p['name'] for p in payload}]
     if len(extra_web) != 24:
         raise ValueError('Las variantes visibles sin ID de Rappi ya no son exactamente 24.')

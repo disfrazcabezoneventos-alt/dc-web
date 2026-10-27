@@ -5,7 +5,7 @@ Fuente: Excel corregido el 27/10/2026 y copia CSV de 1.206 registros. Este archi
 - Lote principal: 661 IDs de Rappi; 554 existentes, 107 altas. Los 24 globos de Mini no forman parte de este lote.
 - Altas Halloween primero: 24. Sorbetes Halloween está incluido con foto local verificada.
 - Actualizaciones propuestas: 87 registros, todos con cambio de stock y solo uno también con cambio de precio. El importador verifica cada campo contra su valor original antes de escribir; respeta ediciones manuales.
-- Los 14 productos inactivos que recuperaron stock conservan `active: false` y no se reactivan.
+- Los 14 productos inactivos que recuperaron stock se reactivan solo si conservan las URL originales y ambas responden HTTP 200 como imagen al ejecutar el lote. Si falla una, la ficha completa queda sin escribir e inactiva.
 
 ## 87 actualizaciones propuestas
 
@@ -101,26 +101,26 @@ Marca **>30 %** cuando cambia el precio o el stock en más de 30 %. `base 0` se�
 | 2115451986 | Guadaña Con Sangre | $ 5.000 | $ 5.000 | +0.0 % | 0 | 9 | base 0 | **>30 %** |
 | 2115451987 | Sangre Negra | $ 2.000 | $ 2.000 | +0.0 % | 0 | 12 | base 0 | **>30 %** |
 
-## 14 productos que siguen inactivos
+## 14 reactivaciones condicionadas
 
-Foto “sí” significa que la copia CSV conserva URLs de imagen y miniatura; no se hizo una comprobación HTTP de cada imagen.
+El 27/10/2026 se hizo un GET HTTP de ambas URL de cada ficha: las 28 respondieron 200 con contenido de imagen. Apps Script volverá a comprobarlas al ejecutar; una falla deja esa ficha inactiva.
 
-| ID Rappi | Producto | Stock nuevo | Foto en la copia |
-|---|---|---:|---|
-| 2115451969 | Mini Calabaza Violeta | 6 | Sí (imagen y miniatura) |
-| 2115451970 | Careta Bruja Con Pelo | 6 | Sí (imagen y miniatura) |
-| 2115451972 | Máscara Chucky Rigida | 5 | Sí (imagen y miniatura) |
-| 2115451973 | Careta Calavera Con Tela | 5 | Sí (imagen y miniatura) |
-| 2115451975 | Caldero De Bruja Mini | 5 | Sí (imagen y miniatura) |
-| 2115451976 | Bolsitas De Halloween | 20 | Sí (imagen y miniatura) |
-| 2115451977 | Vinchas Halloween Formas | 5 | Sí (imagen y miniatura) |
-| 2115451978 | Cuchillo Retráctil | 18 | Sí (imagen y miniatura) |
-| 2115451979 | Plato Halloween | 6 | Sí (imagen y miniatura) |
-| 2115451981 | Vaso Calabaza Fucsia | 7 | Sí (imagen y miniatura) |
-| 2115451983 | Gorro De Bruja Tela Económico | 7 | Sí (imagen y miniatura) |
-| 2115451984 | Gorro De Bruja Negro Tela | 7 | Sí (imagen y miniatura) |
-| 2115451986 | Guadaña Con Sangre | 9 | Sí (imagen y miniatura) |
-| 2115451987 | Sangre Negra | 12 | Sí (imagen y miniatura) |
+| ID Rappi | Producto | Stock nuevo | Imagen | Miniatura |
+|---|---|---:|---|---|
+| 2115451969 | Mini Calabaza Violeta | 6 | HTTP 200 | HTTP 200 |
+| 2115451970 | Careta Bruja Con Pelo | 6 | HTTP 200 | HTTP 200 |
+| 2115451972 | Máscara Chucky Rigida | 5 | HTTP 200 | HTTP 200 |
+| 2115451973 | Careta Calavera Con Tela | 5 | HTTP 200 | HTTP 200 |
+| 2115451975 | Caldero De Bruja Mini | 5 | HTTP 200 | HTTP 200 |
+| 2115451976 | Bolsitas De Halloween | 20 | HTTP 200 | HTTP 200 |
+| 2115451977 | Vinchas Halloween Formas | 5 | HTTP 200 | HTTP 200 |
+| 2115451978 | Cuchillo Retráctil | 18 | HTTP 200 | HTTP 200 |
+| 2115451979 | Plato Halloween | 6 | HTTP 200 | HTTP 200 |
+| 2115451981 | Vaso Calabaza Fucsia | 7 | HTTP 200 | HTTP 200 |
+| 2115451983 | Gorro De Bruja Tela Económico | 7 | HTTP 200 | HTTP 200 |
+| 2115451984 | Gorro De Bruja Negro Tela | 7 | HTTP 200 | HTTP 200 |
+| 2115451986 | Guadaña Con Sangre | 9 | HTTP 200 | HTTP 200 |
+| 2115451987 | Sangre Negra | 12 | HTTP 200 | HTTP 200 |
 
 ## Altas Halloween al principio del lote
 

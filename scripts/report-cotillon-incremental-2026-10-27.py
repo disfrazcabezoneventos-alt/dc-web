@@ -13,6 +13,9 @@ changed = [p for p in payload if p['sourceId'] in old and (old[p['sourceId']]['p
 restocked = [p for p in payload if p['sourceId'] in old and old[p['sourceId']].get('active') is False]
 halloween = [p for p in payload if p['baselinePrice'] is None and p['section'] == 'Halloween']
 assert len(changed) == 87 and len(restocked) == 14
+http = json.loads((ROOT / 'tmp/import-2026-10-27/restock-http.json').read_text(encoding='utf-8'))
+assert {r['id'] for r in http['results']} == {p['sourceId'] for p in restocked}
+assert all(r['passed'] and r['image']['status'] == 200 and r['thumbnail']['status'] == 200 for r in http['results'])
 
 def money(value):
     return f'$ {value:,.0f}'.replace(',', '.')
@@ -31,7 +34,7 @@ lines = [
     f'- Lote principal: {len(payload)} IDs de Rappi; 554 existentes, 107 altas. Los 24 globos de Mini no forman parte de este lote.',
     f'- Altas Halloween primero: {len(halloween)}. Sorbetes Halloween está incluido con foto local verificada.',
     '- Actualizaciones propuestas: 87 registros, todos con cambio de stock y solo uno también con cambio de precio. El importador verifica cada campo contra su valor original antes de escribir; respeta ediciones manuales.',
-    '- Los 14 productos inactivos que recuperaron stock conservan `active: false` y no se reactivan.', '',
+    '- Los 14 productos inactivos que recuperaron stock se reactivan solo si conservan las URL originales y ambas responden HTTP 200 como imagen al ejecutar el lote. Si falla una, la ficha completa queda sin escribir e inactiva.', '',
     '## 87 actualizaciones propuestas', '',
     'Marca **>30 %** cuando cambia el precio o el stock en más de 30 %. `base 0` señala un stock anterior de cero.', '',
     '| ID Rappi | Producto | Precio actual | Precio nuevo | Δ precio | Stock actual | Stock nuevo | Δ stock | Marca |',
@@ -42,13 +45,11 @@ for p in changed:
     flag = '**>30 %**' if big(before['price'], p['price']) or big(before['stock'], p['stock']) else ''
     lines.append(f"| {p['sourceId']} | {p['name'].replace('|', '/')} | {money(before['price'])} | {money(p['price'])} | {change(before['price'], p['price'])} | {before['stock']} | {p['stock']} | {change(before['stock'], p['stock'])} | {flag} |")
 
-lines += ['', '## 14 productos que siguen inactivos', '',
-          'Foto “sí” significa que la copia CSV conserva URLs de imagen y miniatura; no se hizo una comprobación HTTP de cada imagen.', '',
-          '| ID Rappi | Producto | Stock nuevo | Foto en la copia |', '|---|---|---:|---|']
+lines += ['', '## 14 reactivaciones condicionadas', '',
+          'El 27/10/2026 se hizo un GET HTTP de ambas URL de cada ficha: las 28 respondieron 200 con contenido de imagen. Apps Script volverá a comprobarlas al ejecutar; una falla deja esa ficha inactiva.', '',
+          '| ID Rappi | Producto | Stock nuevo | Imagen | Miniatura |', '|---|---|---:|---|---|']
 for p in restocked:
-    before = old[p['sourceId']]
-    photo = 'Sí (imagen y miniatura)' if before.get('image') and before.get('thumbnail') else 'No / incompleta'
-    lines.append(f"| {p['sourceId']} | {p['name'].replace('|', '/')} | {p['stock']} | {photo} |")
+    lines.append(f"| {p['sourceId']} | {p['name'].replace('|', '/')} | {p['stock']} | HTTP 200 | HTTP 200 |")
 
 lines += ['', '## Altas Halloween al principio del lote', '',
           '| ID Rappi | Producto | Foto origen |', '|---|---|---|']

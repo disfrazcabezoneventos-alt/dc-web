@@ -47,7 +47,7 @@ function setup(){
  const context=vm.createContext({console:{log(){}},Date,JSON,Map,Set,
   PropertiesService:{getScriptProperties:()=>({getProperty:key=>settings[key]??'',setProperty:(key,value)=>settings[key]=value,deleteProperty:key=>delete settings[key]})},
   Utilities:{Charset:{UTF_8:'UTF-8'},DigestAlgorithm:{SHA_256:'sha256'},computeDigest:(_algorithm,value)=>[...crypto.createHash('sha256').update(Array.isArray(value)?Buffer.from(value):value).digest()]},
-  UrlFetchApp:{fetch:url=>url.endsWith('sorbetes-halloween__2115454079.jpg')?({getResponseCode:()=>200,getContent:()=>[...fs.readFileSync('backend/import-images/cotillon-2026-10-27/sorbetes-halloween__2115454079.jpg')]}):({getResponseCode:()=>200,getContentText:()=>raw})},
+  UrlFetchApp:{fetch:url=>url.startsWith('https://res.cloudinary.com/')?({getResponseCode:()=>200,getAllHeaders:()=>({'Content-Type':'image/jpeg'})}):url.endsWith('sorbetes-halloween__2115454079.jpg')?({getResponseCode:()=>200,getContent:()=>[...fs.readFileSync('backend/import-images/cotillon-2026-10-27/sorbetes-halloween__2115454079.jpg')]}):({getResponseCode:()=>200,getContentText:()=>raw})},
   SpreadsheetApp:{openById:id=>{assert.equal(id,settings.COTILLON_INC_20261027_TEST_ID);return spreadsheet;},flush(){}},
   LockService:{getScriptLock:()=>({tryLock:()=>true,releaseLock(){}})}
  });
@@ -62,6 +62,7 @@ test('la fuente fija conserva 661 IDs de Rappi y prioriza las altas de Halloween
  assert.equal(new Set(payload.map(p=>p.sourceId)).size,661);
  assert.equal(payload.filter(p=>p.baselinePrice===null).length,107);
  assert.equal(payload.filter(p=>p.baselinePrice!==null).length,554);
+ assert.equal(payload.filter(p=>p.reactivate).length,14);
  assert.ok(payload.every(p=>p.stock>0&&p.price>0&&p.photoUrl.startsWith('https://')));
  const firstOther=payload.findIndex(p=>p.baselinePrice===null&&p.section!=='Halloween');
  assert.ok(firstOther>0);
@@ -79,6 +80,7 @@ test('previsualizar la copia no escribe y detecta solo 87 cambios reales',()=>{
  assert.equal(summary.fuente,661);
  assert.equal(summary.altas,107);
  assert.equal(summary.actualizaciones,87);
+ assert.equal(summary.reactivaciones,14);
  assert.equal(summary.sinCambios,467);
  assert.equal(summary.conflictos,0);
  assert.equal(writeCounts.total,0);
@@ -106,10 +108,11 @@ test('la carga de prueba se reanuda por lotes, preserva campos ajenos y deja nue
  assert.ok(added.every(p=>p.active===false&&p.image===''&&p.thumbnail===''&&p.stock>0));
  const inactiveRestocked=products().filter(p=>['2115451969','2115451970','2115451972','2115451973','2115451975','2115451976','2115451977','2115451978','2115451979','2115451981','2115451983','2115451984','2115451986','2115451987'].includes(p.sourceId));
  assert.equal(inactiveRestocked.length,14);
- assert.ok(inactiveRestocked.every(p=>p.active===false&&p.stock>0));
+ assert.ok(inactiveRestocked.every(p=>p.active===true&&p.stock>0&&p.image&&p.thumbnail));
  assert.ok(sheets.has('cotillon_respaldo_20261027_test'));
  assert.equal(sheets.get('cotillon_respaldo_20261027_test').rows.length,1207);
  assert.equal(context.probarLoteCotillon27Copia().procesados,0);
+ if(process.env.DC_COTILLON_EXPORT_COPY_FINAL)fs.writeFileSync(process.env.DC_COTILLON_EXPORT_COPY_FINAL,JSON.stringify({rows:sheets.get('cotillon').rows,backup:sheets.get('cotillon_respaldo_20261027_test').rows,batches:count}));
 });
 
 test('una edición manual del precio o stock se conserva, aun si la otra columna se actualiza',()=>{
@@ -136,7 +139,7 @@ test('un conflicto de identidad bloquea el lote completo antes de crear un respa
 
 test('en producción simulada nunca escribe un alta sin foto y permite reintentarla',()=>{
  const {context,settings,products}=setup();
- const existingBefore=products().filter(p=>p.importBatch!=='cotillon-incremental-2026-10-27').map(p=>[p.id,p.image,p.thumbnail,p.active]);
+ const existingBefore=new Map(products().map(p=>[p.id,p]));
  settings.SPREADSHEET_ID=settings.COTILLON_INC_20261027_TEST_ID;
  settings.COTILLON_INC_20261027_APPROVED=crypto.createHash('sha256').update(raw).digest('hex');
  settings.CLOUDINARY_CLOUD_NAME='test';settings.CLOUDINARY_API_KEY='test';settings.CLOUDINARY_API_SECRET='test';
@@ -159,8 +162,9 @@ test('en producción simulada nunca escribe un alta sin foto y permite reintenta
  context.subirFotoCotillon_=(url,id)=>({image:`https://res.cloudinary.com/test/image/upload/${id}.jpg`,thumbnail:`https://res.cloudinary.com/test/image/upload/w_160/${id}.jpg`});
  assert.equal(context.aplicarLoteCotillon27Produccion().procesados,1);
  assert.equal(products().filter(p=>p.importBatch==='cotillon-incremental-2026-10-27'&&p.active).length,107);
- const after=products().filter(p=>p.importBatch!=='cotillon-incremental-2026-10-27').map(p=>[p.id,p.image,p.thumbnail,p.active]);
- assert.deepEqual(after,existingBefore);
+ const after=products().filter(p=>p.importBatch!=='cotillon-incremental-2026-10-27');
+ assert.equal(after.filter(p=>p.active&&!existingBefore.get(p.id).active).length,14);
+ assert.ok(after.every(p=>p.image===existingBefore.get(p.id).image&&p.thumbnail===existingBefore.get(p.id).thumbnail));
 });
 
 test('la función de producción exige aprobación explícita',()=>{
@@ -180,4 +184,29 @@ test('Sorbetes no se publica si la foto local difiere de su SHA-256 revisado',()
  context.aplicarLoteCotillon27Produccion();
  assert.equal(products().some(p=>p.sourceId==='2115454079'),false);
  assert.equal(context.previsualizarCotillon27Produccion().fotosFallidas,1);
+});
+
+test('si una miniatura deja de responder 200, la ficha sigue inactiva y se registra para reintento',()=>{
+ const {context,settings,products}=setup();
+ settings.SPREADSHEET_ID=settings.COTILLON_INC_20261027_TEST_ID;
+ settings.COTILLON_INC_20261027_APPROVED=crypto.createHash('sha256').update(raw).digest('hex');
+ settings.CLOUDINARY_CLOUD_NAME='test';settings.CLOUDINARY_API_KEY='test';settings.CLOUDINARY_API_SECRET='test';
+ const target=products().find(p=>p.sourceId==='2115451969');
+ const fetch=context.UrlFetchApp.fetch;
+ context.UrlFetchApp.fetch=(url,options)=>url===target.thumbnail?({getResponseCode:()=>404,getAllHeaders:()=>({'Content-Type':'text/html'})}):fetch(url,options);
+ context.subirFotoCotillon_=(url,id)=>({image:`https://res.cloudinary.com/test/image/upload/${id}.jpg`,thumbnail:`https://res.cloudinary.com/test/image/upload/w_160/${id}.jpg`});
+ for(let i=0;i<20;i++){
+  const preview=context.previsualizarCotillon27Produccion();
+  if(!preview.altas&&!preview.actualizaciones)break;
+  context.aplicarLoteCotillon27Produccion();
+ }
+ const failed=products().find(p=>p.sourceId===target.sourceId);
+ assert.equal(failed.active,false);
+ assert.equal(failed.stock,target.stock);
+ assert.equal(context.previsualizarCotillon27Produccion().fotosFallidas,1);
+ assert.equal(products().filter(p=>payload.some(q=>q.reactivate&&q.sourceId===p.sourceId)&&p.active).length,13);
+ assert.equal(context.reintentarFotosCotillon27Produccion().reintentosHabilitados,1);
+ context.UrlFetchApp.fetch=fetch;
+ assert.equal(context.aplicarLoteCotillon27Produccion().reactivadasEnEsteLote,1);
+ assert.equal(products().find(p=>p.sourceId===target.sourceId).active,true);
 });
