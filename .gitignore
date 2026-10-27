@@ -7,3 +7,5 @@ out/
 reference.html
 reference.js
 tmp/
+test-results/
+playwright-report/
