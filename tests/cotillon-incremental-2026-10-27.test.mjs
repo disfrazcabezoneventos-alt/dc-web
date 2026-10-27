@@ -57,20 +57,27 @@ function setup(){
  return {settings,sheets,context,products,writeCounts};
 }
 
-test('la fuente fija conserva 660 IDs de Rappi y separa 554 existentes de 106 nuevos',()=>{
- assert.equal(payload.length,660);
- assert.equal(new Set(payload.map(p=>p.sourceId)).size,660);
- assert.equal(payload.filter(p=>p.baselinePrice===null).length,106);
+test('la fuente fija conserva 661 IDs de Rappi y prioriza las altas de Halloween',()=>{
+ assert.equal(payload.length,661);
+ assert.equal(new Set(payload.map(p=>p.sourceId)).size,661);
+ assert.equal(payload.filter(p=>p.baselinePrice===null).length,107);
  assert.equal(payload.filter(p=>p.baselinePrice!==null).length,554);
  assert.ok(payload.every(p=>p.stock>0&&p.price>0&&p.photoUrl.startsWith('https://')));
+ const firstOther=payload.findIndex(p=>p.baselinePrice===null&&p.section!=='Halloween');
+ assert.ok(firstOther>0);
+ assert.ok(payload.slice(0,firstOther).every(p=>p.baselinePrice===null&&p.section==='Halloween'));
+ const sorbetes=payload.find(p=>p.sourceId==='2115454079');
+ assert.equal(sorbetes.name,'Sorbetes Halloween');
+ assert.match(sorbetes.description,/24 sorbetes de papel biodegradables.*197 × 6 mm/);
+ assert.match(sorbetes.photoUrl,/sorbetes-halloween__2115454079\.jpg$/);
 });
 
 test('previsualizar la copia no escribe y detecta solo 87 cambios reales',()=>{
  const {context,sheets,writeCounts}=setup();
  const before=JSON.stringify(sheets.get('cotillon').rows);
  const summary=context.previsualizarCotillon27Copia();
- assert.equal(summary.fuente,660);
- assert.equal(summary.altas,106);
+ assert.equal(summary.fuente,661);
+ assert.equal(summary.altas,107);
  assert.equal(summary.actualizaciones,87);
  assert.equal(summary.sinCambios,467);
  assert.equal(summary.conflictos,0);
@@ -90,13 +97,16 @@ test('la carga de prueba se reanuda por lotes, preserva campos ajenos y deja nue
   assert.ok(context.probarLoteCotillon27Copia().procesados<=15);
   if(++count>20)throw Error('La carga no converge.');
  }
- assert.equal(products().length,1312);
+ assert.equal(products().length,1313);
  const updated=products().find(p=>p.sourceId==='2115088426');
  assert.equal(updated.stock,2);
  for(const field of ['id','name','description','categoryId','categoryIds','image','thumbnail','active','sourceImage'])assert.deepEqual(updated[field],old[field],field);
  const added=products().filter(p=>p.importBatch==='cotillon-incremental-2026-10-27');
- assert.equal(added.length,106);
+ assert.equal(added.length,107);
  assert.ok(added.every(p=>p.active===false&&p.image===''&&p.thumbnail===''&&p.stock>0));
+ const inactiveRestocked=products().filter(p=>['2115451969','2115451970','2115451972','2115451973','2115451975','2115451976','2115451977','2115451978','2115451979','2115451981','2115451983','2115451984','2115451986','2115451987'].includes(p.sourceId));
+ assert.equal(inactiveRestocked.length,14);
+ assert.ok(inactiveRestocked.every(p=>p.active===false&&p.stock>0));
  assert.ok(sheets.has('cotillon_respaldo_20261027_test'));
  assert.equal(sheets.get('cotillon_respaldo_20261027_test').rows.length,1207);
  assert.equal(context.probarLoteCotillon27Copia().procesados,0);
@@ -142,13 +152,13 @@ test('en producción simulada nunca escribe un alta sin foto y permite reintenta
   context.aplicarLoteCotillon27Produccion();
  }
  const added=products().filter(p=>p.importBatch==='cotillon-incremental-2026-10-27');
- assert.equal(added.filter(p=>p.active&&p.image&&p.thumbnail).length,105);
+ assert.equal(added.filter(p=>p.active&&p.image&&p.thumbnail).length,106);
  assert.equal(added.filter(p=>p.sourceId===failing).length,0);
  assert.equal(context.previsualizarCotillon27Produccion().fotosFallidas,1);
  assert.equal(context.reintentarFotosCotillon27Produccion().reintentosHabilitados,1);
  context.subirFotoCotillon_=(url,id)=>({image:`https://res.cloudinary.com/test/image/upload/${id}.jpg`,thumbnail:`https://res.cloudinary.com/test/image/upload/w_160/${id}.jpg`});
  assert.equal(context.aplicarLoteCotillon27Produccion().procesados,1);
- assert.equal(products().filter(p=>p.importBatch==='cotillon-incremental-2026-10-27'&&p.active).length,106);
+ assert.equal(products().filter(p=>p.importBatch==='cotillon-incremental-2026-10-27'&&p.active).length,107);
  const after=products().filter(p=>p.importBatch!=='cotillon-incremental-2026-10-27').map(p=>[p.id,p.image,p.thumbnail,p.active]);
  assert.deepEqual(after,existingBefore);
 });

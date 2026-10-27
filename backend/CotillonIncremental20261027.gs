@@ -4,7 +4,7 @@
  * Requiere las funciones existentes de Code.gs en el mismo proyecto Apps Script.
  */
 const COTILLON_INC_20261027_URL='https://raw.githubusercontent.com/disfrazcabezoneventos-alt/dc-web/main/backend/import-cotillon-incremental-2026-10-27.json';
-const COTILLON_INC_20261027_SHA256='fc21a7ed47df600ded1171b0376dbfc0db7cd216564de18715e3dc65edbdbfb6';
+const COTILLON_INC_20261027_SHA256='9ed07dcfce353e0b4efdcd05458028a426de0fcf83c8c01637007cf432367c49';
 const COTILLON_INC_20261027_BATCH='cotillon-incremental-2026-10-27';
 
 function cotillonInc27Source_(){
@@ -13,21 +13,23 @@ function cotillonInc27Source_(){
  const raw=response.getContentText('UTF-8');
  need_(hash_(raw)===COTILLON_INC_20261027_SHA256,'Cambió el archivo de importación. No se modificó la hoja.');
  const source=JSON.parse(raw);
- need_(source.version===1&&source.batch===COTILLON_INC_20261027_BATCH&&Array.isArray(source.products)&&source.products.length===660,'El archivo no contiene los 660 productos revisados.');
+ need_(source.version===1&&source.batch===COTILLON_INC_20261027_BATCH&&Array.isArray(source.products)&&source.products.length===661,'El archivo no contiene los 661 productos revisados.');
  const ids=new Set();let existing=0,created=0;
  source.products.forEach(p=>{
   need_(typeof p.sourceId==='string'&&/^\d{10}$/.test(p.sourceId)&&!ids.has(p.sourceId),'ID de Rappi inválido o repetido.');ids.add(p.sourceId);
   need_(typeof p.name==='string'&&p.name.trim()===p.name&&p.name.length>0&&p.name.length<=150,'Nombre inválido.');
   need_(typeof p.description==='string'&&p.description.length<=2000,'Descripción inválida.');
   need_(typeof p.price==='number'&&Number.isFinite(p.price)&&p.price>0&&p.price<=100000000&&Number.isInteger(p.stock)&&p.stock>0&&p.stock<=100000,'Precio o stock inválido.');
-  need_(typeof p.photoUrl==='string'&&/^https:\/\/(?:images\.rappi\.com\.ar\/products\/|cotilloncasaalberto\.com\.ar\/pedido\/imagen\/producto\/grande\/)[^\s]+$/.test(p.photoUrl)&&typeof p.photoFile==='string'&&p.photoFile.length>0,'Foto de origen inválida.');
+  const approvedLocal='https://raw.githubusercontent.com/disfrazcabezoneventos-alt/dc-web/main/backend/import-images/cotillon-2026-10-27/sorbetes-halloween__2115454079.jpg';
+  const hosted=/^https:\/\/(?:images\.rappi\.com\.ar\/products\/|cotilloncasaalberto\.com\.ar\/pedido\/imagen\/producto\/grande\/)[^\s]+$/.test(p.photoUrl);
+  need_(typeof p.photoUrl==='string'&&(hosted||p.sourceId==='2115454079'&&p.photoUrl===approvedLocal)&&typeof p.photoFile==='string'&&p.photoFile.length>0,'Foto de origen inválida.');
   const group=Object.keys(COTILLON_GROUPS).find(g=>categoryKey_(g)===categoryKey_(p.group));
   need_(group&&COTILLON_GROUPS[group].includes(p.section),'Categoría principal o subcategoría no admitida.');
   need_(!p.inner||group==='COTILLÓN'&&Array.isArray(COTILLON_INNER[p.section])&&COTILLON_INNER[p.section].includes(p.inner),'Subcategoría interna no admitida.');
   if(p.baselinePrice===null&&p.baselineStock===null){created++;}
   else{need_(typeof p.baselinePrice==='number'&&Number.isInteger(p.baselineStock)&&p.baselineStock>=0,'Referencia original incompleta.');existing++;}
  });
- need_(created===106&&existing===554,'La distribución de altas y existentes cambió.');
+ need_(created===107&&existing===554,'La distribución de altas y existentes cambió.');
  return source.products;
 }
 

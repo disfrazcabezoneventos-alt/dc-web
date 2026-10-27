@@ -54,6 +54,7 @@ def main():
     parser.add_argument('--snapshot', type=Path, required=True)
     parser.add_argument('--categories', type=Path, required=True)
     parser.add_argument('--photos-directory', type=Path, required=True)
+    parser.add_argument('--local-photos-directory', type=Path, required=True)
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--report', type=Path, required=True)
     args = parser.parse_args()
@@ -77,6 +78,13 @@ def main():
         if row['id']:
             photos[row['id']].append(row)
     photo_files = {p.name for p in args.photos_directory.rglob('*') if p.is_file()}
+    local_photo = 'sorbetes-halloween__2115454079.jpg'
+    local_path = args.local_photos_directory / local_photo
+    committed_path = Path(__file__).resolve().parents[1] / 'backend' / 'import-images' / 'cotillon-2026-10-27' / local_photo
+    if not local_path.is_file() or not committed_path.is_file() or sha256(local_path) != sha256(committed_path) or sha256(local_path) != '3ad62bbad1660350471754f1603c2bca07050823aedd7fce4c92dd5381a1b786':
+        raise ValueError('La foto local de Sorbetes Halloween no coincide con el archivo revisado.')
+    photos['2115454079'] = [{'id': '2115454079', 'file': local_photo, 'url': 'https://raw.githubusercontent.com/disfrazcabezoneventos-alt/dc-web/main/backend/import-images/cotillon-2026-10-27/' + local_photo, 'origin': 'local-revisada'}]
+    photo_files.add(local_photo)
     categories = [json.loads(row['registro_json']) for row in read_csv(args.categories)]
 
     visible_web = [r for r in web if r['visible'] == 'Sí']
@@ -142,13 +150,16 @@ def main():
 
     if reasons:
         raise ValueError('No se generó ningún archivo: ' + json.dumps(reasons[:20], ensure_ascii=False))
-    if len(payload) != 660 or len({p['sourceId'] for p in payload}) != 660:
-        raise ValueError('El lote no contiene exactamente 660 IDs únicos visibles de General.')
+    if len(payload) != 661 or len({p['sourceId'] for p in payload}) != 661:
+        raise ValueError('El lote no contiene exactamente 661 IDs únicos visibles de General.')
     if sum(p['sourceId'] in by_id for p in payload) != 554:
         raise ValueError('El cruce con la copia no coincide con los 554 existentes esperados.')
     extra_web = [r['nombre'] for r in visible_web if r['nombre'] not in {p['name'] for p in payload}]
     if len(extra_web) != 24:
         raise ValueError('Las variantes visibles sin ID de Rappi ya no son exactamente 24.')
+
+    # Primero las altas de Halloween; después otras altas y finalmente actualizaciones.
+    payload.sort(key=lambda p: (0 if p['baselinePrice'] is None and key(p['section']) == 'halloween' else 1 if p['baselinePrice'] is None else 2, p['sourceId']))
 
     output = {'version': 1, 'batch': 'cotillon-incremental-2026-10-27', 'products': payload}
     args.out.parent.mkdir(parents=True, exist_ok=True)
@@ -156,10 +167,10 @@ def main():
     report = {
         'source_sha256': {'workbook': sha256(args.workbook), 'photo_index': sha256(args.photo_index), 'cotillon_snapshot': sha256(args.snapshot), 'categories_snapshot': sha256(args.categories)},
         'payload_sha256': sha256(args.out),
-        'general_visible': 660,
+        'general_visible': 661,
         'web_visible': len(visible_web),
         'existing': 554,
-        'new': 106,
+        'new': 107,
         'visible_variants_without_rappi_id': extra_web,
         'current_price_changes': sum(by_id[p['sourceId']]['price'] != p['price'] for p in payload if p['sourceId'] in by_id),
         'current_stock_changes': sum(by_id[p['sourceId']]['stock'] != p['stock'] for p in payload if p['sourceId'] in by_id),
