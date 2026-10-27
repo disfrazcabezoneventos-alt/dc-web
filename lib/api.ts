@@ -60,8 +60,8 @@ export async function rentalApi(action:string,form:FormData){
  return api(action,{data,files,access:sessionStorage.getItem('dc-submit-'+data.requestKey)||''});
 }
 export function legacyCategories(products:Product[]):Category[]{const list:Category[]=[];products.forEach(p=>{if(p.category&&p.category!=='Sin categoría'&&!list.some(c=>c.area===p.area&&c.name===p.category))list.push({id:'legacy:'+p.area+':'+p.category,area:p.area,name:p.category})});return list;}
-export async function catalogData():Promise<CatalogResponse>{
- try{const cached=JSON.parse(sessionStorage.getItem(CATALOG_CACHE_KEY)||'null');if(cached&&Date.now()-cached.at<CATALOG_CACHE_MS&&Array.isArray(cached.data?.products)&&Array.isArray(cached.data?.categories))return cached.data}catch{}
+export async function catalogData(forceFresh=false):Promise<CatalogResponse>{
+ if(!forceFresh)try{const cached=JSON.parse(sessionStorage.getItem(CATALOG_CACHE_KEY)||'null');if(cached&&Date.now()-cached.at<CATALOG_CACHE_MS&&Array.isArray(cached.data?.products)&&Array.isArray(cached.data?.categories))return cached.data}catch{}
  if(pendingCatalog)return pendingCatalog;
  pendingCatalog=(async()=>{
   let data:CatalogResponse;

@@ -1,5 +1,6 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
+import Link from 'next/link';
 import {catalogData,demo,whatsapp} from '@/lib/api';
 import {Product,purchaseLimit,seed} from '@/lib/catalog';
 import {money} from '@/lib/model';
@@ -21,11 +22,15 @@ export default function PurchaseForm(){
   if(madeToOrder(product)){setProductId('');setPending(product||null)}
   else{setPending(null);setProductId(product?.id||'')}
  }
- useEffect(()=>{
+ async function loadProducts(){
+  setLoading(true);setLoadFailed(false);setError('');
   const wanted=new URLSearchParams(location.search).get('producto')||'';
-  if(demo){chooseProduct(wanted,seed);return}
-  catalogData().then(data=>{setProducts(data.products);chooseProduct(wanted,data.products)}).catch(e=>{setError(e.message);setLoadFailed(true)}).finally(()=>setLoading(false));
- },[]);
+  if(demo){chooseProduct(wanted,seed);setLoading(false);return}
+  try{const data=await catalogData();setProducts(data.products);chooseProduct(wanted,data.products)}
+  catch(cause){setError((cause as Error).message);setLoadFailed(true)}
+  finally{setLoading(false)}
+ }
+ useEffect(()=>{void loadProducts()},[]);
  useEffect(()=>{
   const dialog=dialogRef.current;
   if(!dialog)return;
@@ -50,9 +55,9 @@ export default function PurchaseForm(){
  return <main className="section narrow">
   <span className="eyebrow">CONSULTA DE COMPRA</span>
   <h1>Ese detalle ya<br/><em>te está esperando.</em></h1>
-  <p>Completá los datos del disfraz. Al continuar, abriremos WhatsApp con tu consulta lista. Para comprar varios artículos de cotillón, usá el <a className="text-link" href="/cotillon/">carrito de cotillón →</a>.</p>
+  <p>Completá los datos del disfraz. Al continuar, abriremos WhatsApp con tu consulta lista. Para comprar varios artículos de cotillón, usá el <Link className="text-link" href="/cotillon/">carrito de cotillón →</Link>.</p>
   {loading&&<div className="loading-state" role="status"><span className="spinner" aria-hidden="true"/>Cargando productos…</div>}
-  {error&&<p className="error-banner" role="alert">{error}</p>}
+  {error&&<p className="error-banner" role="alert">{error} {loadFailed&&<button type="button" disabled={loading} onClick={()=>void loadProducts()}>Reintentar sin perder mis datos</button>}</p>}
   {!loading&&!loadFailed&&<form className="panel form-stack" onSubmit={send}>
    <label>Producto
     <select required value={productId} onChange={e=>chooseProduct(e.target.value)}>
