@@ -180,3 +180,22 @@ test('un disfraz conserva su selección al ir a comprar y a reservar',async({pag
  await expect(page).toHaveURL(/\/reservas\/\?producto=costume-1/);
  await expect(page.locator('.rental-product-note')).toContainText('Disfraz de prueba');
 });
+
+test('el carrito conserva controles táctiles cómodos sin desbordar la pantalla',async({page})=>{
+ await mockBackend(page);
+ await page.goto('/cotillon/');
+ await page.getByRole('button',{name:'Agregar al carrito'}).first().click();
+ const cartButton=await page.locator('.floating-cart').boundingBox();
+ const whatsappButton=await page.locator('.floating-wa').boundingBox();
+ expect(cartButton.y+cartButton.height<=whatsappButton.y||whatsappButton.y+whatsappButton.height<=cartButton.y).toBe(true);
+ await page.getByRole('button',{name:/Abrir carrito de cotillón, 1 productos/}).click();
+ await expect(page.getByRole('dialog',{name:'Carrito de cotillón'})).toContainText('Máscara de fiesta');
+ for(const button of await page.locator('.cart-close,.cart-quantity button').all()){
+  const box=await button.boundingBox();
+  expect(box.width).toBeGreaterThanOrEqual(44);
+  expect(box.height).toBeGreaterThanOrEqual(44);
+ }
+ const overflow=await page.evaluate(()=>document.querySelector('.cart-panel').scrollWidth>document.querySelector('.cart-panel').clientWidth);
+ expect(overflow).toBe(false);
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth>window.innerWidth)).toBe(false);
+});
