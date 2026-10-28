@@ -1,6 +1,6 @@
 import type {Metadata} from 'next';
 
-export const siteUrl='https://dc-web-8ai4.onrender.com';
+export const siteUrl=process.env.NEXT_PUBLIC_SITE_URL || 'https://dc-web-8ai4.onrender.com';
 
 export function pageMetadata(title:string,description:string,path:string):Metadata{
  return {
