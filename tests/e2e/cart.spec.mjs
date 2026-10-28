@@ -39,13 +39,14 @@ test('el carrito sobrevive al logo, a otras páginas, a recargar y al botón Atr
  await expect(page.locator('.cart-trigger span')).toHaveText('1');
 });
 
-test('la carga lenta no borra la selección y el acceso flotante conserva el scroll',async({page})=>{
+test('la carga lenta no borra la selección y abrir el carrito conserva el scroll',async({page})=>{
  await page.addInitScript(()=>localStorage.setItem('dc-cotillon-cart-v1',JSON.stringify([{id:'mask-1',quantity:2}])));
  await mockBackend(page,undefined,1400);
  await page.goto('/cotillon/');
  await expect(page.getByRole('button',{name:/Abrir carrito de cotillón, 2 productos/})).toBeVisible();
  await expect(page.locator('.cart-trigger span')).toHaveText('2',{timeout:15000});
  await page.evaluate(()=>window.scrollTo({top:document.body.scrollHeight,behavior:'instant'}));
+ await page.getByRole('button',{name:/Abrir carrito de cotillón, 2 productos/}).scrollIntoViewIfNeeded();
  const before=await page.evaluate(()=>window.scrollY);
  await page.getByRole('button',{name:/Abrir carrito de cotillón, 2 productos/}).click();
  await expect(page.getByRole('dialog',{name:'Carrito de cotillón'})).toContainText('Máscara de fiesta');
@@ -187,7 +188,29 @@ test('el carrito conserva controles táctiles cómodos sin desbordar la pantalla
  await page.getByRole('button',{name:'Agregar al carrito'}).first().click();
  const cartButton=await page.locator('.floating-cart').boundingBox();
  const whatsappButton=await page.locator('.floating-wa').boundingBox();
- expect(cartButton.y+cartButton.height<=whatsappButton.y||whatsappButton.y+whatsappButton.height<=cartButton.y).toBe(true);
+ const separated=cartButton.x+cartButton.width<=whatsappButton.x||whatsappButton.x+whatsappButton.width<=cartButton.x||cartButton.y+cartButton.height<=whatsappButton.y||whatsappButton.y+whatsappButton.height<=cartButton.y;
+ expect(separated).toBe(true);
+ if(page.viewportSize().width<=760){
+  for(const shortcut of await page.locator('.floating-cart,.floating-wa').all()){
+   const box=await shortcut.boundingBox();
+   expect(box.width).toBeGreaterThanOrEqual(44);
+   expect(box.height).toBeGreaterThanOrEqual(44);
+  }
+  const covered=await page.evaluate(()=>{
+   const shortcuts=[...document.querySelectorAll('.floating-cart,.floating-wa')];
+   const targets=[...document.querySelectorAll('.product-quick,.product-info strong,.site-footer a,.site-footer small')];
+   let covered=false;
+   for(const top of [0,document.body.scrollHeight/2,document.body.scrollHeight]){
+    window.scrollTo({top,behavior:'instant'});
+    covered ||= shortcuts.some(shortcut=>targets.some(target=>{
+     const a=shortcut.getBoundingClientRect(),b=target.getBoundingClientRect();
+     return a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top;
+    }));
+   }
+   return covered;
+  });
+  expect(covered).toBe(false);
+ }
  await page.getByRole('button',{name:/Abrir carrito de cotillón, 1 productos/}).click();
  await expect(page.getByRole('dialog',{name:'Carrito de cotillón'})).toContainText('Máscara de fiesta');
  for(const button of await page.locator('.cart-close,.cart-quantity button').all()){

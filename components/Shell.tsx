@@ -1,12 +1,12 @@
 'use client';
 
 import {useEffect, useState} from 'react';
-import {Menu, X, MessageCircle, ArrowUpRight} from 'lucide-react';
+import {Menu, X, ArrowUpRight} from 'lucide-react';
 import Link from 'next/link';
 import {api, demo, whatsapp} from '@/lib/api';
 import {applySiteTheme, isSiteTheme, readSiteTheme} from '@/lib/theme';
 import HalloweenAtmosphere from '@/components/HalloweenAtmosphere';
-import CartProvider from '@/components/CartProvider';
+import CartProvider,{StoreActions} from '@/components/CartProvider';
 
 export default function Shell({children}: {children: React.ReactNode}) {
   const [open, setOpen] = useState(false);
@@ -55,6 +55,7 @@ export default function Shell({children}: {children: React.ReactNode}) {
           <a className="nav-contact" href={whatsapp()} target="_blank" rel="noreferrer">Hablemos <ArrowUpRight size={17} /></a>
         </nav>
       </header>
+      <StoreActions />
       {children}
       <footer className="site-footer">
         <div>
@@ -72,9 +73,6 @@ export default function Shell({children}: {children: React.ReactNode}) {
         </div>
         <small>© {new Date().getFullYear()} Disfraz Cabezón · Hecho para celebrar.</small>
       </footer>
-      <a className="floating-wa" href={whatsapp()} target="_blank" rel="noreferrer" aria-label="Consultar por WhatsApp">
-        <MessageCircle /><span>¿Te ayudamos?</span>
-      </a>
     </div>
   </CartProvider>;
 }

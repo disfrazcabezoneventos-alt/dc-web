@@ -9,4 +9,12 @@
 html[data-theme="halloween"] .floating-cart{background:#6d3654;border-color:#f6a267;color:#fff}
 html[data-theme="halloween"] .cart-alert{background:#332536;border-color:#aa657c;color:#ffecdb}
 html[data-theme="halloween"] .cart-alert button{color:#ffbf83}
-@media(max-width:760px){.floating-cart{right:16px;bottom:84px;min-width:54px;min-height:54px;justify-content:center;padding:10px}.floating-cart>span{display:none}.floating-cart strong{position:absolute;top:-8px;right:-6px;min-width:21px;height:21px;font-size:10px}.site-footer{padding-bottom:155px}}
+.store-actions{display:contents}
+@media(max-width:760px){
+ .store-actions{display:flex;align-items:center;justify-content:flex-end;gap:12px;min-height:64px;padding:10px 6%;background:var(--paper);border-bottom:1px solid var(--line)}
+ .store-actions .floating-cart,.store-actions .floating-wa{position:relative;inset:auto;min-width:44px;min-height:44px;width:auto;height:auto;padding:8px 12px;justify-content:center;gap:8px;box-shadow:none;transform:none;font-size:12px}
+ .store-actions .floating-cart>span,.store-actions .floating-wa>span{display:inline}
+ .store-actions .floating-cart strong{position:static;min-width:21px;height:21px;padding:0 5px;font-size:10px}
+ .store-actions .floating-wa svg{width:21px;height:21px;flex:none}
+ .site-footer{padding-bottom:35px}
+}

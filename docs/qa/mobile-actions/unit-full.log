@@ -1,0 +1,235 @@
+
+> disfraz-cabezon@1.0.0 test
+> node --test tests/*.test.mjs
+
+{"mode":"production","revisados":1,"enviados":0,"revisionManual":0,"omitidos":0,"sinCuota":1}
+{"mode":"production","revisados":1,"enviados":1,"revisionManual":0,"omitidos":0,"sinCuota":0}
+{"mode":"production","revisados":0,"enviados":0,"revisionManual":0,"omitidos":0,"sinCuota":0}
+{"mode":"test","revisados":10,"enviados":10,"revisionManual":0,"omitidos":0,"sinCuota":0}
+{"mode":"test","revisados":2,"enviados":2,"revisionManual":0,"omitidos":0,"sinCuota":0}
+{"mode":"production","revisados":1,"enviados":0,"revisionManual":1,"omitidos":0,"sinCuota":0}
+{"mode":"production","revisados":0,"enviados":0,"revisionManual":0,"omitidos":0,"sinCuota":0}
+✔ GET público identifica la versión, el tema y la campaña (3.4162ms)
+✔ campaña Halloween se configura aparte del tema y requiere sesión de administrador (3.251ms)
+✔ el tema es global y solo un administrador puede cambiarlo (1.2405ms)
+✔ POST público devuelve un objeto theme que el frontend puede leer (1.8771ms)
+✔ rechaza menores, teléfonos iguales, fecha imposible y consentimientos falsos (4.1075ms)
+✔ autenticación obligatoria, contraseña incorrecta y límite de intentos (2.5414ms)
+✔ CRUD de dos catálogos y no permite alquiler en cotillón (2.1218ms)
+✔ modalidad anula precio incompatible y conserva la miniatura (1.7651ms)
+✔ condición de venta solo en disfraces; pedidos separados del stock físico (2.3301ms)
+✔ clon de alquiler pasa a venta y conserva la condición al recargar el panel (3.0108ms)
+✔ Cloudinary genera miniatura antes de responder la subida (1.4143ms)
+✔ categorías aisladas, renombrado vinculado y eliminación con tres destinos (2.0872ms)
+✔ migración de categorías conserva productos y no repone categorías borradas (1.3939ms)
+✔ reserva comprueba categoría, disfraz y stock físico acumulado (1.8278ms)
+✔ venta a pedido respeta límite sin descontar ni reponer stock (2.0615ms)
+✔ compra usa límite a pedido y stock para ventas inmediatas (72.9662ms)
+✔ venta idempotente, stock insuficiente y anulación que repone una sola vez (1.6167ms)
+✔ recupera stock tras interrupción sin descontar dos veces (0.7686ms)
+✔ no elimina un producto con ventas vigentes y permite borrarlo tras anularlas (1.4163ms)
+✔ una segunda corrección renueva el plazo de doce horas (1.4724ms)
+✔ reserva privada y transiciones; no registra alquiler pendiente ni sobrecobro (1.6546ms)
+✔ documentos comprueban firma binaria y formato (1.2563ms)
+✔ reintento de envío recupera reserva sin duplicar ni enviar otro correo (2.2185ms)
+✔ estadísticas: caja real, gastos, reintegros y anulaciones (11.6105ms)
+✔ exportación estática contiene todas las páginas y ningún servidor API (1.0483ms)
+✔ correo de prueba no llega al cliente y nunca reenvía un envío incierto (1.5376ms)
+✔ reintento manual envía sólo avisos sin cuota del modo actual y no crea otros (1.7554ms)
+✔ reintento manual limita el lote y no reenvía estados inciertos o ya enviados (1.7611ms)
+✔ un envío incierto durante el reintento pasa a revisión y nunca se reenvía (1.0742ms)
+✔ puente de iframe responde solo al origen configurado y escapa HTML (1.024ms)
+✔ PDF firmado genera un documento multipágina con nombre y metadatos (144.8004ms)
+✔ el archivo sólo incluye los 790 visibles y las dos decisiones de clasificación (1.6555ms)
+✔ el segundo archivo conserva los 416 agotados y la clasificación pendiente (0.4432ms)
+✔ checksum inválido impide tocar el catálogo viejo (3.2056ms)
+✔ la importación archiva la pestaña anterior, asigna categorías y se puede reanudar (514.665ms)
+✔ una foto fallida detiene publicación y permite retomar sin duplicar productos (415.1515ms)
+✔ un fallo al intercambiar las pestañas recupera cotillon anterior (13.0588ms)
+✔ los 416 agotados se agregan sin alterar los 790 y sus fotos se procesan por separado (874.7358ms)
+✔ la fuente fija conserva 661 IDs de Rappi y prioriza las altas de Halloween (1.5864ms)
+✖ previsualizar la copia no escribe y detecta solo 87 cambios reales (0.6078ms)
+✖ la carga de prueba se reanuda por lotes, preserva campos ajenos y deja nuevos ocultos (0.3129ms)
+✖ una edición manual del precio o stock se conserva, aun si la otra columna se actualiza (0.2495ms)
+✖ un conflicto de identidad bloquea el lote completo antes de crear un respaldo (0.2574ms)
+✖ en producción simulada nunca escribe un alta sin foto y permite reintentarla (0.3658ms)
+✖ la función de producción exige aprobación explícita (0.2664ms)
+✖ Sorbetes no se publica si la foto local difiere de su SHA-256 revisado (0.2889ms)
+✖ si una miniatura deja de responder 200, la ficha sigue inactiva y se registra para reintento (0.5047ms)
+{"agregados":635,"yaExistian":0,"categorias":8,"fotosPendientes":337}
+{"agregados":0,"yaExistian":635,"categorias":8,"fotosPendientes":337}
+✔ las cuatro categorías y sus 26 subcategorías coinciden con Apps Script (4.2513ms)
+✔ la navegación conserva los productos sin clasificar en Todos y en la búsqueda (0.5538ms)
+✔ un producto asignado sólo a Descartables aparece en ese grupo y en Todos (0.3653ms)
+✔ catálogo real heredado: Freddy aparece en Máscaras y Halloween sin alterar su registro (1.9947ms)
+✔ carrito acepta sólo cotillón activo, limita cantidad y deduplica (0.4895ms)
+✔ un carrito guardado corrupto no impide recuperar una selección válida (0.3622ms)
+✔ opciones distintas conservan el detalle y comparten el límite de stock (16.4806ms)
+✔ mensaje de WhatsApp llega detallado con cantidades y precios a consultar (0.3957ms)
+✔ snapshot contiene sólo ocho rubros y conserva faltantes sin inventar datos (1.7814ms)
+✔ Apps Script importa una vez y vincula Halloween sin duplicar productos (19.4602ms)
+✔ nueva jerarquía conserva productos y permite clasificar categorías anteriores sin reescribirlos (8.1211ms)
+✔ migración de fotos firma la subida y recibe imagen más miniatura (2.4792ms)
+✔ suma las unidades del mismo disfraz en varias filas antes de avanzar (0.9256ms)
+✔ permite filas dentro del stock y trajes acordados fuera del catálogo (0.6241ms)
+✔ el diálogo conserva el foco, atrapa Tab, cierra con Escape y devuelve el foco (18.2007ms)
+✔ cada página pública tiene URL canónica y datos de WhatsApp completos (0.7214ms)
+(node:16496) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///C:/Users/Usuario/.codex/worktrees/mobile-floating-actions/dc-web/lib/theme.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\C:\Users\Usuario\.codex\worktrees\mobile-floating-actions\dc-web\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ el frontend acepta la respuesta pública de la versión instalada y la corregida (0.699ms)
+ℹ tests 64
+ℹ suites 0
+ℹ pass 56
+ℹ fail 8
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2008.5859
+
+✖ failing tests:
+
+test at tests\cotillon-incremental-2026-10-27.test.mjs:76:1
+✖ previsualizar la copia no escribe y detecta solo 87 cambios reales (0.6078ms)
+  Error: ENOENT: no such file or directory, open 'C:\Users\Usuario\.codex\worktrees\mobile-floating-actions\dc-web\tmp\import-2026-10-27\originales\cotillon.csv'
+      at Object.readFileSync (node:fs:483:20)
+      at setup (file:///C:/Users/Usuario/.codex/worktrees/mobile-floating-actions/dc-web/tests/cotillon-incremental-2026-10-27.test.mjs:31:23)
+      at TestContext.<anonymous> (file:///C:/Users/Usuario/.codex/worktrees/mobile-floating-actions/dc-web/tests/cotillon-incremental-2026-10-27.test.mjs:77:37)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: 'C:\\Users\\Usuario\\.codex\\worktrees\\mobile-floating-actions\\dc-web\\tmp\\import-2026-10-27\\originales\\cotillon.csv'
+  }
+
+test at tests\cotillon-incremental-2026-10-27.test.mjs:94:1
+✖ la carga de prueba se reanuda por lotes, preserva campos ajenos y deja nuevos ocultos (0.3129ms)
+  Error: ENOENT: no such file or directory, open 'C:\Users\Usuario\.codex\worktrees\mobile-floating-actions\dc-web\tmp\import-2026-10-27\originales\cotillon.csv'
+      at Object.readFileSync (node:fs:483:20)
+      at setup (file:///C:/Users/Usuario/.codex/worktrees/mobile-floating-actions/dc-web/tests/cotillon-incremental-2026-10-27.test.mjs:31:23)
+      at TestContext.<anonymous> (file:///C:/Users/Usuario/.codex/worktrees/mobile-floating-actions/dc-web/tests/cotillon-incremental-2026-10-27.test.mjs:95:34)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: 'C:\\Users\\Usuario\\.codex\\worktrees\\mobile-floating-actions\\dc-web\\tmp\\import-2026-10-27\\originales\\cotillon.csv'
+  }
+
+test at tests\cotillon-incremental-2026-10-27.test.mjs:118:1
+✖ una edición manual del precio o stock se conserva, aun si la otra columna se actualiza (0.2495ms)
+  Error: ENOENT: no such file or directory, open 'C:\Users\Usuario\.codex\worktrees\mobile-floating-actions\dc-web\tmp\import-2026-10-27\originales\cotillon.csv'
+      at Object.readFileSync (node:fs:483:20)
+      at setup (file:///C:/Users/Usuario/.codex/worktrees/mobile-floating-actions/dc-web/tests/cotillon-incremental-2026-10-27.test.mjs:31:23)
+      at TestContext.<anonymous> (file:///C:/Users/Usuario/.codex/worktrees/mobile-floating-actions/dc-web/tests/cotillon-incremental-2026-10-27.test.mjs:119:34)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: 'C:\\Users\\Usuario\\.codex\\worktrees\\mobile-floating-actions\\dc-web\\tmp\\import-2026-10-27\\originales\\cotillon.csv'
+  }
+
+test at tests\cotillon-incremental-2026-10-27.test.mjs:131:1
+✖ un conflicto de identidad bloquea el lote completo antes de crear un respaldo (0.2574ms)
+  Error: ENOENT: no such file or directory, open 'C:\Users\Usuario\.codex\worktrees\mobile-floating-actions\dc-web\tmp\import-2026-10-27\originales\cotillon.csv'
+      at Object.readFileSync (node:fs:483:20)
+      at setup (file:///C:/Users/Usuario/.codex/worktrees/mobile-floating-actions/dc-web/tests/cotillon-incremental-2026-10-27.test.mjs:31:23)
+      at TestContext.<anonymous> (file:///C:/Users/Usuario/.codex/worktrees/mobile-floating-actions/dc-web/tests/cotillon-incremental-2026-10-27.test.mjs:132:25)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: 'C:\\Users\\Usuario\\.codex\\worktrees\\mobile-floating-actions\\dc-web\\tmp\\import-2026-10-27\\originales\\cotillon.csv'
+  }
+
+test at tests\cotillon-incremental-2026-10-27.test.mjs:140:1
+✖ en producción simulada nunca escribe un alta sin foto y permite reintentarla (0.3658ms)
+  Error: ENOENT: no such file or directory, open 'C:\Users\Usuario\.codex\worktrees\mobile-floating-actions\dc-web\tmp\import-2026-10-27\originales\cotillon.csv'
+      at Object.readFileSync (node:fs:483:20)
+      at setup (file:///C:/Users/Usuario/.codex/worktrees/mobile-floating-actions/dc-web/tests/cotillon-incremental-2026-10-27.test.mjs:31:23)
+      at TestContext.<anonymous> (file:///C:/Users/Usuario/.codex/worktrees/mobile-floating-actions/dc-web/tests/cotillon-incremental-2026-10-27.test.mjs:141:36)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: 'C:\\Users\\Usuario\\.codex\\worktrees\\mobile-floating-actions\\dc-web\\tmp\\import-2026-10-27\\originales\\cotillon.csv'
+  }
+
+test at tests\cotillon-incremental-2026-10-27.test.mjs:170:1
+✖ la función de producción exige aprobación explícita (0.2664ms)
+  Error: ENOENT: no such file or directory, open 'C:\Users\Usuario\.codex\worktrees\mobile-floating-actions\dc-web\tmp\import-2026-10-27\originales\cotillon.csv'
+      at Object.readFileSync (node:fs:483:20)
+      at setup (file:///C:/Users/Usuario/.codex/worktrees/mobile-floating-actions/dc-web/tests/cotillon-incremental-2026-10-27.test.mjs:31:23)
+      at TestContext.<anonymous> (file:///C:/Users/Usuario/.codex/worktrees/mobile-floating-actions/dc-web/tests/cotillon-incremental-2026-10-27.test.mjs:171:25)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: 'C:\\Users\\Usuario\\.codex\\worktrees\\mobile-floating-actions\\dc-web\\tmp\\import-2026-10-27\\originales\\cotillon.csv'
+  }
+
+test at tests\cotillon-incremental-2026-10-27.test.mjs:177:1
+✖ Sorbetes no se publica si la foto local difiere de su SHA-256 revisado (0.2889ms)
+  Error: ENOENT: no such file or directory, open 'C:\Users\Usuario\.codex\worktrees\mobile-floating-actions\dc-web\tmp\import-2026-10-27\originales\cotillon.csv'
+      at Object.readFileSync (node:fs:483:20)
+      at setup (file:///C:/Users/Usuario/.codex/worktrees/mobile-floating-actions/dc-web/tests/cotillon-incremental-2026-10-27.test.mjs:31:23)
+      at TestContext.<anonymous> (file:///C:/Users/Usuario/.codex/worktrees/mobile-floating-actions/dc-web/tests/cotillon-incremental-2026-10-27.test.mjs:178:36)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: 'C:\\Users\\Usuario\\.codex\\worktrees\\mobile-floating-actions\\dc-web\\tmp\\import-2026-10-27\\originales\\cotillon.csv'
+  }
+
+test at tests\cotillon-incremental-2026-10-27.test.mjs:189:1
+✖ si una miniatura deja de responder 200, la ficha sigue inactiva y se registra para reintento (0.5047ms)
+  Error: ENOENT: no such file or directory, open 'C:\Users\Usuario\.codex\worktrees\mobile-floating-actions\dc-web\tmp\import-2026-10-27\originales\cotillon.csv'
+      at Object.readFileSync (node:fs:483:20)
+      at setup (file:///C:/Users/Usuario/.codex/worktrees/mobile-floating-actions/dc-web/tests/cotillon-incremental-2026-10-27.test.mjs:31:23)
+      at TestContext.<anonymous> (file:///C:/Users/Usuario/.codex/worktrees/mobile-floating-actions/dc-web/tests/cotillon-incremental-2026-10-27.test.mjs:190:36)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -4058,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: 'C:\\Users\\Usuario\\.codex\\worktrees\\mobile-floating-actions\\dc-web\\tmp\\import-2026-10-27\\originales\\cotillon.csv'
+  }
