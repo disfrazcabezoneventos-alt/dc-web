@@ -2,13 +2,14 @@
 
 import {createContext,useCallback,useContext,useEffect,useMemo,useState} from 'react';
 import type {Dispatch,ReactNode,SetStateAction} from 'react';
-import {ShoppingBag} from 'lucide-react';
-import {catalogData,demo} from '@/lib/api';
+import {MessageCircle,ShoppingBag} from 'lucide-react';
+import {catalogData,demo,whatsapp} from '@/lib/api';
 import {Product,purchaseLimit,seed} from '@/lib/catalog';
 import {CART_KEY,CartItem,normalizeCart,parseStoredCart} from '@/lib/cotillon-cart';
 import CotillonCart from './CotillonCart';
 
 type CartContextValue={
+ ready:boolean;
  items:CartItem[];
  setItems:Dispatch<SetStateAction<CartItem[]>>;
  openCart:()=>void;
@@ -21,6 +22,15 @@ export function useCotillonCart(){
  const value=useContext(CartContext);
  if(!value)throw new Error('El carrito debe estar dentro de CartProvider.');
  return value;
+}
+
+export function StoreActions(){
+ const {items,openCart,ready}=useCotillonCart();
+ const count=items.reduce((sum,item)=>sum+item.quantity,0);
+ return <div className="store-actions" role="group" aria-label="Carrito y contacto">
+  {ready&&<button type="button" className="floating-cart" onClick={openCart} aria-label={'Abrir carrito de cotillón, '+count+' productos'}><ShoppingBag size={21}/><span>Carrito</span><strong aria-hidden="true">{count}</strong></button>}
+  <a className="floating-wa" href={whatsapp()} target="_blank" rel="noreferrer" aria-label="Consultar por WhatsApp"><MessageCircle /><span>¿Te ayudamos?</span></a>
+ </div>;
 }
 
 export default function CartProvider({children}:{children:ReactNode}){
@@ -82,12 +92,11 @@ export default function CartProvider({children}:{children:ReactNode}){
   const updated={id:product.id,quantity:next,...(option?{option}:{}),unitPrice:product.price,priceKnown:product.priceKnown!==false};
   return base.some(matches)?base.map(item=>matches(item)?updated:item):[...base,updated];
  });
- const context=useMemo(()=>({items,setItems,openCart,closeCart,provideProducts}),[items,openCart,closeCart,provideProducts]);
+ const context=useMemo(()=>({items,setItems,openCart,closeCart,provideProducts,ready}),[items,openCart,closeCart,provideProducts,ready]);
  const count=items.reduce((sum,item)=>sum+item.quantity,0);
 
  return <CartContext.Provider value={context}>
   {children}
-  {ready&&<button type="button" className="floating-cart" onClick={openCart} aria-label={'Abrir carrito de cotillón, '+count+' productos'}><ShoppingBag size={21}/><span>Carrito</span><strong aria-hidden="true">{count}</strong></button>}
   <span className="sr-only" role="status" aria-live="polite">{ready?`${count} productos en el carrito de cotillón`:''}</span>
   {open&&<CotillonCart items={valid} products={products||[]} onChange={changeQuantity} onClose={closeCart} loading={loading} error={error} pendingCount={items.length} changed={changed} onAcknowledge={acknowledge} onRetry={()=>void refresh()} storageError={storageError}/>}
  </CartContext.Provider>;

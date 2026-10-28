@@ -1,0 +1,174 @@
+[
+  {
+    "viewport": "360x640",
+    "phase": "after",
+    "errors": [
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "requests": [
+      "catalogData",
+      "siteTheme",
+      "catalogData"
+    ],
+    "unexpected": [],
+    "failedResponses": [
+      {
+        "url": "http://127.0.0.1:3017/arrepentimiento/__next.arrepentimiento.__PAGE__.txt?_rsc=7F_Z3-ET8Rf-qxyS",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:3017/condiciones/__next.condiciones.__PAGE__.txt?_rsc=w-HJP7_mjTCDw7gd",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:3017/admin/__next.admin.__PAGE__.txt?_rsc=_P4J1x74T3ueXOLS",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:3017/cotillon/__next.cotillon.__PAGE__.txt?_rsc=rrQEBk9_6P0vWm7P",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:3017/disfraces/__next.disfraces.__PAGE__.txt?_rsc=QSw5IJBwOnNzU-bl",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:3017/reservas/__next.reservas.__PAGE__.txt?_rsc=mWGhuQmTDJxOd-ou",
+        "status": 404
+      }
+    ],
+    "steps": [
+      "Agregar al carrito: 1 unidad",
+      "Aumentar: 2 unidades y total $3.000 en enlace de WhatsApp",
+      "Reducir: 1 unidad",
+      "Vaciar mediante Eliminar: carrito vacío",
+      "Reservar disfraz: producto conservado y formulario Tus datos accesible"
+    ],
+    "overlaps": [],
+    "reservationOverflow": false,
+    "status": "passed"
+  },
+  {
+    "viewport": "390x844",
+    "phase": "after",
+    "errors": [
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "requests": [
+      "catalogData",
+      "siteTheme",
+      "catalogData"
+    ],
+    "unexpected": [],
+    "failedResponses": [
+      {
+        "url": "http://127.0.0.1:3017/condiciones/__next.condiciones.__PAGE__.txt?_rsc=w-HJP7_mjTCDw7gd",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:3017/arrepentimiento/__next.arrepentimiento.__PAGE__.txt?_rsc=7F_Z3-ET8Rf-qxyS",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:3017/admin/__next.admin.__PAGE__.txt?_rsc=_P4J1x74T3ueXOLS",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:3017/disfraces/__next.disfraces.__PAGE__.txt?_rsc=QSw5IJBwOnNzU-bl",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:3017/cotillon/__next.cotillon.__PAGE__.txt?_rsc=rrQEBk9_6P0vWm7P",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:3017/reservas/__next.reservas.__PAGE__.txt?_rsc=mWGhuQmTDJxOd-ou",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:3017/comprar/__next.comprar.__PAGE__.txt?producto=costume-1&_rsc=-D6_xbbJQIGMAYis",
+        "status": 404
+      }
+    ],
+    "steps": [
+      "Agregar al carrito: 1 unidad",
+      "Aumentar: 2 unidades y total $3.000 en enlace de WhatsApp",
+      "Reducir: 1 unidad",
+      "Vaciar mediante Eliminar: carrito vacío",
+      "Reservar disfraz: producto conservado y formulario Tus datos accesible"
+    ],
+    "overlaps": [],
+    "reservationOverflow": false,
+    "status": "passed"
+  },
+  {
+    "viewport": "412x915",
+    "phase": "after",
+    "errors": [
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "requests": [
+      "catalogData",
+      "siteTheme",
+      "catalogData"
+    ],
+    "unexpected": [],
+    "failedResponses": [
+      {
+        "url": "http://127.0.0.1:3017/condiciones/__next.condiciones.__PAGE__.txt?_rsc=w-HJP7_mjTCDw7gd",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:3017/arrepentimiento/__next.arrepentimiento.__PAGE__.txt?_rsc=7F_Z3-ET8Rf-qxyS",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:3017/admin/__next.admin.__PAGE__.txt?_rsc=_P4J1x74T3ueXOLS",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:3017/disfraces/__next.disfraces.__PAGE__.txt?_rsc=QSw5IJBwOnNzU-bl",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:3017/cotillon/__next.cotillon.__PAGE__.txt?_rsc=rrQEBk9_6P0vWm7P",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:3017/reservas/__next.reservas.__PAGE__.txt?_rsc=mWGhuQmTDJxOd-ou",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:3017/comprar/__next.comprar.__PAGE__.txt?producto=costume-1&_rsc=-D6_xbbJQIGMAYis",
+        "status": 404
+      }
+    ],
+    "steps": [
+      "Agregar al carrito: 1 unidad",
+      "Aumentar: 2 unidades y total $3.000 en enlace de WhatsApp",
+      "Reducir: 1 unidad",
+      "Vaciar mediante Eliminar: carrito vacío",
+      "Reservar disfraz: producto conservado y formulario Tus datos accesible"
+    ],
+    "overlaps": [],
+    "reservationOverflow": false,
+    "status": "passed"
+  }
+]

@@ -1,0 +1,19 @@
+[WebServer] (node:43932) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 4 tests using 1 worker
+
+(node:5972) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [desktop] › tests\e2e\cart.spec.mjs:185:1 › el carrito conserva controles táctiles cómodos sin desbordar la pantalla (854ms)
+(node:43464) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 2 [mobile-360] › tests\e2e\cart.spec.mjs:185:1 › el carrito conserva controles táctiles cómodos sin desbordar la pantalla (836ms)
+(node:41184) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 3 [mobile-390] › tests\e2e\cart.spec.mjs:185:1 › el carrito conserva controles táctiles cómodos sin desbordar la pantalla (824ms)
+(node:34916) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 4 [tablet-768] › tests\e2e\cart.spec.mjs:185:1 › el carrito conserva controles táctiles cómodos sin desbordar la pantalla (821ms)
+
+  4 passed (7.2s)
