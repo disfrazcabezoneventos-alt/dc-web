@@ -69,7 +69,6 @@ export default function Shell({children}: {children: React.ReactNode}) {
         <div>
           <Link href="/condiciones/">Condiciones y privacidad</Link>
           <Link href="/arrepentimiento/">Solicitud de arrepentimiento</Link>
-          <Link href="/admin/">Acceso administrador</Link>
         </div>
         <small>© {new Date().getFullYear()} Disfraz Cabezón · Hecho para celebrar.</small>
       </footer>
