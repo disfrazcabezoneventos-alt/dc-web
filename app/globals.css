@@ -13,6 +13,7 @@
 @keyframes spinner-turn{to{transform:rotate(360deg)}}
 .admin-list-thumb,.rental-item-thumbnail,.product-note-with-image img{display:block;flex:none;object-fit:contain;background:#f7f4fa;border:1px solid #e8e0ed;border-radius:8px}
 .admin-list-thumb{width:58px;height:58px}.admin-list-placeholder{display:block;width:58px;color:#8d8296;font-size:10px;text-align:center}
+.admin-product-search{display:flex;align-items:end;flex-wrap:wrap;gap:12px;margin:0 0 18px}.admin-product-search label{display:flex;flex:1 1 280px;max-width:520px;flex-direction:column;gap:6px;font-size:13px;font-weight:700}.admin-product-search input{width:100%;min-height:46px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}.admin-product-search .button{min-height:46px}.admin-product-search span{margin-left:auto;color:var(--muted);font-size:13px;white-space:nowrap}.admin-empty-search{text-align:center;color:var(--muted);padding:28px 18px}
 .rental-item-thumbnail{width:64px;height:64px}.product-note-with-image{display:flex;align-items:center;gap:13px}.product-note-with-image img{width:72px;height:72px}
 .admin input:disabled{background:#f1eef3;color:#8b8292;cursor:not-allowed}.admin label:has(input:disabled){color:#8b8292}
 @media(prefers-reduced-motion:reduce){.spinner{animation:none;border-top-color:#744a9a}}
