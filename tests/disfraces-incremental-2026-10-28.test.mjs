@@ -8,6 +8,7 @@ const code=fs.readFileSync('backend/Code.gs','utf8');
 const addon=fs.readFileSync('backend/DisfracesIncremental20261028.gs','utf8');
 const raw=fs.readFileSync('backend/import-disfraces-2026-10-28.json','utf8');
 const manifest=JSON.parse(raw);
+const guide=fs.readFileSync('backend/GUIA_IMPORTACION_DISFRACES_2026_10_28.md','utf8');
 const folder='tmp/disfraces-2026-10-28';
 const names=['Hombres','Cabezones','Mujeres','Personajes','Profesiones','Superheroes y Princesas','Halloween','Históricos','Otros'];
 
@@ -74,6 +75,17 @@ function setup(){
  const products=mode=>copies[mode].get('disfraces').rows.slice(1).map(row=>JSON.parse(row[1]));
  return {context,settings,copies,products,getCloudinaryCalls:()=>cloudinaryCalls};
 }
+
+test('el SHA-256 del JSON publicado coincide con la constante y la guía',()=>{
+ const expected=crypto.createHash('sha256').update(fs.readFileSync('backend/import-disfraces-2026-10-28.json')).digest('hex');
+ const codeHash=addon.match(/const DISFRACES_20261028_SHA256='([a-f0-9]{64})'/)?.[1];
+ const guideHash=guide.match(/DISFRACES_20261028_APPROVED[^\n]*`([a-f0-9]{64})`/)?.[1];
+ assert.ok(codeHash,'Falta la constante del importador');
+ assert.ok(guideHash,'Falta el hash de la guía');
+ assert.equal(codeHash,expected);
+ assert.equal(guideHash,expected);
+ assert.ok(!raw.includes('\r\n'),'El manifiesto debe conservar saltos LF en Windows y GitHub');
+});
 
 test('la fuente conserva los 443 IDs, fotos y reglas de selección',()=>{
  assert.equal(manifest.products.length,443);

@@ -164,7 +164,8 @@ def main() -> None:
         {"name": path.name, "driveId": archive_map.get(path.name, ""), "sha256": sha256(path.read_bytes())}
         for path in sorted(PHOTO_OUT.glob("disfraces-20261028-*.zip"))
     ], "products": products}
-    OUT.write_text(json.dumps(manifest, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
+    # The Apps Script digest is over GitHub's raw bytes. Keep LF on Windows too.
+    OUT.write_bytes((json.dumps(manifest, ensure_ascii=False, separators=(",", ":")) + "\n").encode("utf-8"))
     print(json.dumps({"sourceRows": len(products), "photoBatches": len(manifest["photoArchives"]),
                       "review": review, "manifestSha256": sha256(OUT.read_bytes()),
                       "stockNamesWithDifferentQuantities": len(stock_conflicts),

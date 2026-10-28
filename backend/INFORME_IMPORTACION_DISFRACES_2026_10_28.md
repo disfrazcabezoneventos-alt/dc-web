@@ -65,13 +65,13 @@ Los 21 paquetes privados de fotos (308 seleccionadas, unos 124 MiB) quedaron en 
 
 ## Código y verificación
 
-El importador nuevo está en `DisfracesIncremental20261028.gs`, separado de `Code.gs`, con manifiesto JSON verificado por SHA-256, respaldo previo, lotes de 15, omisión de coincidencias manuales y bloqueo de producción mediante la propiedad `DISFRACES_20261028_APPROVED`. No modifica Cotillón, reservas, caja ni el frontend. El PR #1 anterior está desactualizado respecto de `main` y propone otro enfoque; **conviene rehacer esa importación con este PR nuevo**, dejando #1 sin fusionar hasta decidir qué hacer con él. El PR #9 de globos tampoco se toca.
+El importador nuevo está en `DisfracesIncremental20261028.gs`, separado de `Code.gs`, con manifiesto JSON verificado por SHA-256, respaldo previo, lotes de 15, omisión de coincidencias manuales y bloqueo de producción mediante la propiedad `DISFRACES_20261028_APPROVED`. El SHA-256 de los bytes publicados del JSON es `ba46b567c8a83de18a725cc87b4d82d62f96817a14241837198019572136cde6`; `.gitattributes` fija LF también en Windows y un test compara el archivo, la constante y la guía. No modifica Cotillón, reservas, caja ni el frontend. El PR #1 anterior está desactualizado respecto de `main` y propone otro enfoque; **conviene rehacer esa importación con este PR nuevo**, dejando #1 sin fusionar hasta decidir qué hacer con él. El PR #9 de globos tampoco se toca.
 
 Pruebas locales ejecutadas:
 
 - `npm ci`: correcto tras permitir red; 0 vulnerabilidades reportadas.
 - `npm run typecheck`: correcto.
-- `npm test`: **68/68** correctos, incluidos 30 lotes, respaldo, preservación de fichas manuales, bloqueo de producción y una simulación de fallo de miniatura que deja la ficha inactiva.
+- `npm test`: **69/69** correctos, incluidos 30 lotes, respaldo, preservación de fichas manuales, bloqueo de producción, una simulación de fallo de miniatura y la comprobación del SHA-256.
 - `npm run build`: correcto con Next.js 16.4.2, exportación estática de 12 páginas.
 - Playwright sobre el `out/` recién compilado: `/`, `/cotillon/`, `/disfraces/`, `/reservas/` y `/admin/` respondieron HTTP 200 en 1366 px y 390 px; sin errores de JavaScript ni desborde horizontal. Esta es una prueba local con datos de demostración, no una verificación de producción.
 

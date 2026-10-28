@@ -3,7 +3,7 @@
  */
 const DISFRACES_20261028_BRANCH='codex/importar-disfraces-20261028';
 const DISFRACES_20261028_FILE='backend/import-disfraces-2026-10-28.json';
-const DISFRACES_20261028_SHA256='209e04c18e598118e1618265d00d7acd956c6b49c6c840c946b1f2dd46c5f0a0';
+const DISFRACES_20261028_SHA256='ba46b567c8a83de18a725cc87b4d82d62f96817a14241837198019572136cde6';
 const DISFRACES_20261028_BATCH='disfraces-2026-10-28';
 const DISFRACES_20261028_CATEGORY={
  hombres:'Hombres',cabezones:'Cabezones',mujeres:'Mujeres',
