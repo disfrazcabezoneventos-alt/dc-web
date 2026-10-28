@@ -6,8 +6,8 @@ La ejecución real necesita un nuevo OK explícito del propietario.
 
 ## Auditoría de referencias, antes del ensayo
 
-Fuente actual confirmada por el propietario:
-[Disfraz Cabezón — tienda y reservas](https://docs.google.com/spreadsheets/d/1yY0ZdMkVZs0E_VFVwOqjStVMfFfHzmAA7sgHwWjm6D4/edit).
+Fuente actual confirmada por el propietario: la hoja operativa indicada en la
+conversación privada. Su ID permanece en `SPREADSHEET_ID`, fuera de este informe.
 Lectura del 28/10/2026, zona America/Buenos_Aires. Se revisaron las tres pestañas
 completas dentro de sus límites actuales: `A1:Z1000` en cada una.
 
@@ -71,7 +71,8 @@ de la ficha manual**. No se intenta subir la imagen chica.
 
 ## Ensayo real en una copia de Google Sheets
 
-[Copia de ensayo, NO PRODUCCIÓN](https://docs.google.com/spreadsheets/d/1GljWjlMX0CTDBO6u0pxOZdv4CBD-ldSQOv40CovLgbw/edit).
+El enlace de la copia de ensayo, NO PRODUCCIÓN, se entrega únicamente en la
+conversación privada, sin publicar su ID en este informe.
 Se duplicó el libro completo, con un ID distinto del original. Allí:
 
 1. Se volvieron a leer categorías, disfraces y las tres pestañas de referencias.
