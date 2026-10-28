@@ -1,0 +1,79 @@
+{
+  "version": 1,
+  "batch": "limpieza-manuales-disfraces-2026-10-28",
+  "sourceSha256": "ba46b567c8a83de18a725cc87b4d82d62f96817a14241837198019572136cde6",
+  "delete": [
+    {
+      "id": "bb202e08-8358-46da-b5cb-5d4f57980303",
+      "name": "Scream",
+      "recordSha256": "f995074de296afc28bd3f223cf6a40be008911743c4cf83f97fa774dd1d751b1"
+    },
+    {
+      "id": "af47db49-984f-46bd-b7f8-3d831e89e828",
+      "name": "Medusa",
+      "recordSha256": "48718ca1bb0acf7bb777b0ca6eed7e7b7e14aaa93d302c0f58899b027fe41142"
+    },
+    {
+      "id": "898a77f0-b030-441d-bd48-27fb0dece9d4",
+      "name": "Woody",
+      "recordSha256": "918cf4ae6f074229422f18c15bfbc7f7d12797157f6e93cc56c6b92519bf6dc0"
+    },
+    {
+      "id": "62bc26b2-6533-4d4d-8adb-be01d01b72bd",
+      "name": "Scream Venta",
+      "recordSha256": "60fac3ba34c951b1bdf983603eccb35b1bde9dd5839a2032ead43dc31d2dd170"
+    },
+    {
+      "id": "e147abcd-cc6a-46ee-857f-95f41acf74d6",
+      "name": "Scream Preventa",
+      "recordSha256": "756822505116cd329edc7b7f40c46136c485d217a4137f471e26e01dc0f9d30f"
+    }
+  ],
+  "add": [
+    {
+      "sourceId": "154",
+      "name": "Scream",
+      "categories": [
+        "hombres",
+        "halloween",
+        "personajes"
+      ],
+      "tariff": "Estándar",
+      "rentPrice": 60000,
+      "insurance": 60000,
+      "catalogStock": 3,
+      "stock": 3,
+      "stockFromCross": false,
+      "stockAmbiguous": true,
+      "photoWidth": 1254,
+      "photoHeight": 1254,
+      "photoPath": "fotos-catalogo/154-scream.jpg",
+      "photoSha256": "3c918d3d6102cc690f93ca0b67c9d364faf04615f2c584b1d4608bde0286ffe4",
+      "photoBatch": "",
+      "manualConflict": true,
+      "review": "Pendiente"
+    },
+    {
+      "sourceId": "427",
+      "name": "Woody",
+      "categories": [
+        "cabezones",
+        "personajes"
+      ],
+      "tariff": "Cabezones",
+      "rentPrice": 75000,
+      "insurance": 100000,
+      "catalogStock": 1,
+      "stock": 1,
+      "stockFromCross": false,
+      "stockAmbiguous": true,
+      "photoWidth": 160,
+      "photoHeight": 220,
+      "photoPath": "fotos-catalogo/427-woody.png",
+      "photoSha256": "bb1e517f9627b1de1666bee0b8beb5e13144b40f16f4ba8f1d40fd1fafa57e94",
+      "photoBatch": "",
+      "manualConflict": true,
+      "review": "Pendiente"
+    }
+  ]
+}
