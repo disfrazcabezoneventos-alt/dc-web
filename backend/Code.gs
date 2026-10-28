@@ -90,8 +90,7 @@ function reply_(e,result){
 function doPost(e){let result;try{need_(e&&e.postData&&e.postData.contents.length<47000000,'Solicitud demasiado grande.');const raw=e.parameter&&e.parameter.transport==='frame'?e.parameter.payload:e.postData.contents;const b=JSON.parse(raw);need_(b&&typeof b.action==='string','Solicitud inválida.');result={ok:true,data:b.action==='siteTheme'?{theme:siteTheme_()}:lock_(()=>dispatch_(b))};}catch(error){result={ok:false,error:String(error.message||'No se pudo completar la operación.').slice(0,300)};}return reply_(e,result);}
 function dispatch_(b){
   if(b.action==='siteTheme')return {theme:siteTheme_()};
- recoverStock_();
- if(['catalog','catalogData','admin','saveCategory','saveProduct','mapLegacyCategory'].includes(b.action))ensureCotillonDepth3_();
+ // Las lecturas públicas no reparan stock ni crean categorías.
  if(b.action==='catalog')return CATEGORY_AREAS.flatMap(a=>products_(a).filter(p=>a==='cotillon'||p.active));
  if(b.action==='catalogData')return {products:CATEGORY_AREAS.flatMap(a=>products_(a).filter(p=>a==='cotillon'||p.active)),categories:CATEGORY_AREAS.flatMap(categories_),campaign:siteCampaign_(),cotillonImportReady:config_('COTILLON_EXCEL_2026_STATE')==='ready'};
  if(b.action==='login'){
@@ -112,6 +111,9 @@ function dispatch_(b){
  }
  if(b.action==='cancel'){const d=b.data;need_(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email),'Correo inválido.');limit_('cancel:'+d.email,5,3600);const id=Utilities.getUuid();const r={id,code:'ARR-'+id.slice(0,8).toUpperCase(),name:text_(d.name,150),email:text_(d.email,200),reference:String(d.reference||'').slice(0,100),note:String(d.note||'').slice(0,2000),createdAt:now_(),resolved:false};put_('cancelaciones',r);return {code:r.code};}
  session_(b.token);
+ // Mantenimiento únicamente después de autenticar la operación administrativa.
+ recoverStock_();
+ if(['admin','saveCategory','saveProduct','mapLegacyCategory'].includes(b.action))ensureCotillonDepth3_();
  if(b.action==='logout'){CacheService.getScriptCache().remove('session:'+hash_(b.token));return {ok:true};}
  if(b.action==='admin')return {products:CATEGORY_AREAS.flatMap(products_),categories:CATEGORY_AREAS.flatMap(categories_),requests:rows_('reservas').map(({accessHash,terms,files,...r})=>r),movements:rows_('movimientos'),cancellations:rows_('cancelaciones'),bank:bank_(),mailMode:config_('MAIL_MODE'),siteTheme:siteTheme_(),campaign:siteCampaign_()};
  if(b.action==='setSiteTheme'){need_(['default','halloween'].includes(b.theme),'Tema inválido.');props_().setProperty('SITE_THEME',b.theme);return {theme:siteTheme_()};}
