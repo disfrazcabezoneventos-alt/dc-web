@@ -1,0 +1,55 @@
+{
+  "date": "2026-10-28",
+  "payloadSha256": "9bc98afb0181c3928f7a377350fee9933c263c9c679f157f3c2a302ca7e6aae3",
+  "copyUrl": "https://docs.google.com/spreadsheets/d/1u1cN2569dN7gP_V46iAnzRj4c7OpIO5OCakOeJ41f_M/edit",
+  "spreadsheetId": "1u1cN2569dN7gP_V46iAnzRj4c7OpIO5OCakOeJ41f_M",
+  "rows": 1320,
+  "products": 1319,
+  "existingUnchanged": true,
+  "sixRowsMatch": true,
+  "backupMatches": true,
+  "categoriesUnchanged": true,
+  "allNewInactive": true,
+  "sourceCopyId": "1HlUI6BTuDjhVNxmkeWJInj8J0kq77nZgB2fTLg-pYkw",
+  "beforeProducts": 1313,
+  "afterProducts": 1319,
+  "preview": {
+    "altas": 6,
+    "conflictos": 0
+  },
+  "batch": {
+    "fuente": 6,
+    "altas": 6,
+    "reintentosFoto": 0,
+    "sinCambios": 0,
+    "conflictos": 0,
+    "sinFotoAprobada": 0,
+    "procesados": 6,
+    "fotosFallidas": 0,
+    "respaldo": "cotillon_respaldo_seis_20261028_test"
+  },
+  "repeat": {
+    "fuente": 6,
+    "altas": 0,
+    "reintentosFoto": 0,
+    "sinCambios": 6,
+    "conflictos": 0,
+    "sinFotoAprobada": 0,
+    "procesados": 0
+  },
+  "beforeRowsSha256": "d759ae688f90d307f7bd76fe69a68e59575791162c0ee9e299531797251c5e99",
+  "categoriesRowsSha256": "93f3494ef9017e5e612f19a8a1dfbc57067537c0ee27de815b196c8c1510b567",
+  "approvedLocalPhotos": 6,
+  "rejectedPhotos": [],
+  "photosUploadedToCloudinary": 0,
+  "scriptExecutedInGoogleAppsScript": false,
+  "productionExecuted": false,
+  "validation": {
+    "newTests": "10/10",
+    "cotillonAndProjectScopeTests": "74/74",
+    "completeTests": "77/79; two existing Disfraces tests need an ignored local ZIP",
+    "build": "passed",
+    "typecheck": "passed"
+  },
+  "visualCopyCheck": "Browser session denied access; complete API readback and native cell metadata verified"
+}
