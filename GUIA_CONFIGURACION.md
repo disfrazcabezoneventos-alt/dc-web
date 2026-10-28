@@ -60,7 +60,7 @@ La primera ejecución ya crea estas propiedades:
 | `MAIL_MODE` | Empieza en `test`. Dejalo así durante las pruebas. |
 | `BUSINESS_EMAIL` | Empieza en `disfrazcabezoneventos@gmail.com`. Verificá que sea correcto. |
 
-Agregá **`SITE_URL`** con la dirección final de Render, por ejemplo `https://dc-web-8ai4.onrender.com`, sin `/` al final. Es necesaria para que Apps Script entregue sus respuestas solamente a tu web y para incluir el enlace de administración en el aviso al negocio. Si cambiás de dominio, actualizá esta propiedad.
+Agregá **`SITE_URL`** con la dirección pública final del sitio, por ejemplo `https://tienda.disfrazcabezon.com.ar`, sin `/` al final. Es necesaria para que Apps Script entregue sus respuestas solamente a tu web y para incluir el enlace de administración en el aviso al negocio. Si cambiás de dominio, actualizá esta propiedad una vez que el dominio nuevo funcione.
 
 El usuario y la contraseña se comprueban **en Apps Script**. Nunca los pongas en variables `NEXT_PUBLIC_`, en el código React ni en GitHub. Una sesión dura hasta seis horas y se cierra antes si Google descarta su caché. El panel permite cerrar sesión manualmente.
 
@@ -217,6 +217,8 @@ No registres depósitos de garantía como ventas o ganancia. No hay contabilidad
 No hay comando de inicio para este despliegue. `next.config.ts` ya contiene `output: 'export'` y `trailingSlash: true`. También se incluye `render.yaml` para quien prefiera usar un Blueprint.
 
 Si cambiás `NEXT_PUBLIC_APPS_SCRIPT_URL` en Render, ejecutá un nuevo deploy: Next.js incluye esa variable al compilar. Cambiar productos en Sheets desde el panel no requiere volver a desplegar.
+
+Para usar `https://tienda.disfrazcabezon.com.ar`, primero agregá en el DNS un CNAME con nombre `tienda` y destino `dc-web-8ai4.onrender.com`. En Render, agregá ese dominio a **Settings → Custom Domains** y esperá la verificación del certificado. Recién cuando abra con HTTPS, agregá en Render `NEXT_PUBLIC_SITE_URL=https://tienda.disfrazcabezon.com.ar` y ejecutá un nuevo deploy. Por último, cambiá la propiedad `SITE_URL` del proyecto Apps Script `web-dc` al mismo valor, sin `/` final. No cambies los registros de `www`, el dominio raíz ni el correo.
 
 No agregues una regla general que redirija todas las rutas a `index.html`: cada página ya tiene su propio archivo. Para conectar tu dominio, usá la sección **Custom Domains** y los registros DNS que Render te indique para ese dominio concreto.
 
