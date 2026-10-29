@@ -6,6 +6,8 @@ Next.js con exportación estática para Render. Catálogos separados, reservas, 
 
 Para instalar y usar los temas predeterminado/Halloween, seguí [backend/GUIA_TEMAS.md](backend/GUIA_TEMAS.md).
 
+Para habilitar el formulario presencial por QR, precios por tipo de disfraz y formularios entrantes con notificaciones, seguí [docs/FORMULARIO_LOCAL.md](docs/FORMULARIO_LOCAL.md). Es independiente de la reserva web existente.
+
 ```sh
 npm ci
 npm run dev

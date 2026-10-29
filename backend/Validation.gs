@@ -1,4 +1,4 @@
-// Generado desde lib/model.ts y lib/terms.ts. No editar por separado.
+// Generado desde lib/model.ts, terms.ts, local-rental.ts y local-terms.ts. No editar por separado.
 const BRAND = { name: 'Disfraz Cabezón', owner: 'Lorena Ughetti', cuit: '27-29478271-6', address: 'Av. Rivadavia 3314, CABA', phone: '1149897969', email: 'disfrazcabezoneventos@gmail.com' };
 const OWNER_EMAIL = 'disfrazcabezoneventos@gmail.com';
 const VERSION = 'DC-2026-10-09.1';
@@ -178,3 +178,43 @@ const TERMS = [
         "body": "En las contrataciones a distancia, el consumidor puede revocar la aceptación dentro de los diez días corridos contados desde la celebración del contrato o la entrega del bien, lo último que ocurra, en los casos y términos legalmente aplicables. Es un derecho irrenunciable y su ejercicio no genera responsabilidad ni gastos para el consumidor. Puede comunicarlo mediante el botón de arrepentimiento del formulario, WhatsApp 11 4989-7969 o disfrazcabezoneventos@gmail.com. Cuando corresponda devolver el bien, debe ponerlo a disposición y los gastos legales de devolución son a cargo del proveedor. Rigen la Ley 24.240 y el Código Civil y Comercial de la Nación."
     }
 ];
+const DEFAULT_RENTAL_PRICES = { adulto: 60000, cabezon: 75000, revision: 'default' };
+const LOCAL_TERMS_VERSION = 'DC-LOCAL-2026-10-29.1';
+const FORM_STATES = { reserved: 'Reserva', dispatched: 'Despachado', finished: 'Finalizado' };
+function localTotal(items, prices) {
+    return Math.round(items.reduce((sum, item) => sum + (prices[item.category] || 0) * item.quantity, 0) * 100) / 100;
+}
+function localSchedule(r, now = todayAR()) {
+    return { ...r, pickupWindow: windows(r.pickupDate, 'pickup'), returnWindow: windows(r.returnDate, 'return'), specialSchedule: false, scheduleAgreement: '', payMode: r.pickupDate === now ? 'full' : r.payMode };
+}
+/** The online validator and its document/payment requirements remain unchanged. */
+function validateLocal(r, step, now = todayAR()) {
+    const errors = validate(r, Math.min(step, 1), now);
+    if (errors.priorInfo)
+        errors.priorInfo = 'Confirmá la información recibida en el local.';
+    if (step >= 1 && r.pickupDate === now && r.payMode !== 'full')
+        errors.payMode = 'El retiro de hoy requiere alquiler completo.';
+    if (step >= 1 && (r.specialSchedule || r.pickupWindow !== windows(r.pickupDate, 'pickup') || r.returnWindow !== windows(r.returnDate, 'return')))
+        errors.pickupWindow = 'Los horarios son fijos según la fecha elegida.';
+    if (step >= 2 && !r.namesMatch)
+        errors.namesMatch = 'Confirmá que el DNI corresponde al contratante.';
+    if (step >= 3) {
+        if (!r.terms)
+            errors.terms = 'Aceptá los términos y condiciones.';
+        if (!r.truth)
+            errors.truth = 'Aceptá la declaración de veracidad.';
+        if (norm(r.clarification) !== norm(r.fullName))
+            errors.clarification = 'La aclaración debe coincidir con el nombre del contratante.';
+    }
+    return errors;
+}
+// A separate contract for the in-store flow; the online contract is untouched.
+const replacements = {
+    'Solicitud, revisión y confirmación': 'Este formulario se completa presencialmente en el local y registra una solicitud de alquiler. No acredita pagos ni confirma por sí solo la entrega. El equipo verifica identidad, disponibilidad y las condiciones particulares antes de confirmar o despachar el alquiler.',
+    'Identidad y documentación obligatoria': 'Debe contratar una persona mayor de 18 años. Se solicitan datos del contratante, domicilio declarado, teléfonos, correo y fotos del frente y dorso del DNI, tapando el número de trámite. En esta modalidad presencial no se solicita comprobante de domicilio. El personal revisa la identidad y los documentos.',
+    'Trajes, precio y seña': 'El precio por traje se obtiene de la tarifa vigente del local para Disfraz adulto o Disfraz cabezón, multiplicada por la cantidad. El resumen conserva la tarifa aceptada al enviar. Para retiros en el mismo día corresponde alquiler completo; para fechas futuras puede elegirse 50% o alquiler completo. Esta elección indica la modalidad acordada y no declara que el pago haya sido realizado. La garantía se informa por separado.',
+    'Datos de cobro y comprobante': 'El pago se gestiona presencialmente con el equipo. Este formulario no solicita ni admite comprobantes de pago, no muestra una cuenta bancaria y no registra cobros. La modalidad elegida no acredita un pago. Cualquier cobro debe verificarse y registrarse por separado en el local.',
+    'Información previa y cancelaciones': 'El contratante declara haber recibido en el local información sobre los trajes, precios, fechas, horarios, reserva, modalidad de pago, garantía, devolución, daños y faltantes. Las condiciones particulares quedan registradas para su revisión. Esta declaración no implica renuncia a derechos legales. Las cancelaciones se comunican al negocio por sus canales habituales.',
+    'Declaración, firma electrónica y copias': 'El contratante declara que es mayor de 18 años y que los datos declarados y las fotos del DNI son auténticos, actuales y propios. El nombre del formulario, el DNI y la aclaración corresponden a la misma persona. La firma electrónica comprende la solicitud y, si corresponde, la autorización de retiro por otra persona. Se conserva la versión de estas condiciones, fecha, datos y firma originales. El cliente puede descargar su copia electrónica; las modificaciones de gestión posteriores no sustituyen la aceptación original.',
+};
+const localTerms = TERMS.map(term => ({ ...term, body: replacements[term.title] || term.body }));
