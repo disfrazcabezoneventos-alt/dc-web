@@ -1,0 +1,62 @@
+.list { min-width:0; }
+.filters { display:flex; align-items:end; flex-wrap:wrap; gap:14px; padding:20px; background:var(--surface); border:1px solid var(--line); border-radius:12px; }
+.filters label { flex:1 1 170px; min-width:0; }
+.filters .search { flex:2 1 240px; }
+.filters select { width:100%; max-width:100%; }
+.filters button { min-height:44px; }
+.count { margin:16px 0; font-size:13px; color:var(--muted); }
+.storeNote { padding:12px 16px; border:1px solid var(--line); border-radius:9px; background:var(--surface-soft); font-size:12px; }
+.tableWrap { overflow:auto; border:1px solid var(--line); border-radius:12px; }
+.table { width:100%; table-layout:fixed; background:var(--surface); }
+.table th { font-size:11px; }
+.table th,.table td { padding:14px 10px; vertical-align:top; overflow-wrap:anywhere; }
+.table th:nth-child(1) { width:74px; }
+.table th:nth-child(2) { width:19%; }
+.table th:nth-child(3) { width:15%; }
+.table th:nth-child(4) { width:19%; }
+.table th:nth-child(5) { width:16%; }
+.table th:nth-child(6) { width:130px; }
+.row small { display:block; margin-top:6px; font-size:10px; line-height:1.5; color:var(--muted); }
+.nameCell strong { display:block; font-size:13px; }
+.photoCell img,.placeholder { width:54px; height:54px; object-fit:contain; border-radius:6px; background:var(--surface-soft); }
+.placeholder { display:grid; place-items:center; font-size:10px; }
+.categoryCell { font-size:12px; }
+.numberForm { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:end; gap:5px; margin:0 0 10px; }
+.numberForm label { min-width:0; font-size:10px; }
+.numberForm input { padding:10px 7px!important; margin-top:4px; min-height:44px; font-size:12px; }
+.numberForm .save { border:1px solid var(--line); border-radius:7px; background:var(--surface-soft); color:var(--ink); min-height:44px; padding:8px 6px; font-size:10px; text-decoration:none; }
+.fieldError { grid-column:1/-1; color:#a52332; font-size:11px; }
+.state { display:flex; align-items:center; flex-wrap:wrap; gap:0 5px; font-size:10px; }
+.state>span { white-space:nowrap; }
+.state .switch { display:grid; place-items:center; width:44px; min-width:44px; height:44px; padding:0; border:0; background:transparent; text-decoration:none; }
+.track { display:block; width:40px; height:24px; border:1px solid var(--muted); border-radius:20px; background:var(--surface-soft); padding:3px; }
+.track>span { display:block; width:16px; height:16px; border-radius:50%; background:var(--muted); }
+.track[data-enabled="true"] { background:var(--accent); border-color:var(--accent); }
+.track[data-enabled="true"]>span { background:var(--paper); transform:translateX(15px); }
+.actions { display:flex; gap:4px; flex-wrap:wrap; }
+.actions button { min-height:44px; padding:6px; font-size:11px; }
+.pagination { display:flex; justify-content:center; align-items:center; gap:16px; margin:22px 0; }
+.pagination>span { text-align:center; font-size:12px; }
+.pagination small { display:block; margin-top:4px; color:var(--muted); }
+.pagination button { min-height:44px; }
+.empty { text-align:center; padding:30px!important; }
+@media(max-width:760px) {
+ .filters { flex-direction:column; align-items:stretch; padding:16px; }
+ .filters label,.filters .search { flex:none; }
+ .tableWrap { overflow:visible; border:0; }
+ .table,.table tbody { display:block; background:transparent; }
+ .table thead { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
+ .row { display:grid; grid-template-columns:54px minmax(0,1fr); gap:14px; padding:16px; margin-bottom:16px; border:1px solid var(--line); border-radius:12px; background:var(--surface); }
+ .table .row td { display:block; border:0; padding:0; min-width:0; }
+ .photoCell { grid-column:1; }
+ .nameCell { grid-column:2; }
+ .categoryCell,.priceCell,.stockCell,.stateCell,.actionsCell { grid-column:1/-1; }
+ .row td[data-label]::before { content:attr(data-label); display:block; margin-bottom:6px; font-size:11px; font-weight:700; color:var(--muted); }
+ .numberForm { grid-template-columns:minmax(0,1fr) 84px; margin-bottom:8px; }
+ .numberForm .save { font-size:12px; }
+ .state { gap:9px; font-size:12px; }
+ .actions { gap:12px; }
+ .actions button { padding:8px 5px; font-size:12px; }
+ .pagination { gap:10px; }
+ .pagination button { padding:10px 13px; font-size:12px; }
+}
