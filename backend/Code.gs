@@ -28,7 +28,15 @@ function put_(name,obj){const s=sheet_(name),all=rows_(name),index=all.findIndex
 function remove_(name,id){const index=rows_(name).findIndex(r=>r.id===id);need_(index>=0,'No se encontró el registro.');sheet_(name).deleteRow(index+2);}
 function lock_(fn){const lock=LockService.getScriptLock();need_(lock.tryLock(15000),'El sistema está ocupado. Intentá nuevamente.');try{return fn()}finally{lock.releaseLock()}}
 function limit_(key,max,seconds){const cache=CacheService.getScriptCache();const k='limit:'+hash_(key);const count=Number(cache.get(k)||0);need_(count<max,'Demasiados intentos. Esperá unos minutos.');cache.put(k,String(count+1),seconds);}
-function session_(token){need_(typeof token==='string'&&token.length>30&&CacheService.getScriptCache().get('session:'+hash_(token))==='admin','Sesión vencida. Volvé a ingresar.');}
+// Las sesiones dependen de las credenciales actuales y de una versión revocable.
+// ADMIN_SESSION_VERSION permite cerrarlas todas sin cambiar la contraseña.
+function adminSessionVersion_(){return 'admin-v2:'+hash_(JSON.stringify([config_('ADMIN_USER'),config_('ADMIN_PASSWORD'),config_('ADMIN_SESSION_VERSION')]));}
+function session_(token){
+ need_(typeof token==='string'&&token.length>30,'Sesión vencida. Volvé a ingresar.');
+ const cache=CacheService.getScriptCache(),key='session:'+hash_(token),valid=equal_(cache.get(key),adminSessionVersion_());
+ if(!valid)cache.remove(key);
+ need_(valid,'Sesión vencida. Volvé a ingresar.');
+}
 function text_(v,max=200){need_(typeof v==='string'&&v.trim().length>0&&v.length<=max,'Revisá los campos de texto.');return v.trim();}
 function amount_(v){need_(typeof v==='number'&&Number.isFinite(v)&&v>=0&&v<=100000000,'Importe inválido.');return Math.round(v*100)/100;}
 function date_(v){need_(typeof v==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(v)&&new Date(v+'T12:00:00Z').toISOString().slice(0,10)===v,'Fecha inválida.');return v;}
@@ -101,7 +109,7 @@ function dispatch_(b){
   limit_('login-global',60,900);limit_('login:'+String(b.username).toLowerCase(),8,900);
   need_(config_('ADMIN_PASSWORD').length>=12,'Configurá una contraseña de al menos 12 caracteres.');
   need_(equal_(hash_(String(b.username)),hash_(config_('ADMIN_USER')))&&equal_(hash_(String(b.password)),hash_(config_('ADMIN_PASSWORD'))),'Usuario o contraseña incorrectos.');
-  const token=Utilities.getUuid()+Utilities.getUuid();CacheService.getScriptCache().put('session:'+hash_(token),'admin',21600);return {token};
+  const token=Utilities.getUuid()+Utilities.getUuid();CacheService.getScriptCache().put('session:'+hash_(token),adminSessionVersion_(),21600);return {token};
  }
  if(b.action==='bank'){validateRental_(b.data,2);checkFiles_(b.files,['dniFront','dniBack','addressProof']);return bank_();}
  if(b.action==='submit')return submit_(b);
