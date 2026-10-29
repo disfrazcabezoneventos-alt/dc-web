@@ -9,13 +9,13 @@ Fecha: 29 de octubre de 2026. Implementación preparada en el repositorio; pendi
 | Instalación limpia con `npm ci` | Correcta; 36 paquetes del lockfile |
 | Compilación `npm run build` | Correcta; exportación estática con `/reserva-local/` |
 | TypeScript | Correcto, tanto `npm run typecheck` como durante la compilación final |
-| `npm test` | 108 pruebas aprobadas; 0 fallos |
-| Playwright contra `out/` | 68 pruebas aprobadas; 0 fallos; 1,8 minutos |
+| `npm test` | 160 pruebas aprobadas; 0 fallos |
+| Playwright contra `out/` | 124 pruebas aprobadas; 0 fallos; 2,9 minutos |
 | Proyectos Playwright | desktop, mobile-360, mobile-390, tablet-768 |
 | Formulario web original | Sin cambios en `RentalForm.tsx`, `lib/model.ts`, `lib/terms.ts` y `app/reservas/page.tsx` |
 | Cambios en producción durante esta implementación | Ninguno |
 
-Las 68 pruebas de navegador incluyen 48 escenarios existentes de catálogo, carrito, compra, selección de disfraz, reserva web y 404, más 20 ejecuciones de los cinco recorridos nuevos (uno por cada tamaño). Las pruebas unitarias incluyen diez escenarios nuevos de la API local y gestión, además de las 98 pruebas anteriores.
+Las 124 pruebas de navegador incluyen 104 escenarios existentes de edición rápida, catálogo, carrito, compra, selección de disfraz, reserva web, 404 y banner de Halloween, más 20 ejecuciones de los cinco recorridos nuevos (uno por cada tamaño). Las pruebas unitarias incluyen diez escenarios nuevos de la API local y gestión, además de las 150 pruebas de main.
 
 ## Escenarios nuevos verificados
 
@@ -59,3 +59,9 @@ Las capturas contienen exclusivamente datos ficticios. Se revisó visualmente la
 Publicar `Code.gs`, `Validation.gs` y `LocalForms.gs` en el Apps Script que usa la web, ejecutar `prepararFormulariosLocales`, publicar una nueva versión en la misma implementación y desplegar el frontend. La guía [FORMULARIO_LOCAL.md](../FORMULARIO_LOCAL.md) incluye los pasos y el recorrido de aceptación.
 
 Las pruebas locales no certifican permisos reales de Drive/Sheets, cuotas de Google, entrega de correo ni latencia del polling contra Google. Después de actualizar Apps Script debe completarse ese recorrido en una copia aislada y la prueba final coordinada en el sitio publicado. No se cambió la aplicación original alojada en ChatGPT Sites.
+
+## Integración con main antes de publicar
+
+La rama se integró sobre `ab6a573` de main. Se conservaron la edición rápida de productos de PR #23, el banner de Halloween de PR #22 y las canónicas del dominio actual de PR #26. Los conflictos de Código.gs y Admin.tsx se resolvieron conservando las funciones existentes y agregando las nuevas. Después se repitieron la instalación limpia, compilación, 160 pruebas unitarias y 124 pruebas de navegador; todas pasaron.
+
+El Código.gs entregado inicialmente desde el checkout anterior no contenía quickUpdate. Se corrigió antes de publicar el frontend y se indicó volver a publicar únicamente Código.gs en Apps Script. Validation.gs y LocalForms.gs no cambiaron. La consulta pública localConfig de la implementación existente respondió correctamente, con adulto 60000 y cabezón 75000; la publicación de la corrección de Código.gs fue confirmada por el usuario.
