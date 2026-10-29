@@ -15,5 +15,5 @@ test('cada página pública tiene URL canónica y datos de WhatsApp completos',(
  assert.equal(metadata.openGraph.description,'Productos para tu fiesta');
  assert.equal(metadata.openGraph.images[0].url,'/brand-logo.png');
  assert.equal(metadata.twitter.card,'summary');
- assert.equal(exports.siteUrl,'https://dc-web-8ai4.onrender.com');
+ assert.equal(exports.siteUrl,'https://disfrazcabezon.com.ar');
 });

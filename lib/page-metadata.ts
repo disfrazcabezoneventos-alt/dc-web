@@ -1,6 +1,6 @@
 import type {Metadata} from 'next';
 
-export const siteUrl='https://dc-web-8ai4.onrender.com';
+export const siteUrl='https://disfrazcabezon.com.ar';
 
 export function pageMetadata(title:string,description:string,path:string):Metadata{
  return {
