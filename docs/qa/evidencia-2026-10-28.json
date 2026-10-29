@@ -1,0 +1,1621 @@
+{
+  "timestamp": "2026-10-28T22:34:34.575Z",
+  "sourceCommit": "a64f8e66fc01ec6e25f44ed49a88ff9c3fc19e34",
+  "sourceSheet": "Disfraz Cabezón — tienda y reservas",
+  "counts": {
+    "disfraces": {
+      "total": 558,
+      "active": 370,
+      "inactive": 188,
+      "rental": 309,
+      "sale": 61
+    },
+    "cotillon": {
+      "total": 1204,
+      "active": 855,
+      "inactive": 349
+    }
+  },
+  "emptyOperationSheets": {
+    "reservas": {
+      "count": 0,
+      "verified": true,
+      "isError": false
+    },
+    "movimientos": {
+      "count": 0,
+      "verified": true,
+      "isError": false
+    },
+    "cancelaciones": {
+      "count": 0,
+      "verified": true,
+      "isError": false
+    }
+  },
+  "scope": {
+    "browser": "Chrome inicial y navegador integrado con sesión aportada por el usuario",
+    "productModalsOpened": 33,
+    "cotillonModalsOpened": 4,
+    "adminTabsReviewed": 10,
+    "adminEditorsOpened": 6,
+    "productionMutations": 0,
+    "formSubmissions": 0,
+    "directAppsScriptCalls": 0,
+    "realDocumentsUploaded": 0,
+    "cartRestoredEmpty": true
+  },
+  "httpPages": [
+    {
+      "path": "/",
+      "status": 200,
+      "ms": 561,
+      "bytes": 32509,
+      "title": "Disfraz Cabezón · Tu próxima gran historia",
+      "metas": [
+        "<meta charSet=\"utf-8\"/>",
+        "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/>",
+        "<meta name=\"description\" content=\"Alquiler y venta de disfraces, cotillón y reservas. Encontrá todo para tu próxima fiesta en Av. Rivadavia 3314, CABA.\"/>",
+        "<meta property=\"og:title\" content=\"Disfraces y cotillón | Disfraz Cabezón\"/>",
+        "<meta property=\"og:description\" content=\"Alquiler y venta de disfraces, cotillón y reservas. Encontrá todo para tu próxima fiesta en Av. Rivadavia 3314, CABA.\"/>",
+        "<meta property=\"og:url\" content=\"https://dc-web-8ai4.onrender.com/\"/>",
+        "<meta property=\"og:site_name\" content=\"Disfraz Cabezón\"/>",
+        "<meta property=\"og:locale\" content=\"es_AR\"/>",
+        "<meta property=\"og:image\" content=\"https://dc-web-8ai4.onrender.com/brand-logo.png\"/>",
+        "<meta property=\"og:image:width\" content=\"1254\"/>",
+        "<meta property=\"og:image:height\" content=\"1254\"/>",
+        "<meta property=\"og:image:alt\" content=\"Disfraz Cabezón\"/>",
+        "<meta property=\"og:type\" content=\"website\"/>",
+        "<meta name=\"twitter:card\" content=\"summary\"/>",
+        "<meta name=\"twitter:title\" content=\"Disfraces y cotillón | Disfraz Cabezón\"/>",
+        "<meta name=\"twitter:description\" content=\"Alquiler y venta de disfraces, cotillón y reservas. Encontrá todo para tu próxima fiesta en Av. Rivadavia 3314, CABA.\"/>",
+        "<meta name=\"twitter:image\" content=\"https://dc-web-8ai4.onrender.com/brand-logo.png\"/>"
+      ],
+      "icons": [
+        "<link rel=\"canonical\" href=\"https://dc-web-8ai4.onrender.com/\"/>",
+        "<link rel=\"icon\" href=\"/icon.png?icon.1zv23nxi84eqj.png\" sizes=\"128x128\" type=\"image/png\"/>"
+      ]
+    },
+    {
+      "path": "/disfraces/",
+      "status": 200,
+      "ms": 344,
+      "bytes": 15293,
+      "title": "Disfraces en alquiler y venta | Disfraz Cabezón",
+      "metas": [
+        "<meta charSet=\"utf-8\"/>",
+        "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/>",
+        "<meta name=\"description\" content=\"Elegí un disfraz para alquilar o comprar. Encontrá personajes para chicos y grandes y consultá disponibilidad.\"/>",
+        "<meta property=\"og:title\" content=\"Disfraces en alquiler y venta | Disfraz Cabezón\"/>",
+        "<meta property=\"og:description\" content=\"Elegí un disfraz para alquilar o comprar. Encontrá personajes para chicos y grandes y consultá disponibilidad.\"/>",
+        "<meta property=\"og:url\" content=\"https://dc-web-8ai4.onrender.com/disfraces/\"/>",
+        "<meta property=\"og:site_name\" content=\"Disfraz Cabezón\"/>",
+        "<meta property=\"og:locale\" content=\"es_AR\"/>",
+        "<meta property=\"og:image\" content=\"https://dc-web-8ai4.onrender.com/brand-logo.png\"/>",
+        "<meta property=\"og:image:width\" content=\"1254\"/>",
+        "<meta property=\"og:image:height\" content=\"1254\"/>",
+        "<meta property=\"og:image:alt\" content=\"Disfraz Cabezón\"/>",
+        "<meta property=\"og:type\" content=\"website\"/>",
+        "<meta name=\"twitter:card\" content=\"summary\"/>",
+        "<meta name=\"twitter:title\" content=\"Disfraces en alquiler y venta | Disfraz Cabezón\"/>",
+        "<meta name=\"twitter:description\" content=\"Elegí un disfraz para alquilar o comprar. Encontrá personajes para chicos y grandes y consultá disponibilidad.\"/>",
+        "<meta name=\"twitter:image\" content=\"https://dc-web-8ai4.onrender.com/brand-logo.png\"/>"
+      ],
+      "icons": [
+        "<link rel=\"canonical\" href=\"https://dc-web-8ai4.onrender.com/disfraces/\"/>",
+        "<link rel=\"icon\" href=\"/icon.png?icon.1zv23nxi84eqj.png\" sizes=\"128x128\" type=\"image/png\"/>"
+      ]
+    },
+    {
+      "path": "/cotillon/",
+      "status": 200,
+      "ms": 374,
+      "bytes": 17749,
+      "title": "Cotillón y mercadería | Disfraz Cabezón",
+      "metas": [
+        "<meta charSet=\"utf-8\"/>",
+        "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/>",
+        "<meta name=\"description\" content=\"Explorá cotillón, repostería, fechas especiales y descartables. Armá tu carrito y enviá el pedido listo por WhatsApp.\"/>",
+        "<meta property=\"og:title\" content=\"Cotillón y mercadería | Disfraz Cabezón\"/>",
+        "<meta property=\"og:description\" content=\"Explorá cotillón, repostería, fechas especiales y descartables. Armá tu carrito y enviá el pedido listo por WhatsApp.\"/>",
+        "<meta property=\"og:url\" content=\"https://dc-web-8ai4.onrender.com/cotillon/\"/>",
+        "<meta property=\"og:site_name\" content=\"Disfraz Cabezón\"/>",
+        "<meta property=\"og:locale\" content=\"es_AR\"/>",
+        "<meta property=\"og:image\" content=\"https://dc-web-8ai4.onrender.com/brand-logo.png\"/>",
+        "<meta property=\"og:image:width\" content=\"1254\"/>",
+        "<meta property=\"og:image:height\" content=\"1254\"/>",
+        "<meta property=\"og:image:alt\" content=\"Disfraz Cabezón\"/>",
+        "<meta property=\"og:type\" content=\"website\"/>",
+        "<meta name=\"twitter:card\" content=\"summary\"/>",
+        "<meta name=\"twitter:title\" content=\"Cotillón y mercadería | Disfraz Cabezón\"/>",
+        "<meta name=\"twitter:description\" content=\"Explorá cotillón, repostería, fechas especiales y descartables. Armá tu carrito y enviá el pedido listo por WhatsApp.\"/>",
+        "<meta name=\"twitter:image\" content=\"https://dc-web-8ai4.onrender.com/brand-logo.png\"/>"
+      ],
+      "icons": [
+        "<link rel=\"canonical\" href=\"https://dc-web-8ai4.onrender.com/cotillon/\"/>",
+        "<link rel=\"icon\" href=\"/icon.png?icon.1zv23nxi84eqj.png\" sizes=\"128x128\" type=\"image/png\"/>"
+      ]
+    },
+    {
+      "path": "/comprar/",
+      "status": 200,
+      "ms": 375,
+      "bytes": 13882,
+      "title": "Consultar compra de disfraces | Disfraz Cabezón",
+      "metas": [
+        "<meta charSet=\"utf-8\"/>",
+        "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/>",
+        "<meta name=\"description\" content=\"Elegí un disfraz, indicá cantidad y consultá la compra por WhatsApp con los datos ya preparados.\"/>",
+        "<meta property=\"og:title\" content=\"Consultar compra de disfraces | Disfraz Cabezón\"/>",
+        "<meta property=\"og:description\" content=\"Elegí un disfraz, indicá cantidad y consultá la compra por WhatsApp con los datos ya preparados.\"/>",
+        "<meta property=\"og:url\" content=\"https://dc-web-8ai4.onrender.com/comprar/\"/>",
+        "<meta property=\"og:site_name\" content=\"Disfraz Cabezón\"/>",
+        "<meta property=\"og:locale\" content=\"es_AR\"/>",
+        "<meta property=\"og:image\" content=\"https://dc-web-8ai4.onrender.com/brand-logo.png\"/>",
+        "<meta property=\"og:image:width\" content=\"1254\"/>",
+        "<meta property=\"og:image:height\" content=\"1254\"/>",
+        "<meta property=\"og:image:alt\" content=\"Disfraz Cabezón\"/>",
+        "<meta property=\"og:type\" content=\"website\"/>",
+        "<meta name=\"twitter:card\" content=\"summary\"/>",
+        "<meta name=\"twitter:title\" content=\"Consultar compra de disfraces | Disfraz Cabezón\"/>",
+        "<meta name=\"twitter:description\" content=\"Elegí un disfraz, indicá cantidad y consultá la compra por WhatsApp con los datos ya preparados.\"/>",
+        "<meta name=\"twitter:image\" content=\"https://dc-web-8ai4.onrender.com/brand-logo.png\"/>"
+      ],
+      "icons": [
+        "<link rel=\"canonical\" href=\"https://dc-web-8ai4.onrender.com/comprar/\"/>",
+        "<link rel=\"icon\" href=\"/icon.png?icon.1zv23nxi84eqj.png\" sizes=\"128x128\" type=\"image/png\"/>"
+      ]
+    },
+    {
+      "path": "/reservas/",
+      "status": 200,
+      "ms": 358,
+      "bytes": 26323,
+      "title": "Reservá tu disfraz | Disfraz Cabezón",
+      "metas": [
+        "<meta charSet=\"utf-8\"/>",
+        "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/>",
+        "<meta name=\"description\" content=\"Completá la solicitud de alquiler de disfraces, adjuntá la documentación y consultá el estado de tu reserva.\"/>",
+        "<meta property=\"og:title\" content=\"Reservá tu disfraz | Disfraz Cabezón\"/>",
+        "<meta property=\"og:description\" content=\"Completá la solicitud de alquiler de disfraces, adjuntá la documentación y consultá el estado de tu reserva.\"/>",
+        "<meta property=\"og:url\" content=\"https://dc-web-8ai4.onrender.com/reservas/\"/>",
+        "<meta property=\"og:site_name\" content=\"Disfraz Cabezón\"/>",
+        "<meta property=\"og:locale\" content=\"es_AR\"/>",
+        "<meta property=\"og:image\" content=\"https://dc-web-8ai4.onrender.com/brand-logo.png\"/>",
+        "<meta property=\"og:image:width\" content=\"1254\"/>",
+        "<meta property=\"og:image:height\" content=\"1254\"/>",
+        "<meta property=\"og:image:alt\" content=\"Disfraz Cabezón\"/>",
+        "<meta property=\"og:type\" content=\"website\"/>",
+        "<meta name=\"twitter:card\" content=\"summary\"/>",
+        "<meta name=\"twitter:title\" content=\"Reservá tu disfraz | Disfraz Cabezón\"/>",
+        "<meta name=\"twitter:description\" content=\"Completá la solicitud de alquiler de disfraces, adjuntá la documentación y consultá el estado de tu reserva.\"/>",
+        "<meta name=\"twitter:image\" content=\"https://dc-web-8ai4.onrender.com/brand-logo.png\"/>"
+      ],
+      "icons": [
+        "<link rel=\"canonical\" href=\"https://dc-web-8ai4.onrender.com/reservas/\"/>",
+        "<link rel=\"icon\" href=\"/icon.png?icon.1zv23nxi84eqj.png\" sizes=\"128x128\" type=\"image/png\"/>"
+      ]
+    },
+    {
+      "path": "/condiciones/",
+      "status": 200,
+      "ms": 479,
+      "bytes": 42182,
+      "title": "Condiciones y privacidad | Disfraz Cabezón",
+      "metas": [
+        "<meta charSet=\"utf-8\"/>",
+        "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/>",
+        "<meta name=\"description\" content=\"Leé las condiciones de alquiler y el aviso de privacidad de Disfraz Cabezón.\"/>",
+        "<meta property=\"og:title\" content=\"Condiciones y privacidad | Disfraz Cabezón\"/>",
+        "<meta property=\"og:description\" content=\"Leé las condiciones de alquiler y el aviso de privacidad de Disfraz Cabezón.\"/>",
+        "<meta property=\"og:url\" content=\"https://dc-web-8ai4.onrender.com/condiciones/\"/>",
+        "<meta property=\"og:site_name\" content=\"Disfraz Cabezón\"/>",
+        "<meta property=\"og:locale\" content=\"es_AR\"/>",
+        "<meta property=\"og:image\" content=\"https://dc-web-8ai4.onrender.com/brand-logo.png\"/>",
+        "<meta property=\"og:image:width\" content=\"1254\"/>",
+        "<meta property=\"og:image:height\" content=\"1254\"/>",
+        "<meta property=\"og:image:alt\" content=\"Disfraz Cabezón\"/>",
+        "<meta property=\"og:type\" content=\"website\"/>",
+        "<meta name=\"twitter:card\" content=\"summary\"/>",
+        "<meta name=\"twitter:title\" content=\"Condiciones y privacidad | Disfraz Cabezón\"/>",
+        "<meta name=\"twitter:description\" content=\"Leé las condiciones de alquiler y el aviso de privacidad de Disfraz Cabezón.\"/>",
+        "<meta name=\"twitter:image\" content=\"https://dc-web-8ai4.onrender.com/brand-logo.png\"/>"
+      ],
+      "icons": [
+        "<link rel=\"canonical\" href=\"https://dc-web-8ai4.onrender.com/condiciones/\"/>",
+        "<link rel=\"icon\" href=\"/icon.png?icon.1zv23nxi84eqj.png\" sizes=\"128x128\" type=\"image/png\"/>"
+      ]
+    },
+    {
+      "path": "/arrepentimiento/",
+      "status": 200,
+      "ms": 336,
+      "bytes": 13733,
+      "title": "Solicitud de arrepentimiento | Disfraz Cabezón",
+      "metas": [
+        "<meta charSet=\"utf-8\"/>",
+        "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/>",
+        "<meta name=\"description\" content=\"Conocé cómo solicitar el arrepentimiento de una contratación en Disfraz Cabezón.\"/>",
+        "<meta property=\"og:title\" content=\"Solicitud de arrepentimiento | Disfraz Cabezón\"/>",
+        "<meta property=\"og:description\" content=\"Conocé cómo solicitar el arrepentimiento de una contratación en Disfraz Cabezón.\"/>",
+        "<meta property=\"og:url\" content=\"https://dc-web-8ai4.onrender.com/arrepentimiento/\"/>",
+        "<meta property=\"og:site_name\" content=\"Disfraz Cabezón\"/>",
+        "<meta property=\"og:locale\" content=\"es_AR\"/>",
+        "<meta property=\"og:image\" content=\"https://dc-web-8ai4.onrender.com/brand-logo.png\"/>",
+        "<meta property=\"og:image:width\" content=\"1254\"/>",
+        "<meta property=\"og:image:height\" content=\"1254\"/>",
+        "<meta property=\"og:image:alt\" content=\"Disfraz Cabezón\"/>",
+        "<meta property=\"og:type\" content=\"website\"/>",
+        "<meta name=\"twitter:card\" content=\"summary\"/>",
+        "<meta name=\"twitter:title\" content=\"Solicitud de arrepentimiento | Disfraz Cabezón\"/>",
+        "<meta name=\"twitter:description\" content=\"Conocé cómo solicitar el arrepentimiento de una contratación en Disfraz Cabezón.\"/>",
+        "<meta name=\"twitter:image\" content=\"https://dc-web-8ai4.onrender.com/brand-logo.png\"/>"
+      ],
+      "icons": [
+        "<link rel=\"canonical\" href=\"https://dc-web-8ai4.onrender.com/arrepentimiento/\"/>",
+        "<link rel=\"icon\" href=\"/icon.png?icon.1zv23nxi84eqj.png\" sizes=\"128x128\" type=\"image/png\"/>"
+      ]
+    },
+    {
+      "path": "/admin/",
+      "status": 200,
+      "ms": 313,
+      "bytes": 13117,
+      "title": "Administración | Disfraz Cabezón",
+      "metas": [
+        "<meta charSet=\"utf-8\"/>",
+        "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/>",
+        "<meta name=\"description\" content=\"Alquiler y venta de disfraces, cotillón y reservas. Encontrá todo para tu próxima fiesta en Av. Rivadavia 3314, CABA.\"/>",
+        "<meta name=\"robots\" content=\"noindex, nofollow\"/>",
+        "<meta property=\"og:title\" content=\"Disfraces y cotillón | Disfraz Cabezón\"/>",
+        "<meta property=\"og:description\" content=\"Alquiler y venta de disfraces, cotillón y reservas. Encontrá todo para tu próxima fiesta en Av. Rivadavia 3314, CABA.\"/>",
+        "<meta property=\"og:url\" content=\"https://dc-web-8ai4.onrender.com/\"/>",
+        "<meta property=\"og:site_name\" content=\"Disfraz Cabezón\"/>",
+        "<meta property=\"og:locale\" content=\"es_AR\"/>",
+        "<meta property=\"og:image\" content=\"https://dc-web-8ai4.onrender.com/brand-logo.png\"/>",
+        "<meta property=\"og:image:width\" content=\"1254\"/>",
+        "<meta property=\"og:image:height\" content=\"1254\"/>",
+        "<meta property=\"og:image:alt\" content=\"Disfraz Cabezón\"/>",
+        "<meta property=\"og:type\" content=\"website\"/>",
+        "<meta name=\"twitter:card\" content=\"summary\"/>",
+        "<meta name=\"twitter:title\" content=\"Disfraces y cotillón | Disfraz Cabezón\"/>",
+        "<meta name=\"twitter:description\" content=\"Alquiler y venta de disfraces, cotillón y reservas. Encontrá todo para tu próxima fiesta en Av. Rivadavia 3314, CABA.\"/>",
+        "<meta name=\"twitter:image\" content=\"https://dc-web-8ai4.onrender.com/brand-logo.png\"/>"
+      ],
+      "icons": [
+        "<link rel=\"canonical\" href=\"https://dc-web-8ai4.onrender.com/admin/\"/>",
+        "<link rel=\"icon\" href=\"/icon.png?icon.1zv23nxi84eqj.png\" sizes=\"128x128\" type=\"image/png\"/>"
+      ]
+    },
+    {
+      "path": "/solicitud/",
+      "status": 200,
+      "ms": 348,
+      "bytes": 13233,
+      "title": "Mi solicitud | Disfraz Cabezón",
+      "metas": [
+        "<meta charSet=\"utf-8\"/>",
+        "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/>",
+        "<meta name=\"description\" content=\"Consulta privada de tu solicitud de alquiler.\"/>",
+        "<meta name=\"robots\" content=\"noindex, nofollow\"/>",
+        "<meta property=\"og:title\" content=\"Disfraces y cotillón | Disfraz Cabezón\"/>",
+        "<meta property=\"og:description\" content=\"Alquiler y venta de disfraces, cotillón y reservas. Encontrá todo para tu próxima fiesta en Av. Rivadavia 3314, CABA.\"/>",
+        "<meta property=\"og:url\" content=\"https://dc-web-8ai4.onrender.com/\"/>",
+        "<meta property=\"og:site_name\" content=\"Disfraz Cabezón\"/>",
+        "<meta property=\"og:locale\" content=\"es_AR\"/>",
+        "<meta property=\"og:image\" content=\"https://dc-web-8ai4.onrender.com/brand-logo.png\"/>",
+        "<meta property=\"og:image:width\" content=\"1254\"/>",
+        "<meta property=\"og:image:height\" content=\"1254\"/>",
+        "<meta property=\"og:image:alt\" content=\"Disfraz Cabezón\"/>",
+        "<meta property=\"og:type\" content=\"website\"/>",
+        "<meta name=\"twitter:card\" content=\"summary\"/>",
+        "<meta name=\"twitter:title\" content=\"Disfraces y cotillón | Disfraz Cabezón\"/>",
+        "<meta name=\"twitter:description\" content=\"Alquiler y venta de disfraces, cotillón y reservas. Encontrá todo para tu próxima fiesta en Av. Rivadavia 3314, CABA.\"/>",
+        "<meta name=\"twitter:image\" content=\"https://dc-web-8ai4.onrender.com/brand-logo.png\"/>"
+      ],
+      "icons": [
+        "<link rel=\"canonical\" href=\"https://dc-web-8ai4.onrender.com/solicitud/\"/>",
+        "<link rel=\"icon\" href=\"/icon.png?icon.1zv23nxi84eqj.png\" sizes=\"128x128\" type=\"image/png\"/>"
+      ]
+    },
+    {
+      "path": "/auditoria-pagina-inexistente/",
+      "status": 404,
+      "ms": 372,
+      "bytes": 13585,
+      "title": "Disfraz Cabezón · Tu próxima gran historia",
+      "metas": [
+        "<meta charSet=\"utf-8\"/>",
+        "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/>",
+        "<meta name=\"robots\" content=\"noindex\"/>",
+        "<meta name=\"description\" content=\"Alquiler y venta de disfraces, cotillón y reservas. Encontrá todo para tu próxima fiesta en Av. Rivadavia 3314, CABA.\"/>",
+        "<meta property=\"og:title\" content=\"Disfraces y cotillón | Disfraz Cabezón\"/>",
+        "<meta property=\"og:description\" content=\"Alquiler y venta de disfraces, cotillón y reservas. Encontrá todo para tu próxima fiesta en Av. Rivadavia 3314, CABA.\"/>",
+        "<meta property=\"og:url\" content=\"https://dc-web-8ai4.onrender.com/\"/>",
+        "<meta property=\"og:site_name\" content=\"Disfraz Cabezón\"/>",
+        "<meta property=\"og:locale\" content=\"es_AR\"/>",
+        "<meta property=\"og:image\" content=\"https://dc-web-8ai4.onrender.com/brand-logo.png\"/>",
+        "<meta property=\"og:image:width\" content=\"1254\"/>",
+        "<meta property=\"og:image:height\" content=\"1254\"/>",
+        "<meta property=\"og:image:alt\" content=\"Disfraz Cabezón\"/>",
+        "<meta property=\"og:type\" content=\"website\"/>",
+        "<meta name=\"twitter:card\" content=\"summary\"/>",
+        "<meta name=\"twitter:title\" content=\"Disfraces y cotillón | Disfraz Cabezón\"/>",
+        "<meta name=\"twitter:description\" content=\"Alquiler y venta de disfraces, cotillón y reservas. Encontrá todo para tu próxima fiesta en Av. Rivadavia 3314, CABA.\"/>",
+        "<meta name=\"twitter:image\" content=\"https://dc-web-8ai4.onrender.com/brand-logo.png\"/>"
+      ],
+      "icons": [
+        "<link rel=\"canonical\" href=\"https://dc-web-8ai4.onrender.com/\"/>",
+        "<link rel=\"icon\" href=\"/icon.png?icon.1zv23nxi84eqj.png\" sizes=\"128x128\" type=\"image/png\"/>"
+      ]
+    }
+  ],
+  "offline": {
+    "categories": [
+      {
+        "name": "Hombres",
+        "all": 110,
+        "alquiler": 110,
+        "venta": 0
+      },
+      {
+        "name": "Cabezones",
+        "all": 94,
+        "alquiler": 94,
+        "venta": 0
+      },
+      {
+        "name": "Personajes",
+        "all": 148,
+        "alquiler": 144,
+        "venta": 4
+      },
+      {
+        "name": "Profesiones",
+        "all": 50,
+        "alquiler": 47,
+        "venta": 3
+      },
+      {
+        "name": "Superheroes y Princesas",
+        "all": 32,
+        "alquiler": 32,
+        "venta": 0
+      },
+      {
+        "name": "Halloween",
+        "all": 45,
+        "alquiler": 32,
+        "venta": 13
+      },
+      {
+        "name": "Históricos",
+        "all": 52,
+        "alquiler": 48,
+        "venta": 4
+      },
+      {
+        "name": "Otros",
+        "all": 78,
+        "alquiler": 78,
+        "venta": 0
+      },
+      {
+        "name": "Mujeres",
+        "all": 103,
+        "alquiler": 103,
+        "venta": 0
+      },
+      {
+        "name": "Niños",
+        "all": 49,
+        "alquiler": 0,
+        "venta": 49
+      }
+    ],
+    "branches": [
+      {
+        "id": "6e1bab71-8868-481c-844a-2e8ba8fb8c37",
+        "name": "Halloween",
+        "group": "FECHAS ESPECIALES",
+        "total": 116,
+        "purchasable": 72
+      },
+      {
+        "id": "2e3e0272-6cc1-4573-b9c8-07357e0573da",
+        "name": "Golosinas",
+        "group": "REPOSTERÍA",
+        "total": 23,
+        "purchasable": 9
+      },
+      {
+        "id": "63cadb0c-f15a-416d-8192-098b09853eff",
+        "name": "Navidad",
+        "group": "FECHAS ESPECIALES",
+        "total": 8,
+        "purchasable": 7
+      },
+      {
+        "id": "a7868929-5682-4f34-969a-2628f7695078",
+        "name": "Fiestas",
+        "group": "COTILLÓN",
+        "total": 681,
+        "purchasable": 527
+      },
+      {
+        "id": "f27bf0d6-2ecf-4bb2-848d-e51d5a01a8e7",
+        "name": "Cumpleaños infantil",
+        "group": "COTILLÓN",
+        "total": 37,
+        "purchasable": 30
+      },
+      {
+        "id": "7ed1538f-335e-4fa2-a557-2792a074bc02",
+        "name": "Comestibles",
+        "group": "REPOSTERÍA",
+        "total": 116,
+        "purchasable": 91
+      },
+      {
+        "id": "4b9d4614-a950-4652-8319-1833ab443e74",
+        "name": "Accesorios",
+        "group": "REPOSTERÍA",
+        "total": 56,
+        "purchasable": 28
+      },
+      {
+        "id": "bec93fd7-03fb-4f81-b3e6-2dbdde70c1a9",
+        "name": "Pascua",
+        "group": "FECHAS ESPECIALES",
+        "total": 3,
+        "purchasable": 2
+      },
+      {
+        "id": "de414927-48bb-4e41-9133-bcca0b250330",
+        "name": "San Valentín",
+        "group": "FECHAS ESPECIALES",
+        "total": 0,
+        "purchasable": 0
+      },
+      {
+        "id": "bec5acaa-0fd9-4757-864a-f6d1d4b7cec1",
+        "name": "Patrios",
+        "group": "FECHAS ESPECIALES",
+        "total": 59,
+        "purchasable": 34
+      },
+      {
+        "id": "c226f920-144c-46a3-8fea-0a92bb6419ad",
+        "name": "Baby Shower y revelación de género",
+        "group": "FECHAS ESPECIALES",
+        "total": 0,
+        "purchasable": 0
+      },
+      {
+        "id": "136129f7-ce31-411c-86c6-354de154aeb5",
+        "name": "Bautismo, comunión, 1 año",
+        "group": "FECHAS ESPECIALES",
+        "total": 20,
+        "purchasable": 0
+      },
+      {
+        "id": "01efaf7d-4e45-4f38-9d7c-588f64af45c0",
+        "name": "Egresados, UPD y recibidas",
+        "group": "FECHAS ESPECIALES",
+        "total": 6,
+        "purchasable": 2
+      },
+      {
+        "id": "3a6969c2-32c8-48d1-afaa-5ff54759d6da",
+        "name": "Primavera",
+        "group": "FECHAS ESPECIALES",
+        "total": 0,
+        "purchasable": 0
+      },
+      {
+        "id": "c808ebc7-0094-4fc5-9575-9b1768a0c429",
+        "name": "Mundial",
+        "group": "FECHAS ESPECIALES",
+        "total": 11,
+        "purchasable": 4
+      },
+      {
+        "id": "e54b72e4-4c30-470f-9125-e24225b3f447",
+        "name": "Despedida de soltera",
+        "group": "FECHAS ESPECIALES",
+        "total": 5,
+        "purchasable": 5
+      },
+      {
+        "id": "b1f8476d-c2c2-4f68-9293-f0b9fe1b343a",
+        "name": "Otros...",
+        "group": "FECHAS ESPECIALES",
+        "total": 0,
+        "purchasable": 0
+      },
+      {
+        "id": "c27bb7b0-8f13-4a6d-8245-d2a4f752fa06",
+        "name": "Bandejas",
+        "group": "DESCARTABLES",
+        "total": 16,
+        "purchasable": 14
+      },
+      {
+        "id": "ce8722fc-a2e0-489a-b1bd-a409ec268b03",
+        "name": "Cubiertos",
+        "group": "DESCARTABLES",
+        "total": 1,
+        "purchasable": 1
+      },
+      {
+        "id": "47d84ef2-129e-4131-8e7c-d00568fbeb91",
+        "name": "Servilletas",
+        "group": "DESCARTABLES",
+        "total": 3,
+        "purchasable": 2
+      },
+      {
+        "id": "0d113862-5d78-4ba7-8aca-af310f9b00cd",
+        "name": "Platos",
+        "group": "DESCARTABLES",
+        "total": 6,
+        "purchasable": 4
+      },
+      {
+        "id": "95fff8d0-1b89-4319-a412-a8b42b34dad9",
+        "name": "Vasos / Copas / Jarras",
+        "group": "DESCARTABLES",
+        "total": 9,
+        "purchasable": 7
+      },
+      {
+        "id": "6b2e9688-4df5-42a3-aa7a-73acc97dd161",
+        "name": "Cajas",
+        "group": "DESCARTABLES",
+        "total": 13,
+        "purchasable": 5
+      },
+      {
+        "id": "3e03485e-519a-4035-9744-2e9cccc74a76",
+        "name": "Sobres / Bolsas",
+        "group": "DESCARTABLES",
+        "total": 4,
+        "purchasable": 3
+      },
+      {
+        "id": "307564f5-93b3-453c-beae-6c30f90abc55",
+        "name": "Sorbetes",
+        "group": "DESCARTABLES",
+        "total": 2,
+        "purchasable": 1
+      },
+      {
+        "id": "a208efd9-3879-4da5-b252-9a7979ebca14",
+        "name": "Hilos y cintas",
+        "group": "DESCARTABLES",
+        "total": 7,
+        "purchasable": 6
+      },
+      {
+        "id": "0a6de4f5-4fc5-4386-81f1-f8b580d4ba5b",
+        "name": "Carnaval carioca",
+        "group": "COTILLÓN",
+        "parentId": "a7868929-5682-4f34-969a-2628f7695078",
+        "total": 34,
+        "purchasable": 31
+      },
+      {
+        "id": "62fdf4a9-763a-41b3-95a9-cf32df364de5",
+        "name": "Anteojos",
+        "group": "COTILLÓN",
+        "parentId": "a7868929-5682-4f34-969a-2628f7695078",
+        "total": 24,
+        "purchasable": 22
+      },
+      {
+        "id": "22e5a1d6-f90b-408c-852f-60c379a288e0",
+        "name": "Máscaras y antifaces",
+        "group": "COTILLÓN",
+        "parentId": "a7868929-5682-4f34-969a-2628f7695078",
+        "total": 173,
+        "purchasable": 137
+      },
+      {
+        "id": "5fbdecfe-8603-407f-930b-933df35acccb",
+        "name": "Accesorios para lanzar",
+        "group": "COTILLÓN",
+        "parentId": "a7868929-5682-4f34-969a-2628f7695078",
+        "total": 5,
+        "purchasable": 1
+      },
+      {
+        "id": "03df8fc8-e3fe-427d-a19b-5fe5d80ab9ea",
+        "name": "Pelucas y barbas",
+        "group": "COTILLÓN",
+        "parentId": "a7868929-5682-4f34-969a-2628f7695078",
+        "total": 40,
+        "purchasable": 37
+      },
+      {
+        "id": "046b9c39-dca3-460d-9edf-f5d8f9931506",
+        "name": "Maquillaje pinta pelo",
+        "group": "COTILLÓN",
+        "parentId": "a7868929-5682-4f34-969a-2628f7695078",
+        "total": 39,
+        "purchasable": 24
+      },
+      {
+        "id": "6c8f2635-efba-4c3c-9440-cfbccaa5c050",
+        "name": "Sombreros cascos",
+        "group": "COTILLÓN",
+        "parentId": "a7868929-5682-4f34-969a-2628f7695078",
+        "total": 62,
+        "purchasable": 47
+      },
+      {
+        "id": "c9bf0023-9c6f-4f5d-9d57-1f260158616b",
+        "name": "Vinchas y coronas",
+        "group": "COTILLÓN",
+        "parentId": "a7868929-5682-4f34-969a-2628f7695078",
+        "total": 78,
+        "purchasable": 65
+      },
+      {
+        "id": "814ff6ef-4091-4d10-b91d-7c54ded75382",
+        "name": "Armas bastones escudos",
+        "group": "COTILLÓN",
+        "parentId": "a7868929-5682-4f34-969a-2628f7695078",
+        "total": 44,
+        "purchasable": 30
+      },
+      {
+        "id": "dfb6a719-1894-45a8-8353-c6e325f052e4",
+        "name": "Accesorios",
+        "group": "COTILLÓN",
+        "parentId": "a7868929-5682-4f34-969a-2628f7695078",
+        "total": 36,
+        "purchasable": 30
+      },
+      {
+        "id": "dca9abb4-8126-4917-9185-d76054ec8fc0",
+        "name": "Alas y tutús",
+        "group": "COTILLÓN",
+        "parentId": "a7868929-5682-4f34-969a-2628f7695078",
+        "total": 25,
+        "purchasable": 22
+      },
+      {
+        "id": "8bd2edb5-01f7-4285-a014-b1ec550663a4",
+        "name": "Guantes y medias",
+        "group": "COTILLÓN",
+        "parentId": "a7868929-5682-4f34-969a-2628f7695078",
+        "total": 43,
+        "purchasable": 35
+      },
+      {
+        "id": "7c1cd3d5-c740-4138-9121-6040994d6d12",
+        "name": "Capas",
+        "group": "COTILLÓN",
+        "parentId": "a7868929-5682-4f34-969a-2628f7695078",
+        "total": 36,
+        "purchasable": 17
+      },
+      {
+        "id": "18cfbc3b-3eb3-46ca-b8ca-2cd7e9566dda",
+        "name": "Corbatas moños cinturones y tiradores",
+        "group": "COTILLÓN",
+        "parentId": "a7868929-5682-4f34-969a-2628f7695078",
+        "total": 8,
+        "purchasable": 8
+      },
+      {
+        "id": "84f845df-69ef-483f-afa7-5758630bf92a",
+        "name": "Personajes",
+        "group": "COTILLÓN",
+        "parentId": "f27bf0d6-2ecf-4bb2-848d-e51d5a01a8e7",
+        "total": 1,
+        "purchasable": 1
+      },
+      {
+        "id": "590ddc6b-9ce8-4222-be34-0fae3a08fddf",
+        "name": "Adorno para torta",
+        "group": "COTILLÓN",
+        "parentId": "f27bf0d6-2ecf-4bb2-848d-e51d5a01a8e7",
+        "total": 5,
+        "purchasable": 3
+      },
+      {
+        "id": "c8724676-b6bf-4c10-aac9-282b5d70d5e0",
+        "name": "Decoración",
+        "group": "COTILLÓN",
+        "parentId": "f27bf0d6-2ecf-4bb2-848d-e51d5a01a8e7",
+        "total": 29,
+        "purchasable": 24
+      },
+      {
+        "id": "f886e42c-8160-43b8-8191-01e0902f51b6",
+        "name": "Bolsas y piñatas",
+        "group": "COTILLÓN",
+        "parentId": "f27bf0d6-2ecf-4bb2-848d-e51d5a01a8e7",
+        "total": 2,
+        "purchasable": 2
+      }
+    ],
+    "groups": [
+      {
+        "name": "COTILLÓN",
+        "total": 718,
+        "purchasable": 557
+      },
+      {
+        "name": "REPOSTERÍA",
+        "total": 196,
+        "purchasable": 128
+      },
+      {
+        "name": "FECHAS ESPECIALES",
+        "total": 228,
+        "purchasable": 126
+      },
+      {
+        "name": "DESCARTABLES",
+        "total": 62,
+        "purchasable": 44
+      }
+    ],
+    "searches": [
+      {
+        "q": "ninos",
+        "costumes": 0,
+        "cotillon": 0
+      },
+      {
+        "q": "niños",
+        "costumes": 49,
+        "cotillon": 1
+      },
+      {
+        "q": "premium",
+        "costumes": 8,
+        "cotillon": 2
+      },
+      {
+        "q": "pre,ium",
+        "costumes": 1,
+        "cotillon": 0
+      },
+      {
+        "q": "mascara",
+        "costumes": 3,
+        "cotillon": 83
+      },
+      {
+        "q": "máscara",
+        "costumes": 0,
+        "cotillon": 178
+      }
+    ],
+    "variantCount": 44,
+    "variants": [
+      {
+        "id": "excel-2115053564",
+        "name": "Abanicos Colores Surtidos"
+      },
+      {
+        "id": "excel-2115450965",
+        "name": "Anteojo Ovalado Varios Colores"
+      },
+      {
+        "id": "excel-2115451029",
+        "name": "Anteojo Rayban Liso Negro"
+      },
+      {
+        "id": "excel-2115053547",
+        "name": "Antifaz Gatita Lentejuela Tornasol- Casa"
+      },
+      {
+        "id": "excel-2115200355",
+        "name": "Banderin De Personajes A Eleccion"
+      },
+      {
+        "id": "excel-2115053609",
+        "name": "Banderin Feliz Cumple Color A Eleccion"
+      },
+      {
+        "id": "excel-2115053603",
+        "name": "Bengalas Gibreadas Varios Colores"
+      },
+      {
+        "id": "excel-2115450914",
+        "name": "Capelina Varias"
+      }
+    ],
+    "cartMessage": "¡Hola! Quiero consultar por este pedido de cotillón:\n\n1. 2 × Abanicos Colores Surtidos · rojo (COTILLÓN › Fiestas › Carnaval carioca) — $ 3.000 c/u · subtotal $ 6.000\n2. 1 × Corona Princesa Plastica (COTILLÓN › Fiestas › Vinchas y coronas) — $ 2.500 c/u · subtotal $ 2.500\n\nTotal publicado de los productos con precio: $ 8.500.\nPor favor, confirmen disponibilidad, precios finales y forma de entrega. ¡Gracias!",
+    "normalizedOverstock": [
+      {
+        "id": "excel-2115053564",
+        "quantity": 12,
+        "option": "rojo",
+        "unitPrice": 3000,
+        "priceKnown": true
+      },
+      {
+        "id": "excel-2115053564",
+        "quantity": 1,
+        "option": "azul",
+        "unitPrice": 3000,
+        "priceKnown": true
+      }
+    ],
+    "persisted": [
+      {
+        "id": "excel-2115053564",
+        "quantity": 2,
+        "option": "rojo",
+        "unitPrice": 3000,
+        "priceKnown": true
+      },
+      {
+        "id": "excel-2115053557",
+        "quantity": 1,
+        "unitPrice": 2500,
+        "priceKnown": true
+      }
+    ],
+    "saleLimits": [
+      {
+        "id": "excel-2115151703",
+        "name": "Disfraz Boxeador T1",
+        "limit": 1,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115179181",
+        "name": "Disfraz Boxeador Usa- Party Store",
+        "limit": 2,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115179182",
+        "name": "Disfraz Cardenal",
+        "limit": 1,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115179183",
+        "name": "Disfraz Diosa Griega",
+        "limit": 1,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115151725",
+        "name": "Disfraz Esqueleto T1",
+        "limit": 1,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115179184",
+        "name": "Disfraz Faraon",
+        "limit": 1,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115179188",
+        "name": "Disfraz Gladiador",
+        "limit": 1,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115179189",
+        "name": "Disfraz Gladiadora",
+        "limit": 1,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115179190",
+        "name": "Disfraz Medusa",
+        "limit": 1,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115061671",
+        "name": "Disfraz Papa Noel Friselina",
+        "limit": 20,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115151758",
+        "name": "Disfraz Tunica Harry Potter Grande",
+        "limit": 2,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115176390",
+        "name": "Disfraz Anna Niña",
+        "limit": 1,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115169444",
+        "name": "Disfraz Annabelle Niña",
+        "limit": 3,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115176393",
+        "name": "Disfraz Art Payaso Niño",
+        "limit": 4,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115176398",
+        "name": "Disfraz Batichica Niña-",
+        "limit": 1,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115176400",
+        "name": "Disfraz Bella Niña",
+        "limit": 1,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115176438",
+        "name": "Disfraz Brujita Niña",
+        "limit": 11,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115176442",
+        "name": "Disfraz Capitan America Niño",
+        "limit": 1,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115177528",
+        "name": "Disfraz Coco Niño",
+        "limit": 3,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115151746",
+        "name": "Disfraz Coya Nena",
+        "limit": 3,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115061669",
+        "name": "Disfraz De Angelito Niño",
+        "limit": 4,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115177529",
+        "name": "Disfraz Deadpool Niño",
+        "limit": 1,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115179173",
+        "name": "Disfraz Elsa Niños Premium - Ovejita Negra",
+        "limit": 2,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115177539",
+        "name": "Disfraz Esqueleto Niño",
+        "limit": 15,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115177542",
+        "name": "Disfraz Freddy Niño",
+        "limit": 1,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115151739",
+        "name": "Disfraz Gaucho",
+        "limit": 1,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115177543",
+        "name": "Disfraz Harley Quinn Niña",
+        "limit": 3,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115177545",
+        "name": "Disfraz Huggy Niño",
+        "limit": 2,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115179176",
+        "name": "Disfraz Infantil Mario Premium",
+        "limit": 1,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115179177",
+        "name": "Disfraz Infantil Mira Kpop Blanco",
+        "limit": 1,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115151592",
+        "name": "Disfraz Infantil Policia Niña",
+        "limit": 1,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115179178",
+        "name": "Disfraz Infantil Spider Premium",
+        "limit": 1,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115179179",
+        "name": "Disfraz Infantil Woody Premium",
+        "limit": 1,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115177548",
+        "name": "Disfraz Intensamente Niña",
+        "limit": 3,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115178654",
+        "name": "Disfraz Joker Niño",
+        "limit": 1,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115178668",
+        "name": "Disfraz Lady Bug Niña",
+        "limit": 2,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115178676",
+        "name": "Disfraz Marshall Niño",
+        "limit": 1,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115178682",
+        "name": "Disfraz Merlina Niña",
+        "limit": 2,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115179180",
+        "name": "Disfraz Merlina Pre,ium Niños",
+        "limit": 1,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115178687",
+        "name": "Disfraz Minion Niño",
+        "limit": 2,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115179191",
+        "name": "Disfraz Mirabel Premium",
+        "limit": 1,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115178689",
+        "name": "Disfraz Moana Niña",
+        "limit": 4,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115178690",
+        "name": "Disfraz Mujer Maravilla Niña",
+        "limit": 2,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115178700",
+        "name": "Disfraz Peppa Niña",
+        "limit": 1,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115178705",
+        "name": "Disfraz Poli Niño",
+        "limit": 6,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115151597",
+        "name": "Disfraz Policia Niño Candela",
+        "limit": 1,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115178706",
+        "name": "Disfraz Robin Niño",
+        "limit": 3,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115178717",
+        "name": "Disfraz Saw Niño",
+        "limit": 2,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115178718",
+        "name": "Disfraz Sirenita Niña",
+        "limit": 4,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115178721",
+        "name": "Disfraz Skye Niña",
+        "limit": 1,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115178734",
+        "name": "Disfraz Spiderwoman Niña",
+        "limit": 1,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115179157",
+        "name": "Disfraz Tinkerbell Niña",
+        "limit": 2,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115179168",
+        "name": "Disfraz Vampirina Niña",
+        "limit": 3,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115454095",
+        "name": "Set Esqueleto Niño",
+        "limit": 3,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115450820",
+        "name": "Set Zombie Niño",
+        "limit": 2,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115053599",
+        "name": "Disfraz Coya Mujer T3- Candela",
+        "limit": 2,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115053600",
+        "name": "Disfraz Coya Mujer T4- Candela",
+        "limit": 1,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115053601",
+        "name": "Disfraz Dama Antigua Rosa T3- Candela",
+        "limit": 4,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115053589",
+        "name": "Disfraz Gaucho T3- Candela",
+        "limit": 2,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115053590",
+        "name": "Disfraz Gaucho T4- Candela",
+        "limit": 2,
+        "saleCondition": ""
+      },
+      {
+        "id": "excel-2115179186",
+        "name": "Disfraz Joker L",
+        "limit": 2,
+        "saleCondition": ""
+      }
+    ],
+    "validationEmpty": [
+      {
+        "step": 1,
+        "errors": {
+          "fullName": "Escribí nombre y apellido completos.",
+          "dni": "Ingresá 7 u 8 números, sin puntos.",
+          "birthDate": "Indicá tu fecha de nacimiento.",
+          "address": "Ingresá tu domicilio actual completo.",
+          "city": "Ingresá localidad y provincia.",
+          "phone": "Ingresá código de área y número (10 a 15 dígitos).",
+          "altPhone": "Usá un teléfono alternativo diferente al principal.",
+          "email": "Ingresá un correo válido.",
+          "adult": "Confirmá que sos mayor de edad.",
+          "privacy": "Aceptá el tratamiento de datos para gestionar el alquiler."
+        }
+      },
+      {
+        "step": 2,
+        "errors": {
+          "fullName": "Escribí nombre y apellido completos.",
+          "dni": "Ingresá 7 u 8 números, sin puntos.",
+          "birthDate": "Indicá tu fecha de nacimiento.",
+          "address": "Ingresá tu domicilio actual completo.",
+          "city": "Ingresá localidad y provincia.",
+          "phone": "Ingresá código de área y número (10 a 15 dígitos).",
+          "altPhone": "Usá un teléfono alternativo diferente al principal.",
+          "email": "Ingresá un correo válido.",
+          "adult": "Confirmá que sos mayor de edad.",
+          "privacy": "Aceptá el tratamiento de datos para gestionar el alquiler.",
+          "item0": "Completá personaje, categoría y cantidad.",
+          "pickupDate": "Elegí una fecha de retiro desde hoy.",
+          "returnDate": "La devolución debe ser igual o posterior al retiro.",
+          "pickupWindow": "Para este día hace falta una excepción previamente autorizada.",
+          "returnWindow": "Para este día hace falta una excepción previamente autorizada.",
+          "total": "Ingresá el total del alquiler acordado por WhatsApp.",
+          "priorInfo": "Confirmá la información recibida por WhatsApp."
+        }
+      },
+      {
+        "step": 3,
+        "errors": {
+          "fullName": "Escribí nombre y apellido completos.",
+          "dni": "Ingresá 7 u 8 números, sin puntos.",
+          "birthDate": "Indicá tu fecha de nacimiento.",
+          "address": "Ingresá tu domicilio actual completo.",
+          "city": "Ingresá localidad y provincia.",
+          "phone": "Ingresá código de área y número (10 a 15 dígitos).",
+          "altPhone": "Usá un teléfono alternativo diferente al principal.",
+          "email": "Ingresá un correo válido.",
+          "adult": "Confirmá que sos mayor de edad.",
+          "privacy": "Aceptá el tratamiento de datos para gestionar el alquiler.",
+          "item0": "Completá personaje, categoría y cantidad.",
+          "pickupDate": "Elegí una fecha de retiro desde hoy.",
+          "returnDate": "La devolución debe ser igual o posterior al retiro.",
+          "pickupWindow": "Para este día hace falta una excepción previamente autorizada.",
+          "returnWindow": "Para este día hace falta una excepción previamente autorizada.",
+          "total": "Ingresá el total del alquiler acordado por WhatsApp.",
+          "priorInfo": "Confirmá la información recibida por WhatsApp.",
+          "docDate": "Indicá la fecha de emisión.",
+          "namesMatch": "Confirmá que el nombre y domicilio coinciden."
+        }
+      },
+      {
+        "step": 4,
+        "errors": {
+          "fullName": "Escribí nombre y apellido completos.",
+          "dni": "Ingresá 7 u 8 números, sin puntos.",
+          "birthDate": "Indicá tu fecha de nacimiento.",
+          "address": "Ingresá tu domicilio actual completo.",
+          "city": "Ingresá localidad y provincia.",
+          "phone": "Ingresá código de área y número (10 a 15 dígitos).",
+          "altPhone": "Usá un teléfono alternativo diferente al principal.",
+          "email": "Ingresá un correo válido.",
+          "adult": "Confirmá que sos mayor de edad.",
+          "privacy": "Aceptá el tratamiento de datos para gestionar el alquiler.",
+          "item0": "Completá personaje, categoría y cantidad.",
+          "pickupDate": "Elegí una fecha de retiro desde hoy.",
+          "returnDate": "La devolución debe ser igual o posterior al retiro.",
+          "pickupWindow": "Para este día hace falta una excepción previamente autorizada.",
+          "returnWindow": "Para este día hace falta una excepción previamente autorizada.",
+          "total": "Ingresá el total del alquiler acordado por WhatsApp.",
+          "priorInfo": "Confirmá la información recibida por WhatsApp.",
+          "docDate": "Indicá la fecha de emisión.",
+          "namesMatch": "Confirmá que el nombre y domicilio coinciden."
+        }
+      },
+      {
+        "step": 5,
+        "errors": {
+          "fullName": "Escribí nombre y apellido completos.",
+          "dni": "Ingresá 7 u 8 números, sin puntos.",
+          "birthDate": "Indicá tu fecha de nacimiento.",
+          "address": "Ingresá tu domicilio actual completo.",
+          "city": "Ingresá localidad y provincia.",
+          "phone": "Ingresá código de área y número (10 a 15 dígitos).",
+          "altPhone": "Usá un teléfono alternativo diferente al principal.",
+          "email": "Ingresá un correo válido.",
+          "adult": "Confirmá que sos mayor de edad.",
+          "privacy": "Aceptá el tratamiento de datos para gestionar el alquiler.",
+          "item0": "Completá personaje, categoría y cantidad.",
+          "pickupDate": "Elegí una fecha de retiro desde hoy.",
+          "returnDate": "La devolución debe ser igual o posterior al retiro.",
+          "pickupWindow": "Para este día hace falta una excepción previamente autorizada.",
+          "returnWindow": "Para este día hace falta una excepción previamente autorizada.",
+          "total": "Ingresá el total del alquiler acordado por WhatsApp.",
+          "priorInfo": "Confirmá la información recibida por WhatsApp.",
+          "docDate": "Indicá la fecha de emisión.",
+          "namesMatch": "Confirmá que el nombre y domicilio coinciden.",
+          "terms": "Aceptá los términos y condiciones.",
+          "truth": "Aceptá la declaración de veracidad."
+        }
+      }
+    ],
+    "depositExamples": [
+      {
+        "id": "catalogo-disfraz-39",
+        "name": "Banana Fortnite",
+        "sheet": 65000,
+        "form": 100000
+      },
+      {
+        "id": "catalogo-disfraz-108",
+        "name": "Daddy Yankee",
+        "sheet": 100000,
+        "form": 60000
+      },
+      {
+        "id": "catalogo-disfraz-74",
+        "name": "Freddy Krueger",
+        "sheet": 65000,
+        "form": 60000
+      }
+    ]
+  },
+  "smallOriginals": [
+    {
+      "id": "excel-2115151739",
+      "name": "Disfraz Gaucho",
+      "status": 200,
+      "width": 224,
+      "height": 224,
+      "bytes": 5337
+    },
+    {
+      "id": "excel-2115061671",
+      "name": "Disfraz Papa Noel Friselina",
+      "status": 200,
+      "width": 225,
+      "height": 225,
+      "bytes": 9293
+    },
+    {
+      "id": "excel-2115151758",
+      "name": "Disfraz Tunica Harry Potter Grande",
+      "status": 200,
+      "width": 225,
+      "height": 225,
+      "bytes": 4172
+    }
+  ],
+  "imageSummary": {
+    "cards": 1573,
+    "sampleOriginals": 34,
+    "failures": 0,
+    "smallCards": 72
+  },
+  "findings": [
+    {
+      "id": "H001",
+      "severity": "ALTO",
+      "evidence": "[components/Admin.tsx:39](https://github.com/disfrazcabezoneventos-alt/dc-web/blob/a64f8e66fc01ec6e25f44ed49a88ff9c3fc19e34/components/Admin.tsx#L39); [backend/Code.gs:136](https://github.com/disfrazcabezoneventos-alt/dc-web/blob/a64f8e66fc01ec6e25f44ed49a88ff9c3fc19e34/backend/Code.gs#L136)",
+      "captures": [
+        "admin-editor-alquiler.jpg"
+      ]
+    },
+    {
+      "id": "H002",
+      "severity": "ALTO",
+      "evidence": "[components/Admin.tsx:39](https://github.com/disfrazcabezoneventos-alt/dc-web/blob/a64f8e66fc01ec6e25f44ed49a88ff9c3fc19e34/components/Admin.tsx#L39); [backend/Code.gs:32](https://github.com/disfrazcabezoneventos-alt/dc-web/blob/a64f8e66fc01ec6e25f44ed49a88ff9c3fc19e34/backend/Code.gs#L32)",
+      "captures": [
+        "admin-editor-alquiler.jpg"
+      ]
+    },
+    {
+      "id": "H003",
+      "severity": "ALTO",
+      "evidence": "[lib/model.ts:14](https://github.com/disfrazcabezoneventos-alt/dc-web/blob/a64f8e66fc01ec6e25f44ed49a88ff9c3fc19e34/lib/model.ts#L14); [components/RentalForm.tsx:27](https://github.com/disfrazcabezoneventos-alt/dc-web/blob/a64f8e66fc01ec6e25f44ed49a88ff9c3fc19e34/components/RentalForm.tsx#L27)",
+      "captures": [
+        "H003-garantia-reserva.jpg"
+      ]
+    },
+    {
+      "id": "H004",
+      "severity": "MEDIO",
+      "evidence": "[components/Admin.tsx:39](https://github.com/disfrazcabezoneventos-alt/dc-web/blob/a64f8e66fc01ec6e25f44ed49a88ff9c3fc19e34/components/Admin.tsx#L39); [components/PurchaseForm.tsx](https://github.com/disfrazcabezoneventos-alt/dc-web/blob/a64f8e66fc01ec6e25f44ed49a88ff9c3fc19e34/components/PurchaseForm.tsx)",
+      "captures": [
+        "admin-editor-venta-ninos.jpg"
+      ]
+    },
+    {
+      "id": "H005",
+      "severity": "MEDIO",
+      "evidence": "[components/Catalog.tsx:49](https://github.com/disfrazcabezoneventos-alt/dc-web/blob/a64f8e66fc01ec6e25f44ed49a88ff9c3fc19e34/components/Catalog.tsx#L49); [lib/cotillon-taxonomy.ts:104](https://github.com/disfrazcabezoneventos-alt/dc-web/blob/a64f8e66fc01ec6e25f44ed49a88ff9c3fc19e34/lib/cotillon-taxonomy.ts#L104)",
+      "captures": [
+        "H005-busqueda-ninos-390.jpg"
+      ]
+    },
+    {
+      "id": "H006",
+      "severity": "MEDIO",
+      "evidence": "cotillon!A2:B1205; duplicados-2026-10-28.csv",
+      "captures": [
+        "H006-coronas-dos-precios.jpg"
+      ]
+    },
+    {
+      "id": "H007",
+      "severity": "BAJO",
+      "evidence": "disfraces!A514:B514; búsquedas en evidencia-2026-10-28.json",
+      "captures": [
+        "public-ficha-excel-2115179180.jpg"
+      ]
+    },
+    {
+      "id": "H008",
+      "severity": "MEDIO",
+      "evidence": "[lib/thumbnail.ts:12](https://github.com/disfrazcabezoneventos-alt/dc-web/blob/a64f8e66fc01ec6e25f44ed49a88ff9c3fc19e34/lib/thumbnail.ts#L12); imagenes-2026-10-28.csv; activos-2026-10-28.csv",
+      "captures": [
+        "public-ficha-excel-2115151739.jpg",
+        "public-ficha-excel-2115061671.jpg",
+        "public-ficha-excel-2115151758.jpg"
+      ]
+    },
+    {
+      "id": "H009",
+      "severity": "MEDIO",
+      "evidence": "cotillon!A279:B279; [components/Catalog.tsx:98](https://github.com/disfrazcabezoneventos-alt/dc-web/blob/a64f8e66fc01ec6e25f44ed49a88ff9c3fc19e34/components/Catalog.tsx#L98)",
+      "captures": [
+        "H009-sin-foto.jpg"
+      ]
+    },
+    {
+      "id": "H010",
+      "severity": "MEDIO",
+      "evidence": "[components/Catalog.tsx:101](https://github.com/disfrazcabezoneventos-alt/dc-web/blob/a64f8e66fc01ec6e25f44ed49a88ff9c3fc19e34/components/Catalog.tsx#L101); textos-internos-2026-10-28.csv",
+      "captures": [
+        "H010-H020-set-scream.jpg"
+      ]
+    },
+    {
+      "id": "H011",
+      "severity": "MEDIO",
+      "evidence": "[components/Catalog.tsx:44](https://github.com/disfrazcabezoneventos-alt/dc-web/blob/a64f8e66fc01ec6e25f44ed49a88ff9c3fc19e34/components/Catalog.tsx#L44); [backend/Code.gs:96](https://github.com/disfrazcabezoneventos-alt/dc-web/blob/a64f8e66fc01ec6e25f44ed49a88ff9c3fc19e34/backend/Code.gs#L96)",
+      "captures": [
+        "H011-agotado.jpg",
+        "H011-admin-oculto-stock1.jpg"
+      ]
+    },
+    {
+      "id": "H012",
+      "severity": "MEDIO",
+      "evidence": "categorías de producción; [lib/cotillon-taxonomy.ts:103](https://github.com/disfrazcabezoneventos-alt/dc-web/blob/a64f8e66fc01ec6e25f44ed49a88ff9c3fc19e34/lib/cotillon-taxonomy.ts#L103)",
+      "captures": [
+        "admin-editor-mantel-sin-categoria.jpg"
+      ]
+    },
+    {
+      "id": "H013",
+      "severity": "MEDIO",
+      "evidence": "[lib/thumbnail.ts:12](https://github.com/disfrazcabezoneventos-alt/dc-web/blob/a64f8e66fc01ec6e25f44ed49a88ff9c3fc19e34/lib/thumbnail.ts#L12); [components/Catalog.tsx:101](https://github.com/disfrazcabezoneventos-alt/dc-web/blob/a64f8e66fc01ec6e25f44ed49a88ff9c3fc19e34/components/Catalog.tsx#L101)",
+      "captures": [
+        "public-home-1366.jpg",
+        "public-ficha-catalogo-disfraz-2.jpg"
+      ]
+    },
+    {
+      "id": "H014",
+      "severity": "MEDIO",
+      "evidence": "[components/Admin.tsx:12](https://github.com/disfrazcabezoneventos-alt/dc-web/blob/a64f8e66fc01ec6e25f44ed49a88ff9c3fc19e34/components/Admin.tsx#L12); [backend/Code.gs:31](https://github.com/disfrazcabezoneventos-alt/dc-web/blob/a64f8e66fc01ec6e25f44ed49a88ff9c3fc19e34/backend/Code.gs#L31)",
+      "captures": [
+        "admin-sin-sesion.jpg"
+      ]
+    },
+    {
+      "id": "H015",
+      "severity": "MEDIO",
+      "evidence": "[components/Admin.tsx:39](https://github.com/disfrazcabezoneventos-alt/dc-web/blob/a64f8e66fc01ec6e25f44ed49a88ff9c3fc19e34/components/Admin.tsx#L39); [components/Admin.tsx:40](https://github.com/disfrazcabezoneventos-alt/dc-web/blob/a64f8e66fc01ec6e25f44ed49a88ff9c3fc19e34/components/Admin.tsx#L40)",
+      "captures": [
+        "H015-admin-productos-360.jpg",
+        "admin-productos-1366.jpg"
+      ]
+    },
+    {
+      "id": "H016",
+      "severity": "BAJO",
+      "evidence": "[components/Shell.tsx:60](https://github.com/disfrazcabezoneventos-alt/dc-web/blob/a64f8e66fc01ec6e25f44ed49a88ff9c3fc19e34/components/Shell.tsx#L60)",
+      "captures": [
+        "public-home-1366.jpg"
+      ]
+    },
+    {
+      "id": "H017",
+      "severity": "BAJO",
+      "evidence": "[components/CotillonCart.tsx](https://github.com/disfrazcabezoneventos-alt/dc-web/blob/a64f8e66fc01ec6e25f44ed49a88ff9c3fc19e34/components/CotillonCart.tsx); contrastado con chunk público /_next/static/chunks/1o4srvd4ogj-d.js",
+      "captures": [
+        "H017-carrito-8500.jpg"
+      ]
+    },
+    {
+      "id": "H018",
+      "severity": "BAJO",
+      "evidence": "CSS publicado /_next/static/chunks/3cz-yop4nnvqa.css, selector .close-dialog",
+      "captures": [
+        "public-ficha-catalogo-disfraz-39.jpg"
+      ]
+    },
+    {
+      "id": "H019",
+      "severity": "MEDIO",
+      "evidence": "[components/RentalForm.tsx:50](https://github.com/disfrazcabezoneventos-alt/dc-web/blob/a64f8e66fc01ec6e25f44ed49a88ff9c3fc19e34/components/RentalForm.tsx#L50)",
+      "captures": [
+        "H019-cantidad-total-manual.jpg"
+      ]
+    },
+    {
+      "id": "H020",
+      "severity": "MEDIO",
+      "evidence": "disfraces filas 251/252; cotillon fila 649; fotos públicas y fichas-2026-10-28.csv",
+      "captures": [
+        "public-ficha-catalogo-disfraz-118.jpg",
+        "H010-H020-set-scream.jpg"
+      ]
+    },
+    {
+      "id": "H021",
+      "severity": "BAJO",
+      "evidence": "[components/Catalog.tsx:16](https://github.com/disfrazcabezoneventos-alt/dc-web/blob/a64f8e66fc01ec6e25f44ed49a88ff9c3fc19e34/components/Catalog.tsx#L16)",
+      "captures": [
+        "public-disfraces-1366.jpg"
+      ]
+    },
+    {
+      "id": "H022",
+      "severity": "CRÍTICO",
+      "evidence": "Panel real: cinco campos vacíos. components/RentalForm.tsx: disabled en step===3; backend/Code.gs: bank_().",
+      "captures": [
+        "H022-cuenta-cobro-vacia.jpg"
+      ]
+    },
+    {
+      "id": "H023",
+      "severity": "MEDIO",
+      "evidence": "Transcripción de DOM de la primera visita; catálogo recuperado y filtros verificados. No reproducido en la segunda sesión del navegador integrado.",
+      "captures": []
+    },
+    {
+      "id": "H024",
+      "severity": "BAJO",
+      "evidence": "UI real: plusEnabled=true, antes/después iguales; public-audit.json, test sharedStock13.",
+      "captures": [
+        "H024-carrito-tope-compartido.jpg"
+      ]
+    }
+  ],
+  "publication": {
+    "status": "draft_documents_ready_screenshots_pending_user_approval",
+    "screenshotsLocal": 102,
+    "screenshotsIncludedInThisCommit": 0,
+    "note": "La revisión automática rechazó la publicación de capturas binarias por posible contenido confidencial. Se solicitó autorización específica; no se reintentan las capturas bloqueadas mientras esté pendiente."
+  },
+  "interactiveEvidence": [
+    "capturas-2026-10-28/public-audit.json",
+    "capturas-2026-10-28/admin-audit.json"
+  ],
+  "summary": {
+    "findings": 24,
+    "severity": {
+      "ALTO": 3,
+      "MEDIO": 14,
+      "BAJO": 6,
+      "CRÍTICO": 1
+    },
+    "costumeModals": 33,
+    "cotillonCategoryNodes": 44,
+    "categoryLeafChecks": 42,
+    "layoutChecks": 32,
+    "criticalBankEmpty": true
+  }
+}

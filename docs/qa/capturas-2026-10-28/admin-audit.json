@@ -1,0 +1,1633 @@
+{
+  "tabs": [
+    {
+      "tab": "Categorías disfraces",
+      "appearance": null,
+      "emptyCancellations": false,
+      "emptyRequests": false,
+      "errors": [],
+      "headings": [
+        "Categorías de disfraces"
+      ],
+      "ninos": true,
+      "rows": 10
+    },
+    {
+      "tab": "Categorías cotillón",
+      "appearance": null,
+      "emptyCancellations": false,
+      "emptyRequests": false,
+      "errors": [],
+      "headings": [
+        "Categorías de cotillón"
+      ],
+      "ninos": false,
+      "rows": 51
+    },
+    {
+      "tab": "Reservas",
+      "appearance": null,
+      "emptyCancellations": false,
+      "emptyRequests": true,
+      "errors": [],
+      "headings": [
+        "Solicitudes de alquiler"
+      ],
+      "ninos": false,
+      "rows": 0
+    },
+    {
+      "tab": "Caja",
+      "appearance": null,
+      "emptyCancellations": false,
+      "emptyRequests": false,
+      "errors": [],
+      "headings": [
+        "Caja · cobros y costos"
+      ],
+      "ninos": true,
+      "rows": 0
+    },
+    {
+      "tab": "Arrepentimientos",
+      "appearance": null,
+      "emptyCancellations": true,
+      "emptyRequests": false,
+      "errors": [],
+      "headings": [
+        "Pedidos de arrepentimiento"
+      ],
+      "ninos": false,
+      "rows": 0
+    },
+    {
+      "tab": "Apariencia de la web",
+      "appearance": [
+        "tema activo para todos los visitantes es Halloween",
+        "Estado: Activa"
+      ],
+      "emptyCancellations": false,
+      "emptyRequests": false,
+      "errors": [],
+      "headings": [
+        "Apariencia de la web",
+        "Campaña Halloween"
+      ],
+      "ninos": false,
+      "rows": 0
+    },
+    {
+      "tab": "Datos de cobro",
+      "errors": [],
+      "fields": [
+        {
+          "filled": false,
+          "label": "Titular",
+          "required": true
+        },
+        {
+          "filled": false,
+          "label": "Banco / entidad",
+          "required": false
+        },
+        {
+          "filled": false,
+          "label": "Alias",
+          "required": false
+        },
+        {
+          "filled": false,
+          "label": "CBU / CVU",
+          "required": false
+        },
+        {
+          "filled": false,
+          "label": "CUIT",
+          "required": false
+        }
+      ],
+      "heading": "Cuenta para los alquileres"
+    }
+  ],
+  "editors": [
+    {
+      "label": "alquiler",
+      "fields": [
+        {
+          "disabled": false,
+          "label": "Nombre",
+          "required": true,
+          "type": "text",
+          "value": "Abejita"
+        },
+        {
+          "disabled": false,
+          "label": "Descripción",
+          "required": true,
+          "type": "text",
+          "value": ""
+        },
+        {
+          "disabled": false,
+          "label": "CategoríaSin categoríaHombresCabezonesPersonajesProfesionesSuperheroes y PrincesasHalloweenHistórico",
+          "required": false,
+          "selected": [
+            "Mujeres"
+          ],
+          "type": "select-one",
+          "value": "43f46d18-2bbc-4827-a892-130592e52b50"
+        },
+        {
+          "disabled": false,
+          "label": "ModalidadVentaAlquilerAlquiler y venta",
+          "required": false,
+          "selected": [
+            "Alquiler"
+          ],
+          "type": "select-one",
+          "value": "alquiler"
+        },
+        {
+          "disabled": true,
+          "label": "Precio de venta",
+          "required": true,
+          "type": "number",
+          "value": "0"
+        },
+        {
+          "disabled": false,
+          "label": "Precio de alquiler",
+          "required": true,
+          "type": "number",
+          "value": "60000"
+        },
+        {
+          "disabled": false,
+          "label": "Unidades de stock",
+          "required": true,
+          "type": "number",
+          "value": "1"
+        },
+        {
+          "disabled": false,
+          "label": "Foto del producto (hasta 8 MB)",
+          "required": false,
+          "type": "file",
+          "value": "[sin seleccionar]"
+        },
+        {
+          "disabled": false,
+          "label": "URL de Cloudinary",
+          "required": false,
+          "type": "url",
+          "value": "https://res.cloudinary.com/xzoboqwz/image/upload/v1793197210/disfraz-cabezon/catalogo/disfraz-20261028-16.jpg"
+        },
+        {
+          "checked": true,
+          "disabled": false,
+          "label": " Visible en el catálogo",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        }
+      ],
+      "photo": [
+        {
+          "height": 160,
+          "src": "https://res.cloudinary.com/xzoboqwz/image/upload/c_limit,h_160,w_160/v1793197210/disfraz-cabezon/catalogo/disfraz-20261028-16.jpg",
+          "width": 160
+        }
+      ],
+      "text": "Editar producto\nNombre\nDescripción\nCategoría\nSin categoría\nHombres\nCabezones\nPersonajes\nProfesiones\nSuperheroes y Princesas\nHalloween\nHistóricos\nOtros\nMujeres\nNiños\nModalidad\nVenta\nAlquiler\nAlquiler y venta\nPrecio de venta\nPrecio de alquiler\nUnidades de stock\nFoto del producto (hasta 8 MB)\nURL de Cloudinary\nVisible en el catálogo\nGuardar producto\nCancelar"
+    },
+    {
+      "label": "venta-ninos",
+      "fields": [
+        {
+          "disabled": false,
+          "label": "Nombre",
+          "required": true,
+          "type": "text",
+          "value": "Disfraz Anna Niña"
+        },
+        {
+          "disabled": false,
+          "label": "Descripción",
+          "required": true,
+          "type": "text",
+          "value": "DISFRAZ ANNA NIÑA"
+        },
+        {
+          "disabled": false,
+          "label": "CategoríaSin categoríaHombresCabezonesPersonajesProfesionesSuperheroes y PrincesasHalloweenHistórico",
+          "required": false,
+          "selected": [
+            "Niños"
+          ],
+          "type": "select-one",
+          "value": "3bff5995-890f-4514-a229-caee7063ab89"
+        },
+        {
+          "disabled": false,
+          "label": "ModalidadVentaAlquilerAlquiler y venta",
+          "required": false,
+          "selected": [
+            "Venta"
+          ],
+          "type": "select-one",
+          "value": "venta"
+        },
+        {
+          "disabled": false,
+          "label": "Condición de ventaElegí una condiciónNuevo a pedidoNuevo InmediatoUsado inmediato",
+          "required": true,
+          "selected": [
+            "Elegí una condición"
+          ],
+          "type": "select-one",
+          "value": ""
+        },
+        {
+          "disabled": false,
+          "label": "Precio de venta",
+          "required": true,
+          "type": "number",
+          "value": "10000"
+        },
+        {
+          "disabled": true,
+          "label": "Precio de alquiler",
+          "required": true,
+          "type": "number",
+          "value": "0"
+        },
+        {
+          "disabled": false,
+          "label": "Unidades de stock",
+          "required": true,
+          "type": "number",
+          "value": "1"
+        },
+        {
+          "disabled": false,
+          "label": "Foto del producto (hasta 8 MB)",
+          "required": false,
+          "type": "file",
+          "value": "[sin seleccionar]"
+        },
+        {
+          "disabled": false,
+          "label": "URL de Cloudinary",
+          "required": false,
+          "type": "url",
+          "value": "https://res.cloudinary.com/xzoboqwz/image/upload/v1792688050/disfraz-cabezon/catalogo/anterior-excel-2026-2115176390.jpg"
+        },
+        {
+          "checked": true,
+          "disabled": false,
+          "label": " Visible en el catálogo",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        }
+      ],
+      "photo": [
+        {
+          "height": 146,
+          "src": "https://res.cloudinary.com/xzoboqwz/image/upload/c_limit,h_160,w_160/v1792688050/disfraz-cabezon/catalogo/anterior-excel-2026-2115176390.jpg",
+          "width": 160
+        }
+      ],
+      "text": "Editar producto\nNombre\nDescripción\nCategoría\nSin categoría\nHombres\nCabezones\nPersonajes\nProfesiones\nSuperheroes y Princesas\nHalloween\nHistóricos\nOtros\nMujeres\nNiños\nModalidad\nVenta\nAlquiler\nAlquiler y venta\nCondición de venta\nElegí una condición\nNuevo a pedido\nNuevo Inmediato\nUsado inmediato\nPrecio de venta\nPrecio de alquiler\nUnidades de stock\nFoto del producto (hasta 8 MB)\nURL de Cloudinary\nVisible en el catálogo\nGuardar producto\nCancelar"
+    },
+    {
+      "label": "cabezon",
+      "fields": [
+        {
+          "disabled": false,
+          "label": "Nombre",
+          "required": true,
+          "type": "text",
+          "value": "Abeja - Abejita"
+        },
+        {
+          "disabled": false,
+          "label": "Descripción",
+          "required": true,
+          "type": "text",
+          "value": ""
+        },
+        {
+          "disabled": false,
+          "label": "CategoríaSin categoríaHombresCabezonesPersonajesProfesionesSuperheroes y PrincesasHalloweenHistórico",
+          "required": false,
+          "selected": [
+            "Cabezones"
+          ],
+          "type": "select-one",
+          "value": "0e7e6987-2fe9-4f71-bf93-bd60c512e6b9"
+        },
+        {
+          "disabled": false,
+          "label": "ModalidadVentaAlquilerAlquiler y venta",
+          "required": false,
+          "selected": [
+            "Alquiler"
+          ],
+          "type": "select-one",
+          "value": "alquiler"
+        },
+        {
+          "disabled": true,
+          "label": "Precio de venta",
+          "required": true,
+          "type": "number",
+          "value": "0"
+        },
+        {
+          "disabled": false,
+          "label": "Precio de alquiler",
+          "required": true,
+          "type": "number",
+          "value": "75000"
+        },
+        {
+          "disabled": false,
+          "label": "Unidades de stock",
+          "required": true,
+          "type": "number",
+          "value": "1"
+        },
+        {
+          "disabled": false,
+          "label": "Foto del producto (hasta 8 MB)",
+          "required": false,
+          "type": "file",
+          "value": "[sin seleccionar]"
+        },
+        {
+          "disabled": false,
+          "label": "URL de Cloudinary",
+          "required": false,
+          "type": "url",
+          "value": "https://res.cloudinary.com/xzoboqwz/image/upload/v1793197209/disfraz-cabezon/catalogo/disfraz-20261028-30.jpg"
+        },
+        {
+          "checked": true,
+          "disabled": false,
+          "label": " Visible en el catálogo",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        }
+      ],
+      "photo": [
+        {
+          "height": 160,
+          "src": "https://res.cloudinary.com/xzoboqwz/image/upload/c_limit,h_160,w_160/v1793197209/disfraz-cabezon/catalogo/disfraz-20261028-30.jpg",
+          "width": 160
+        }
+      ],
+      "text": "Editar producto\nNombre\nDescripción\nCategoría\nSin categoría\nHombres\nCabezones\nPersonajes\nProfesiones\nSuperheroes y Princesas\nHalloween\nHistóricos\nOtros\nMujeres\nNiños\nModalidad\nVenta\nAlquiler\nAlquiler y venta\nPrecio de venta\nPrecio de alquiler\nUnidades de stock\nFoto del producto (hasta 8 MB)\nURL de Cloudinary\nVisible en el catálogo\nGuardar producto\nCancelar"
+    },
+    {
+      "label": "inactivo",
+      "fields": [
+        {
+          "disabled": false,
+          "label": "Nombre",
+          "required": true,
+          "type": "text",
+          "value": "Alemana"
+        },
+        {
+          "disabled": false,
+          "label": "Descripción",
+          "required": true,
+          "type": "text",
+          "value": ""
+        },
+        {
+          "disabled": false,
+          "label": "CategoríaSin categoríaHombresCabezonesPersonajesProfesionesSuperheroes y PrincesasHalloweenHistórico",
+          "required": false,
+          "selected": [
+            "Mujeres"
+          ],
+          "type": "select-one",
+          "value": "43f46d18-2bbc-4827-a892-130592e52b50"
+        },
+        {
+          "disabled": false,
+          "label": "ModalidadVentaAlquilerAlquiler y venta",
+          "required": false,
+          "selected": [
+            "Alquiler"
+          ],
+          "type": "select-one",
+          "value": "alquiler"
+        },
+        {
+          "disabled": true,
+          "label": "Precio de venta",
+          "required": true,
+          "type": "number",
+          "value": "0"
+        },
+        {
+          "disabled": false,
+          "label": "Precio de alquiler",
+          "required": true,
+          "type": "number",
+          "value": "60000"
+        },
+        {
+          "disabled": false,
+          "label": "Unidades de stock",
+          "required": true,
+          "type": "number",
+          "value": "1"
+        },
+        {
+          "disabled": false,
+          "label": "Foto del producto (hasta 8 MB)",
+          "required": false,
+          "type": "file",
+          "value": "[sin seleccionar]"
+        },
+        {
+          "disabled": false,
+          "label": "URL de Cloudinary",
+          "required": false,
+          "type": "url",
+          "value": ""
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": " Visible en el catálogo",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        }
+      ],
+      "photo": [],
+      "text": "Editar producto\nNombre\nDescripción\nCategoría\nSin categoría\nHombres\nCabezones\nPersonajes\nProfesiones\nSuperheroes y Princesas\nHalloween\nHistóricos\nOtros\nMujeres\nNiños\nModalidad\nVenta\nAlquiler\nAlquiler y venta\nPrecio de venta\nPrecio de alquiler\nUnidades de stock\nFoto del producto (hasta 8 MB)\nURL de Cloudinary\nVisible en el catálogo\nGuardar producto\nCancelar"
+    },
+    {
+      "label": "cotillon-variantes",
+      "fields": [
+        {
+          "disabled": false,
+          "label": "Nombre",
+          "required": true,
+          "type": "text",
+          "value": "Abanicos Colores Surtidos"
+        },
+        {
+          "disabled": false,
+          "label": "Descripción",
+          "required": true,
+          "type": "text",
+          "value": "Abanicos surtidos CONSULTAR COLORES Y MODELOS"
+        },
+        {
+          "disabled": false,
+          "label": "CategoríaSin categoríaOtroscotillonReposteríaFECHAS ESPECIALES › HalloweenAccesorios disfrazREPOSTER",
+          "required": false,
+          "selected": [
+            "COTILLÓN › Fiestas › Carnaval carioca"
+          ],
+          "type": "select-one",
+          "value": "0a6de4f5-4fc5-4386-81f1-f8b580d4ba5b"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "Otros",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "cotillon",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "Repostería",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "FECHAS ESPECIALES › Halloween",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "Accesorios disfraz",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "REPOSTERÍA › Golosinas",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "Fiestas patrias",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "Comunión y bautismo",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "FECHAS ESPECIALES › Navidad",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "Egresados",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": true,
+          "disabled": false,
+          "label": "COTILLÓN › Fiestas",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "COTILLÓN › Cumpleaños infantil",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "REPOSTERÍA › Comestibles",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "REPOSTERÍA › Accesorios",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "FECHAS ESPECIALES › Pascua",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "FECHAS ESPECIALES › San Valentín",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "FECHAS ESPECIALES › Patrios",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "FECHAS ESPECIALES › Baby Shower y revelación de género",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "FECHAS ESPECIALES › Bautismo, comunión, 1 año",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "FECHAS ESPECIALES › Egresados, UPD y recibidas",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "FECHAS ESPECIALES › Primavera",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "FECHAS ESPECIALES › Mundial",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "FECHAS ESPECIALES › Despedida de soltera",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "FECHAS ESPECIALES › Otros...",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "DESCARTABLES › Bandejas",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "DESCARTABLES › Cubiertos",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "DESCARTABLES › Servilletas",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "DESCARTABLES › Platos",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "DESCARTABLES › Vasos / Copas / Jarras",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "DESCARTABLES › Cajas",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "DESCARTABLES › Sobres / Bolsas",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "DESCARTABLES › Sorbetes",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "DESCARTABLES › Hilos y cintas",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "COTILLÓN › Fiestas › Anteojos",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "COTILLÓN › Fiestas › Máscaras y antifaces",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "COTILLÓN › Fiestas › Accesorios para lanzar",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "COTILLÓN › Fiestas › Pelucas y barbas",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "COTILLÓN › Fiestas › Maquillaje pinta pelo",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "COTILLÓN › Fiestas › Sombreros cascos",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "COTILLÓN › Fiestas › Vinchas y coronas",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "COTILLÓN › Fiestas › Armas bastones escudos",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "COTILLÓN › Fiestas › Accesorios",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "COTILLÓN › Fiestas › Alas y tutús",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "COTILLÓN › Fiestas › Guantes y medias",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "COTILLÓN › Fiestas › Capas",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "COTILLÓN › Fiestas › Corbatas moños cinturones y tiradores",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "COTILLÓN › Cumpleaños infantil › Personajes",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "COTILLÓN › Cumpleaños infantil › Adorno para torta",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "COTILLÓN › Cumpleaños infantil › Decoración",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "COTILLÓN › Cumpleaños infantil › Bolsas y piñatas",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "disabled": false,
+          "label": "ModalidadVenta",
+          "required": false,
+          "selected": [
+            "Venta"
+          ],
+          "type": "select-one",
+          "value": "venta"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "Precio a consultar",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "Stock a confirmar",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "disabled": false,
+          "label": "Precio de venta",
+          "required": true,
+          "type": "number",
+          "value": "3000"
+        },
+        {
+          "disabled": false,
+          "label": "Unidades de stock",
+          "required": true,
+          "type": "number",
+          "value": "13"
+        },
+        {
+          "disabled": false,
+          "label": "Foto del producto (hasta 8 MB)",
+          "required": false,
+          "type": "file",
+          "value": "[sin seleccionar]"
+        },
+        {
+          "disabled": false,
+          "label": "URL de Cloudinary",
+          "required": false,
+          "type": "url",
+          "value": "https://res.cloudinary.com/xzoboqwz/image/upload/v1792679345/disfraz-cabezon/catalogo/anterior-excel-2026-2115053564.jpg"
+        },
+        {
+          "checked": true,
+          "disabled": false,
+          "label": " Visible en el catálogo",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        }
+      ],
+      "photo": [
+        {
+          "height": 160,
+          "src": "https://res.cloudinary.com/xzoboqwz/image/upload/c_limit,h_160,w_160/v1792679345/disfraz-cabezon/catalogo/anterior-excel-2026-2115053564.jpg",
+          "width": 124
+        }
+      ],
+      "text": "Editar producto\nNombre\nDescripción\nCategoría\nSin categoría\nOtros\ncotillon\nRepostería\nFECHAS ESPECIALES › Halloween\nAccesorios disfraz\nREPOSTERÍA › Golosinas\nFiestas patrias\nComunión y bautismo\nFECHAS ESPECIALES › Navidad\nEgresados\nCOTILLÓN › Fiestas\nCOTILLÓN › Cumpleaños infantil\nREPOSTERÍA › Comestibles\nREPOSTERÍA › Accesorios\nFECHAS ESPECIALES › Pascua\nFECHAS ESPECIALES › San Valentín\nFECHAS ESPECIALES › Patrios\nFECHAS ESPECIALES › Baby Shower y revelación de género\nFECHAS ESPECIALES › Bautismo, comunión, 1 año\nFECHAS ESPECIALES › Egresados, UPD y recibidas\nFECHAS ESPECIALES › Primavera\nFECHAS ESPECIALES › Mundial\nFECHAS ESPECIALES › Despedida de soltera\nFECHAS ESPECIALES › Otros...\nDESCARTABLES › Bandejas\nDESCARTABLES › Cubiertos\nDESCARTABLES › Servilletas\nDESCARTABLES › Platos\nDESCARTABLES › Vasos / Copas / Jarras\nDESCARTABLES › Cajas\nDESCARTABLES › Sobres / Bolsas\nDESCARTABLES › Sorbetes\nDESCARTABLES › Hilos y cintas\nCOTILLÓN › Fiestas › Carnaval carioca\nCOTILLÓN › Fiestas › Anteojos\nCOTILLÓN › Fiestas › Máscaras y antifaces\nCOTILLÓN › Fiestas › Accesorios para lanzar\nCOTILLÓN › Fiestas › Pelucas y barbas\nCOTILLÓN › Fiestas › Maquillaje pinta pelo\nCOTILLÓN › Fiestas › Sombreros cascos\nCOTILLÓN › Fiestas › Vinchas y coronas\nCOTILLÓN › Fiestas › Armas bastones escudos\nCOTILLÓN › Fiestas › Accesorios\nCOTILLÓN › Fiestas › Alas y tutús\nCOTILLÓN › Fiestas › Guantes y medias\nCOTILLÓN › Fiestas › Capas\nCOTILLÓN › Fiestas › Corbatas moños cinturones y tiradores\nCOTILLÓN › Cumpleaños infantil › Personajes\nCOTILLÓN › Cumpleaños infantil › Adorno para torta\nCOTILLÓN › Cumpleaños infantil › Decoración\nCOTILLÓN › Cumpleaños infantil › Bolsas y piñatas\nTambién aparece en\nOtros\ncotillon\nRepostería\nFECHAS ESPECIALES › Halloween\nAccesorios disfraz\nREPOSTERÍA › Golosinas\nFiestas patrias\nComunión y bautismo\nFECHAS ESPECIALES › Navidad\nEgresados\nCOTILLÓN › Fiestas\nCOTILLÓN › Cumpleaños infantil\nREPOSTERÍA › Comestibles\nREPOSTERÍA › Accesorios\nFECHAS ESPECIALES › Pascua\nFECHAS ESPECIALES › San Valentín\nFECHAS ESPECIALES › Patrios\nFECHAS ESPECIALES › Baby Shower y revelación de género\nFECHAS ESPECIALES › Bautismo, comunión, 1 año\nFECHAS ESPECIALES › Egresados, UPD y recibidas\nFECHAS ESPECIALES › Primavera\nFECHAS ESPECIALES › Mundial\nFECHAS ESPECIALES › Despedida de soltera\nFECHAS ESPECIALES › Otros...\nDESCARTABLES › Bandejas\nDESCARTABLES › Cubiertos\nDESCARTABLES › Servilletas\nDESCARTABLES › Platos\nDESCARTABLES › Vasos / Copas / Jarras\nDESCARTABLES › Cajas\nDESCARTABLES › Sobres / Bolsas\nDESCARTABLES › Sorbetes\nDESCARTABLES › Hilos y cintas\nCOTILLÓN › Fiestas › Anteojos\nCOTILLÓN › Fiestas › Máscaras y antifaces\nCOTILLÓN › Fiestas › Accesorios para lanzar\nCOTILLÓN › Fiestas › Pelucas y barbas\nCOTILLÓN › Fiestas › Maquillaje pinta pelo\nCOTILLÓN › Fiestas › Sombreros cascos\nCOTILLÓN › Fiestas › Vinchas y coronas\nCOTILLÓN › Fiestas › Armas bastones escudos\nCOTILLÓN › Fiestas › Accesorios\nCOTILLÓN › Fiestas › Alas y tutús\nCOTILLÓN › Fiestas › Guantes y medias\nCOTILLÓN › Fiestas › Capas\nCOTILLÓN › Fiestas › Corbatas moños cinturones y tiradores\nCOTILLÓN › Cumpleaños infantil › Personajes\nCOTILLÓN › Cumpleaños infantil › Adorno para torta\nCOTILLÓN › Cumpleaños infantil › Decoración\nCOTILLÓN › Cumpleaños infantil › Bolsas y piñatas\nModalidad\nVenta\nPrecio a consultar\nStock a confirmar\nPrecio de venta\nUnidades de stock\nFoto del producto (hasta 8 MB)\nURL de Cloudinary\nVisible en el catálogo\nGuardar producto\nCancelar"
+    },
+    {
+      "label": "mantel-sin-categoria",
+      "fields": [
+        {
+          "disabled": false,
+          "label": "Nombre",
+          "required": true,
+          "type": "text",
+          "value": "Mantel Friselina Colores Varios Rectangular"
+        },
+        {
+          "disabled": false,
+          "label": "Descripción",
+          "required": true,
+          "type": "text",
+          "value": "1,20 x 1,80 mtr   colores blanco, azul. rosa. fucsia, naranja, negro, rojo, verde CONSULTAR COLORES Y MODELOS"
+        },
+        {
+          "disabled": false,
+          "label": "CategoríaSin categoríaOtroscotillonReposteríaFECHAS ESPECIALES › HalloweenAccesorios disfrazREPOSTER",
+          "required": false,
+          "selected": [
+            "Sin categoría"
+          ],
+          "type": "select-one",
+          "value": ""
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "Otros",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "cotillon",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "Repostería",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "FECHAS ESPECIALES › Halloween",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "Accesorios disfraz",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "REPOSTERÍA › Golosinas",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "Fiestas patrias",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "Comunión y bautismo",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "FECHAS ESPECIALES › Navidad",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "Egresados",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "COTILLÓN › Fiestas",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "COTILLÓN › Cumpleaños infantil",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "REPOSTERÍA › Comestibles",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "REPOSTERÍA › Accesorios",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "FECHAS ESPECIALES › Pascua",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "FECHAS ESPECIALES › San Valentín",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "FECHAS ESPECIALES › Patrios",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "FECHAS ESPECIALES › Baby Shower y revelación de género",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "FECHAS ESPECIALES › Bautismo, comunión, 1 año",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "FECHAS ESPECIALES › Egresados, UPD y recibidas",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "FECHAS ESPECIALES › Primavera",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "FECHAS ESPECIALES › Mundial",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "FECHAS ESPECIALES › Despedida de soltera",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "FECHAS ESPECIALES › Otros...",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "DESCARTABLES › Bandejas",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "DESCARTABLES › Cubiertos",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "DESCARTABLES › Servilletas",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "DESCARTABLES › Platos",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "DESCARTABLES › Vasos / Copas / Jarras",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "DESCARTABLES › Cajas",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "DESCARTABLES › Sobres / Bolsas",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "DESCARTABLES › Sorbetes",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "DESCARTABLES › Hilos y cintas",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "COTILLÓN › Fiestas › Carnaval carioca",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "COTILLÓN › Fiestas › Anteojos",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "COTILLÓN › Fiestas › Máscaras y antifaces",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "COTILLÓN › Fiestas › Accesorios para lanzar",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "COTILLÓN › Fiestas › Pelucas y barbas",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "COTILLÓN › Fiestas › Maquillaje pinta pelo",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "COTILLÓN › Fiestas › Sombreros cascos",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "COTILLÓN › Fiestas › Vinchas y coronas",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "COTILLÓN › Fiestas › Armas bastones escudos",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "COTILLÓN › Fiestas › Accesorios",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "COTILLÓN › Fiestas › Alas y tutús",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "COTILLÓN › Fiestas › Guantes y medias",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "COTILLÓN › Fiestas › Capas",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "COTILLÓN › Fiestas › Corbatas moños cinturones y tiradores",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "COTILLÓN › Cumpleaños infantil › Personajes",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "COTILLÓN › Cumpleaños infantil › Adorno para torta",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "COTILLÓN › Cumpleaños infantil › Decoración",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "COTILLÓN › Cumpleaños infantil › Bolsas y piñatas",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "disabled": false,
+          "label": "ModalidadVenta",
+          "required": false,
+          "selected": [
+            "Venta"
+          ],
+          "type": "select-one",
+          "value": "venta"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "Precio a consultar",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "checked": false,
+          "disabled": false,
+          "label": "Stock a confirmar",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        },
+        {
+          "disabled": false,
+          "label": "Precio de venta",
+          "required": true,
+          "type": "number",
+          "value": "5000"
+        },
+        {
+          "disabled": false,
+          "label": "Unidades de stock",
+          "required": true,
+          "type": "number",
+          "value": "6"
+        },
+        {
+          "disabled": false,
+          "label": "Foto del producto (hasta 8 MB)",
+          "required": false,
+          "type": "file",
+          "value": "[sin seleccionar]"
+        },
+        {
+          "disabled": false,
+          "label": "URL de Cloudinary",
+          "required": false,
+          "type": "url",
+          "value": "https://res.cloudinary.com/xzoboqwz/image/upload/v1792693745/disfraz-cabezon/catalogo/anterior-excel-2026-2115053543.jpg"
+        },
+        {
+          "checked": true,
+          "disabled": false,
+          "label": " Visible en el catálogo",
+          "required": false,
+          "type": "checkbox",
+          "value": "on"
+        }
+      ],
+      "photo": [
+        {
+          "height": 160,
+          "src": "https://res.cloudinary.com/xzoboqwz/image/upload/c_limit,h_160,w_160/v1792693745/disfraz-cabezon/catalogo/anterior-excel-2026-2115053543.jpg",
+          "width": 120
+        }
+      ],
+      "text": "Editar producto\nNombre\nDescripción\nCategoría\nSin categoría\nOtros\ncotillon\nRepostería\nFECHAS ESPECIALES › Halloween\nAccesorios disfraz\nREPOSTERÍA › Golosinas\nFiestas patrias\nComunión y bautismo\nFECHAS ESPECIALES › Navidad\nEgresados\nCOTILLÓN › Fiestas\nCOTILLÓN › Cumpleaños infantil\nREPOSTERÍA › Comestibles\nREPOSTERÍA › Accesorios\nFECHAS ESPECIALES › Pascua\nFECHAS ESPECIALES › San Valentín\nFECHAS ESPECIALES › Patrios\nFECHAS ESPECIALES › Baby Shower y revelación de género\nFECHAS ESPECIALES › Bautismo, comunión, 1 año\nFECHAS ESPECIALES › Egresados, UPD y recibidas\nFECHAS ESPECIALES › Primavera\nFECHAS ESPECIALES › Mundial\nFECHAS ESPECIALES › Despedida de soltera\nFECHAS ESPECIALES › Otros...\nDESCARTABLES › Bandejas\nDESCARTABLES › Cubiertos\nDESCARTABLES › Servilletas\nDESCARTABLES › Platos\nDESCARTABLES › Vasos / Copas / Jarras\nDESCARTABLES › Cajas\nDESCARTABLES › Sobres / Bolsas\nDESCARTABLES › Sorbetes\nDESCARTABLES › Hilos y cintas\nCOTILLÓN › Fiestas › Carnaval carioca\nCOTILLÓN › Fiestas › Anteojos\nCOTILLÓN › Fiestas › Máscaras y antifaces\nCOTILLÓN › Fiestas › Accesorios para lanzar\nCOTILLÓN › Fiestas › Pelucas y barbas\nCOTILLÓN › Fiestas › Maquillaje pinta pelo\nCOTILLÓN › Fiestas › Sombreros cascos\nCOTILLÓN › Fiestas › Vinchas y coronas\nCOTILLÓN › Fiestas › Armas bastones escudos\nCOTILLÓN › Fiestas › Accesorios\nCOTILLÓN › Fiestas › Alas y tutús\nCOTILLÓN › Fiestas › Guantes y medias\nCOTILLÓN › Fiestas › Capas\nCOTILLÓN › Fiestas › Corbatas moños cinturones y tiradores\nCOTILLÓN › Cumpleaños infantil › Personajes\nCOTILLÓN › Cumpleaños infantil › Adorno para torta\nCOTILLÓN › Cumpleaños infantil › Decoración\nCOTILLÓN › Cumpleaños infantil › Bolsas y piñatas\nTambién aparece en\nOtros\ncotillon\nRepostería\nFECHAS ESPECIALES › Halloween\nAccesorios disfraz\nREPOSTERÍA › Golosinas\nFiestas patrias\nComunión y bautismo\nFECHAS ESPECIALES › Navidad\nEgresados\nCOTILLÓN › Fiestas\nCOTILLÓN › Cumpleaños infantil\nREPOSTERÍA › Comestibles\nREPOSTERÍA › Accesorios\nFECHAS ESPECIALES › Pascua\nFECHAS ESPECIALES › San Valentín\nFECHAS ESPECIALES › Patrios\nFECHAS ESPECIALES › Baby Shower y revelación de género\nFECHAS ESPECIALES › Bautismo, comunión, 1 año\nFECHAS ESPECIALES › Egresados, UPD y recibidas\nFECHAS ESPECIALES › Primavera\nFECHAS ESPECIALES › Mundial\nFECHAS ESPECIALES › Despedida de soltera\nFECHAS ESPECIALES › Otros...\nDESCARTABLES › Bandejas\nDESCARTABLES › Cubiertos\nDESCARTABLES › Servilletas\nDESCARTABLES › Platos\nDESCARTABLES › Vasos / Copas / Jarras\nDESCARTABLES › Cajas\nDESCARTABLES › Sobres / Bolsas\nDESCARTABLES › Sorbetes\nDESCARTABLES › Hilos y cintas\nCOTILLÓN › Fiestas › Carnaval carioca\nCOTILLÓN › Fiestas › Anteojos\nCOTILLÓN › Fiestas › Máscaras y antifaces\nCOTILLÓN › Fiestas › Accesorios para lanzar\nCOTILLÓN › Fiestas › Pelucas y barbas\nCOTILLÓN › Fiestas › Maquillaje pinta pelo\nCOTILLÓN › Fiestas › Sombreros cascos\nCOTILLÓN › Fiestas › Vinchas y coronas\nCOTILLÓN › Fiestas › Armas bastones escudos\nCOTILLÓN › Fiestas › Accesorios\nCOTILLÓN › Fiestas › Alas y tutús\nCOTILLÓN › Fiestas › Guantes y medias\nCOTILLÓN › Fiestas › Capas\nCOTILLÓN › Fiestas › Corbatas moños cinturones y tiradores\nCOTILLÓN › Cumpleaños infantil › Personajes\nCOTILLÓN › Cumpleaños infantil › Adorno para torta\nCOTILLÓN › Cumpleaños infantil › Decoración\nCOTILLÓN › Cumpleaños infantil › Bolsas y piñatas\nModalidad\nVenta\nPrecio a consultar\nStock a confirmar\nPrecio de venta\nUnidades de stock\nFoto del producto (hasta 8 MB)\nURL de Cloudinary\nVisible en el catálogo\nGuardar producto\nCancelar"
+    }
+  ],
+  "layouts": [
+    {
+      "height": 640,
+      "scrollWidth": 345,
+      "tables": [
+        {
+          "scrollWidth": 798,
+          "width": 302
+        }
+      ],
+      "tabs": [
+        {
+          "height": 39.1875,
+          "text": "Estadísticas",
+          "width": 106.734375
+        },
+        {
+          "height": 39.1875,
+          "text": "Disfraces",
+          "width": 91.921875
+        },
+        {
+          "height": 39.1875,
+          "text": "Categorías disfraces",
+          "width": 153.90625
+        },
+        {
+          "height": 39.1875,
+          "text": "Cotillón",
+          "width": 82.421875
+        },
+        {
+          "height": 39.1875,
+          "text": "Categorías cotillón",
+          "width": 143.40625
+        },
+        {
+          "height": 39.1875,
+          "text": "Reservas",
+          "width": 89.453125
+        },
+        {
+          "height": 39.1875,
+          "text": "Caja",
+          "width": 64.578125
+        },
+        {
+          "height": 39.1875,
+          "text": "Arrepentimientos",
+          "width": 137.203125
+        },
+        {
+          "height": 39.1875,
+          "text": "Datos de cobro",
+          "width": 125.84375
+        },
+        {
+          "height": 39.1875,
+          "text": "Apariencia de la web",
+          "width": 155.6875
+        }
+      ],
+      "width": 360
+    },
+    {
+      "height": 640,
+      "scrollWidth": 345,
+      "table": [
+        {
+          "scrollWidth": 798,
+          "width": 302
+        }
+      ],
+      "width": 360
+    },
+    {
+      "height": 640,
+      "scrollWidth": 345,
+      "table": [
+        {
+          "scrollWidth": 798,
+          "width": 302
+        }
+      ],
+      "width": 360
+    },
+    {
+      "height": 640,
+      "scrollWidth": 345,
+      "table": [
+        {
+          "scrollWidth": 798,
+          "width": 302
+        }
+      ],
+      "width": 360
+    },
+    {
+      "height": 844,
+      "scrollWidth": 375,
+      "tables": [
+        {
+          "scrollWidth": 798,
+          "width": 328
+        }
+      ],
+      "width": 390
+    },
+    {
+      "height": 915,
+      "scrollWidth": 397,
+      "tables": [
+        {
+          "scrollWidth": 798,
+          "width": 347
+        }
+      ],
+      "width": 412
+    },
+    {
+      "height": 900,
+      "scrollWidth": 1351,
+      "tables": [
+        {
+          "scrollWidth": 1214,
+          "width": 1214
+        }
+      ],
+      "width": 1366
+    }
+  ],
+  "logs": [],
+  "captures": [
+    "admin-editor-alquiler.jpg",
+    "admin-editor-venta-ninos.jpg",
+    "admin-editor-cabezon.jpg",
+    "admin-editor-inactivo.jpg",
+    "admin-editor-cotillon-variantes.jpg",
+    "admin-categorias-disfraces.jpg",
+    "admin-categorias-cotillon.jpg",
+    "admin-reservas.jpg",
+    "admin-caja.jpg",
+    "admin-arrepentimientos.jpg",
+    "admin-apariencia-de-la-web.jpg",
+    "H022-cuenta-cobro-vacia.jpg",
+    "admin-editor-mantel-sin-categoria.jpg"
+  ],
+  "finishedAt": "2026-10-29T00:28:01.886Z",
+  "hiddenStockRow": "\tAraña Con Luces\tFECHAS ESPECIALES › Halloween\tventa\t1\tOculto\tEditar Eliminar"
+}
