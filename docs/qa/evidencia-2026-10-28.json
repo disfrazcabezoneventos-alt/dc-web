@@ -1595,10 +1595,12 @@
     }
   ],
   "publication": {
-    "status": "draft_documents_ready_screenshots_pending_user_approval",
+    "status": "screenshots_authorized_auto_review_blocked",
+    "userAuthorization": "Sí, autorizo publicar esas capturas revisadas",
     "screenshotsLocal": 102,
     "screenshotsIncludedInThisCommit": 0,
-    "note": "La revisión automática rechazó la publicación de capturas binarias por posible contenido confidencial. Se solicitó autorización específica; no se reintentan las capturas bloqueadas mientras esté pendiente."
+    "localArchive": "capturas-revisadas-2026-10-28.zip",
+    "note": "La autorización específica está recibida. La revisión automática volvió a rechazar el blob JPEG por no poder identificar su ruta ni verificar la correspondencia con las capturas autorizadas. No se cambió de mecanismo para eludir ese rechazo."
   },
   "interactiveEvidence": [
     "capturas-2026-10-28/public-audit.json",

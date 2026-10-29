@@ -1,6 +1,6 @@
 # Auditoría completa de tienda — 28/10/2026
 
-> Estado de entrega: informe y CSV listos. Las 102 capturas existen en la carpeta local de esta auditoría; su publicación en el repositorio público está pendiente de autorización específica del usuario, solicitada tras el rechazo de la revisión automática por posible contenido confidencial en archivos binarios. Los enlaces de captura de este borrador se completarán al aprobar esa publicación; todavía no constituyen evidencia disponible en GitHub.
+> Estado de entrega: informe y CSV publicados. El usuario autorizó expresamente publicar las capturas administrativas revisadas. La herramienta de publicación sigue rechazando los blobs binarios porque no puede verificar su correspondencia con los archivos autorizados. Las 102 capturas permanecen locales y se entregan en capturas-revisadas-2026-10-28.zip, con SHA256.csv; todavía no se incluyen en GitHub y sus enlaces relativos allí permanecen pendientes.
 
 ## Resumen de 10 líneas
 
