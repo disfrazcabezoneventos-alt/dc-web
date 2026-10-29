@@ -78,11 +78,12 @@ function reply_(e,result){
  if(!e||!e.parameter||e.parameter.transport!=='frame')return json_(result);
  const id=String(e.parameter.bridgeId||'');
  need_(/^[a-f0-9-]{36}$/.test(id),'Identificador de respuesta inválido.');
- const site=config_('SITE_URL')||'https://dc-web-8ai4.onrender.com';
- const match=/^https:\/\/[^\s/?#]+/.exec(site);
- need_(match,'SITE_URL debe empezar con https:// y contener el dominio de Render.');
- const origin=match[0];
- need_(e.parameter.origin===origin,'Origen del sitio no configurado. Revisá SITE_URL.');
+ // SITE_URL es la dirección principal; EXTRA_SITE_URLS (opcional, separadas por coma) permite otras, p. ej. la de Render y el dominio propio a la vez.
+ const sites=[config_('SITE_URL')||'https://dc-web-8ai4.onrender.com',...String(config_('EXTRA_SITE_URLS')||'').split(',')].map(s=>s.trim()).filter(Boolean);
+ const origins=sites.map(s=>(/^https:\/\/[^\s/?#]+/.exec(s)||[])[0]).filter(Boolean);
+ need_(origins.length,'SITE_URL debe empezar con https:// y contener el dominio de Render.');
+ const origin=String(e.parameter.origin||'');
+ need_(origins.includes(origin),'Origen del sitio no configurado. Revisá SITE_URL.');
  const message=JSON.stringify({type:'dc-apps-result',id,result}).replace(/</g,'\\u003c');
  const html='<!doctype html><html><body><script>window.top.postMessage('+message+','+JSON.stringify(origin)+');</script></body></html>';
  return HtmlService.createHtmlOutput(html).setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
