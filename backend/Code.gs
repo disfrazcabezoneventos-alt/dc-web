@@ -90,6 +90,8 @@ function reply_(e,result){
 function doPost(e){let result;try{need_(e&&e.postData&&e.postData.contents.length<47000000,'Solicitud demasiado grande.');const raw=e.parameter&&e.parameter.transport==='frame'?e.parameter.payload:e.postData.contents;const b=JSON.parse(raw);need_(b&&typeof b.action==='string','Solicitud inválida.');result={ok:true,data:b.action==='siteTheme'?{theme:siteTheme_()}:lock_(()=>dispatch_(b))};}catch(error){result={ok:false,error:String(error.message||'No se pudo completar la operación.').slice(0,300)};}return reply_(e,result);}
 function dispatch_(b){
   if(b.action==='siteTheme')return {theme:siteTheme_()};
+ // La edición rápida no dispara mantenimiento ni migraciones de otros campos.
+ if(b.action==='quickUpdate'){session_(b.token);return quickUpdate_(b);}
  recoverStock_();
  if(['catalog','catalogData','admin','saveCategory','saveProduct','mapLegacyCategory'].includes(b.action))ensureCotillonDepth3_();
  if(b.action==='catalog')return CATEGORY_AREAS.flatMap(a=>products_(a).filter(p=>a==='cotillon'||p.active));
@@ -147,6 +149,28 @@ function dispatch_(b){
  if(b.action==='resolveCancel'){const r=rows_('cancelaciones').find(x=>x.id===b.id);need_(r,'Pedido inexistente.');r.resolved=true;r.resolvedAt=now_();put_('cancelaciones',r);return {ok:true};}
  if(b.action==='bankSettings'){const d=b.data;need_(d.alias||d.cbu,'Ingresá alias o CBU.');need_(!d.cbu||/^\d{22}$/.test(d.cbu),'CBU de 22 dígitos.');need_(!d.alias||/^[a-zA-Z0-9._-]{6,20}$/.test(d.alias),'Alias inválido.');['holder','bank','alias','cbu','cuit'].forEach(k=>props_().setProperty('BANK_'+k.toUpperCase(),String(d[k]||'').slice(0,150)));return bank_();}
  throw new Error('Acción desconocida.');
+}
+function quickUpdate_(b){
+ need_(CATEGORY_AREAS.includes(b.area),'Área inválida.');
+ need_(typeof b.id==='string'&&b.id.length>0&&b.id.length<=150,'Identificador inválido.');
+ const changes=b.cambios;
+ need_(changes&&typeof changes==='object'&&!Array.isArray(changes),'Cambios inválidos.');
+ const keys=Object.keys(changes),allowed=['active','stock','price','rentPrice'];
+ need_(keys.length>0&&keys.every(k=>allowed.includes(k)),'Solo se permiten active, stock, price y rentPrice.');
+ const product=rows_(b.area).find(p=>p.id===b.id);
+ need_(product&&product.area===b.area,'Producto inexistente en esta área.');
+ const patch={};
+ keys.forEach(key=>{
+  const value=changes[key];
+  if(key==='active'){need_(typeof value==='boolean','Estado inválido.');patch.active=value;}
+  else if(key==='stock'){need_(Number.isInteger(value)&&value>=0&&value<=100000,'Stock inválido: entero entre 0 y 100000.');patch.stock=value;}
+  else{
+   need_(key==='price'?['venta','ambos'].includes(product.mode):b.area==='disfraces'&&['alquiler','ambos'].includes(product.mode),'El precio no corresponde a la modalidad.');
+   patch[key]=amount_(value);
+  }
+ });
+ if(keys.includes('stock'))need_(!rows_('movimientos').some(m=>m.area===b.area&&m.productId===b.id&&m.stockPending),'Hay un movimiento de stock pendiente. Resolvelo en Caja antes de editar el stock.');
+ return put_(b.area,{...product,...patch});
 }
 // Diario recuperable: si Sheets interrumpe entre caja y stock, la siguiente llamada completa la operación una sola vez.
 function recoverStock_(){rows_('movimientos').filter(r=>r.stockPending).forEach(r=>{const p=rows_(r.area).find(p=>p.id===r.productId);need_(p,'Revisá el producto de un movimiento pendiente.');need_(p.stock===r.stockPending.before||p.stock===r.stockPending.after,'Stock modificado durante una operación pendiente.');p.stock=r.stockPending.after;put_(r.area,p);delete r.stockPending;put_('movimientos',r);});}
