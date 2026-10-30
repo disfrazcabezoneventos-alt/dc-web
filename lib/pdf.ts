@@ -1,6 +1,11 @@
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import { BRAND, Rental, dateAR, money, paid, deposit, VERSION } from './model';
-export async function contractPdf(r:Rental,code:string,createdAt:string,signature:ArrayBuffer,conditions:{title:string,body:string}[],hash:string,version=VERSION,source:'web'|'local'='web'){
+import {localContractPdf} from './local-pdf';
+export async function contractPdf(r:Rental,code:string,createdAt:string,signature:ArrayBuffer,conditions:{title:string,body:string}[],hash:string,version=VERSION,source:'web'|'local'='web',layout:'compact'|'full'='compact'){
+ if(source==='local'&&layout==='compact')return localContractPdf(r,code,createdAt,signature,conditions,hash,version);
+ return fullContractPdf(r,code,createdAt,signature,conditions,hash,version,source);
+}
+async function fullContractPdf(r:Rental,code:string,createdAt:string,signature:ArrayBuffer,conditions:{title:string,body:string}[],hash:string,version=VERSION,source:'web'|'local'='web'){
  const doc=await PDFDocument.create();doc.setTitle('Contrato de alquiler '+code+' - Disfraz Cabezón');doc.setAuthor(BRAND.name);doc.setCreationDate(new Date(createdAt));
  const regular=await doc.embedFont(StandardFonts.Helvetica),bold=await doc.embedFont(StandardFonts.HelveticaBold);let page=doc.addPage([595.28,841.89]),y=780;const purple=rgb(.36,.20,.49),ink=rgb(.18,.17,.23),grey=rgb(.45,.43,.49);
  const safe=(s:string)=>s.replace(/[^\x20-\x7E\xA0-\xFF\n]/g,'-');

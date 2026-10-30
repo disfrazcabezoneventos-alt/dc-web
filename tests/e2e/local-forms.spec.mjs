@@ -1,5 +1,27 @@
 import {test,expect} from '@playwright/test';
 import {localHarness,fixture,submission,png} from '../local-forms-harness.mjs';
+import fs from 'node:fs';
+import {PDFDocument} from 'pdf-lib';
+
+test('portal local: descarga una hoja A4 y conserva la copia original completa',async({page})=>{
+ const h=localHarness(),created=h.dispatch(submission(h));await backend(page,h);
+ await page.goto('/solicitud/#id='+created.id+'&acceso='+'a'.repeat(72));
+ await expect(page.getByRole('heading',{name:created.code,exact:true})).toBeVisible();
+ const compactDownload=page.waitForEvent('download');await page.getByRole('button',{name:'Descargar contrato (1 hoja)',exact:true}).click();
+ const compact=await compactDownload;expect((await PDFDocument.load(fs.readFileSync(await compact.path()))).getPageCount()).toBe(1);
+ const originalDownload=page.waitForEvent('download');await page.getByRole('button',{name:'Descargar original completo',exact:true}).click();
+ const original=await originalDownload;expect((await PDFDocument.load(fs.readFileSync(await original.path()))).getPageCount()).toBeGreaterThan(1);
+ expect(h.tables.reservas).toHaveLength(1);
+});
+
+test('portal web: mantiene su descarga habitual y el contrato completo',async({page})=>{
+ const h=localHarness(),created=h.dispatch(submission(h));h.tables.reservas[0].source='web';h.tables.reservas[0].code='DC-WEB-PRUEBA';
+ await backend(page,h);await page.goto('/solicitud/#id='+created.id+'&acceso='+'a'.repeat(72));
+ await expect(page.getByRole('heading',{name:'DC-WEB-PRUEBA',exact:true})).toBeVisible();
+ await expect(page.getByRole('button',{name:'Descargar contrato (1 hoja)',exact:true})).toHaveCount(0);
+ const download=page.waitForEvent('download');await page.getByRole('button',{name:'Descargar contrato firmado',exact:true}).click();
+ const original=await download;expect((await PDFDocument.load(fs.readFileSync(await original.path()))).getPageCount()).toBeGreaterThan(1);
+});
 
 async function backend(page,h){
  h.tables.categorias_disfraces.push({id:'cabezones',area:'disfraces',name:'Cabezones'},{id:'adultos',area:'disfraces',name:'Adultos'});
@@ -77,7 +99,8 @@ test('admin: archivos, contrato original, orden real por cada fecha y aviso web'
  await modal.getByRole('button',{name:'Guardar cambios'}).click();await expect(modal).toHaveCount(0);expect(h.tables.reservas[0].managementFiles.dniFront.id).not.toBe(originalFiles.dniFront.id);expect(h.tables.reservas[0].files).toEqual(originalFiles);
  await page.getByRole('button',{name:'Abrir '+created.code,exact:true}).click();
  const imagePromise=page.waitForEvent('download');await modal.getByRole('button',{name:'Ver / descargar DNI frente',exact:true}).click();expect((await imagePromise).suggestedFilename()).toContain('dniFront');
- const pdfPromise=page.waitForEvent('download');await modal.getByRole('button',{name:'Descargar contrato original firmado'}).click();expect((await pdfPromise).suggestedFilename()).toContain('original-firmado.pdf');
+ const compactPromise=page.waitForEvent('download');await modal.getByRole('button',{name:'Descargar contrato (1 hoja)',exact:true}).click();const compact=await compactPromise;expect(compact.suggestedFilename()).toContain('una-hoja.pdf');expect((await PDFDocument.load(fs.readFileSync(await compact.path()))).getPageCount()).toBe(1);
+ const pdfPromise=page.waitForEvent('download');await modal.getByRole('button',{name:'Descargar contrato original firmado'}).click();const original=await pdfPromise;expect(original.suggestedFilename()).toContain('original-firmado.pdf');expect((await PDFDocument.load(fs.readFileSync(await original.path()))).getPageCount()).toBeGreaterThan(1);
  await modal.getByRole('button',{name:'Cerrar',exact:true}).click();await page.getByRole('button',{name:'Notificaciones de formularios: 3'}).click();await page.getByRole('button',{name:/Formulario web · DC-WEB-NEW/}).click();await expect(modal).toContainText('FORMULARIO WEB');await expect(modal.getByRole('heading',{name:'DC-WEB-NEW'})).toBeVisible();
  await page.screenshot({path:test.info().outputPath('modal-formulario-web.png'),fullPage:true});
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
