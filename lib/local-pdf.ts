@@ -1,5 +1,5 @@
 import {PDFDocument,StandardFonts,rgb} from 'pdf-lib';
-import {BRAND,Rental,dateAR,money,deposit,norm} from './model';
+import {BRAND,Rental,dateAR,norm} from './model';
 import {localTerms} from './local-terms';
 
 type Condition={title:string;body:string};
@@ -78,11 +78,11 @@ export async function localContractPdf(r:Rental,code:string,createdAt:string,sig
   row(['Retiro: '+dateAR(r.pickupDate)+' | '+r.pickupWindow+' h','Devolución: '+dateAR(r.returnDate)+' | '+r.returnWindow+' h'],[width/2,width/2],size,true);
   if(r.specialSchedule&&r.scheduleAgreement)row(['Acuerdo de horario: '+r.scheduleAgreement],[width]);
   heading('DISFRACES Y ACCESORIOS');
-  const columns=[257,85,35,width-377],headers=['PRODUCTO','CATEGORÍA','CANT.','PARTES / INDICACIONES'];
+  const columns=[218,80,32,82,width-412],headers=['PRODUCTO','CATEGORÍA','CANT.','PARTES','INDICACIONES'];
   const tableRow=(values:string[],header=false)=>{
    const fontSize=header?7:size,leading=fontSize*1.23;
    const wrapped=values.map((value,i)=>lines(value,columns[i]-10,fontSize,header));
-   const h=Math.max(header?17:16,...wrapped.map(v=>v.length*leading+7));
+   const h=Math.max(header?17:r.items.length>4?16:24,...wrapped.map(v=>v.length*leading+7));
    if(draw){
     page.drawRectangle({x:left,y:y-h,width,height:h,borderWidth:.5,borderColor:border,...(header?{color:rgb(.94,.94,.94)}:{})});
     let x=left;
@@ -93,10 +93,10 @@ export async function localContractPdf(r:Rental,code:string,createdAt:string,sig
   tableRow(headers,true);
   r.items.forEach(i=>{
    const category=i.category==='adulto'?'Adulto':'Cabezón',detail=i.catalogCategory||'';
-   tableRow([i.name,category+(detail&&!['adulto','adultos','cabezon','cabezones'].includes(norm(detail))?' / '+detail:''),String(i.quantity),'']);
+   tableRow([i.name,category+(detail&&!['adulto','adultos','cabezon','cabezones'].includes(norm(detail))?' / '+detail:''),String(i.quantity),'','']);
   });
   y-=7;
-  row(['Alquiler: '+money(r.total),'Garantía: '+money(deposit(r)),'Modalidad: '+(r.payMode==='full'?'100%':'50%')],[width/3,width/3,width/3],size,true);
+  row(['Alquiler / precio: $ __________','Seguro / garantía: $ __________','Modalidad: '+(r.payMode==='full'?'100%':'50%')],[width/3,width/3,width/3],size,true);
   row(['Cobros a verificar y registrar en el local. Este formulario no acredita pagos.'],[width],7.8);
   const yes=(value:boolean)=>value?'Sí':'No';
   row(['Mayor de edad: '+yes(r.adult)+' | Datos auténticos: '+yes(r.truth)+' | DNI propio: '+yes(r.namesMatch)+' | Información previa: '+yes(r.priorInfo)+' | Privacidad: '+yes(r.privacy)+' | Condiciones: '+yes(r.terms)],[width],7.3);

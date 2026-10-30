@@ -6,8 +6,10 @@ Abrir**, debajo de los archivos. Imprimí el PDF en papel A4.
 
 La hoja reúne los datos del cliente y de quien retira, los disfraces con sus
 categorías y cantidades, retiro y devolución, alquiler, garantía, modalidad,
-declaraciones, condiciones resumidas, firma y aclaración. La tabla conserva un
-espacio para anotar partes e indicaciones en el local.
+declaraciones, condiciones resumidas, firma y aclaración. Los importes de alquiler
+y seguro / garantía quedan en blanco para completarlos a mano. La tabla conserva
+casilleros separados y vacíos para partes e indicaciones en el local. Los precios
+registrados en el formulario y en administración se conservan.
 
 La modalidad elegida no se presenta como un cobro acreditado. La copia lleva el
 código de solicitud, la versión y el hash del registro firmado.
