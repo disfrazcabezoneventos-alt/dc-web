@@ -11,5 +11,5 @@ export function pdfModules(){
   new Function('exports','require',js)(result,id=>id==='pdf-lib'?pdfLib:load(path.resolve(path.dirname(file),id+'.ts')));
   return result;
  }
- return {pdf:load('lib/pdf.ts'),local:load('lib/local-pdf.ts'),terms:load('lib/local-terms.ts').localTerms,webTerms:load('lib/terms.ts').terms};
+ return {pdf:load('lib/pdf.ts'),receipt:load('lib/receipt.ts'),receiptPdf:load('lib/receipt-pdf.ts'),stats:load('lib/stats.ts'),local:load('lib/local-pdf.ts'),terms:load('lib/local-terms.ts').localTerms,webTerms:load('lib/terms.ts').terms};
 }

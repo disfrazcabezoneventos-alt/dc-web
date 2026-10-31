@@ -8,7 +8,7 @@ function rentalPrices_(){
 function formSource_(r){return r.source==='local'?'local':'web';}
 function formData_(r){return r.managementData||r.data;}
 function safeIncoming_(r){
- return {id:r.id,code:r.code,source:formSource_(r),status:r.status,formState:r.formState||'reserved',createdAt:r.createdAt,updatedAt:r.updatedAt,revision:r.managementRevision||0,data:formData_(r),originalData:r.data,events:r.events||[],fileSlots:Object.keys({...r.files,...r.managementFiles}),hasEdits:!!r.managementData,terms:r.terms,termsVersion:r.termsVersion,signedHash:r.signedHash};
+ return {id:r.id,code:r.code,source:formSource_(r),status:r.status,formState:r.formState||'reserved',createdAt:r.createdAt,updatedAt:r.updatedAt,revision:r.managementRevision||0,data:formData_(r),originalData:r.data,events:r.events||[],fileSlots:Object.keys({...r.files,...r.managementFiles}),hasEdits:!!r.managementData,terms:r.terms,termsVersion:r.termsVersion,signedHash:r.signedHash,receiptsReady:config_('LOCAL_RECEIPTS_ENABLED')==='yes'};
 }
 // Run once before deploying the frontend. No new spreadsheet or Drive folder is created.
 function prepararFormulariosLocales(){
@@ -54,6 +54,7 @@ function incomingDispatch_(b){
   const file=(b.original?row.files:{...row.files,...row.managementFiles})?.[b.slot];need_(file,'No hay archivo en ese campo.');
   const blob=DriveApp.getFileById(file.id).getBlob();return {data:{base64:Utilities.base64Encode(blob.getBytes()),type:blob.getContentType()}};
  }
+ if(typeof needNoPendingReceipt_==='function')needNoPendingReceipt_(row.id);
  need_(b.revision===(row.managementRevision||0),'Otra sesión modificó este formulario. Cerrá y volvé a abrirlo para actualizar.');
  if(b.action==='deleteIncomingForm'){
   row.deletedAt=now_();row.adminNotificationReadAt=now_();row.managementRevision=(row.managementRevision||0)+1;

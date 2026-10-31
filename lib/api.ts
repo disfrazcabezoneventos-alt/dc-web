@@ -40,7 +40,7 @@ export async function api(action:string, data:Record<string,unknown>={}, token='
       if(event.data?.type!=='dc-apps-result'||event.data.id!==id)return;
       finish(undefined,event.data.result);
     };
-    const publicRead=['catalogData','catalog','siteTheme','localConfig','incomingForms','incomingRequest','incomingNotifications'].includes(action);
+    const publicRead=['catalogData','catalog','siteTheme','localConfig','incomingForms','incomingRequest','incomingNotifications','localReceiptInfo','viewLocalReceipt'].includes(action);
     const timer=setTimeout(()=>finish(new Error(publicRead?'No se pudo conectar con Apps Script. Revisá que la implementación web esté activa y que la URL configurada en Render sea la misma.':'Apps Script tardó demasiado en responder. Si estabas guardando datos, revisá el panel antes de repetir la operación.')),publicRead?30000:120000);
     window.addEventListener('message',receive);
     document.body.append(frame,form);
