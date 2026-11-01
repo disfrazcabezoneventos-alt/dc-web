@@ -5,17 +5,19 @@ import vm from 'node:vm';
 import crypto from 'node:crypto';
 
 function setup(mode='alquiler',area='disfraces'){
- const token='test-admin-token-01234567890123456789',writes=[];
+ const writes=[],cache=new Map(),settings={ADMIN_USER:'admin',ADMIN_PASSWORD:'test-password-12345'};
  const product={id:'p1',area,name:'Disfraz sin descripción',description:'',categoryId:'ninos',categoryIds:['ninos','halloween'],category:'Niños',mode,stock:3,price:mode==='alquiler'?0:10000,rentPrice:mode==='venta'?0:60000,active:true,image:'https://res.cloudinary.com/test/foto.jpg',thumbnail:'https://res.cloudinary.com/test/thumb.jpg',sourceId:'original',custom:{keep:true},priceKnown:false,stockUnknown:true};
  const tables={disfraces:[],cotillon:[],movimientos:[]};tables[area].push(product);
  const ctx=vm.createContext({console,Date,JSON,Map,Set,
-  PropertiesService:{getScriptProperties:()=>({getProperty:()=>'',setProperty:()=>writes.push('properties')})},
-  CacheService:{getScriptCache:()=>({get:key=>key==='session:'+crypto.createHash('sha256').update(token).digest('hex')?'admin':null,put:()=>writes.push('cache')})},
-  Utilities:{Charset:{UTF_8:'utf8'},DigestAlgorithm:{SHA_256:'sha256'},computeDigest:(_a,value)=>[...crypto.createHash('sha256').update(value).digest()]}
+  PropertiesService:{getScriptProperties:()=>({getProperty:key=>settings[key]||'',setProperty:()=>writes.push('properties')})},
+  CacheService:{getScriptCache:()=>({get:key=>cache.get(key),put:(key,value)=>{cache.set(key,value);writes.push('cache');},remove:key=>cache.delete(key)})},
+  Utilities:{getUuid:()=>crypto.randomUUID(),Charset:{UTF_8:'utf8'},DigestAlgorithm:{SHA_256:'sha256'},computeDigest:(_a,value)=>[...crypto.createHash('sha256').update(value).digest()]}
  });
  vm.runInContext(fs.readFileSync('backend/Code.gs','utf8'),ctx);
  ctx.rows_=name=>structuredClone(tables[name]||[]);
  ctx.put_=(name,p)=>{writes.push(name);const i=tables[name].findIndex(x=>x.id===p.id);tables[name][i]=structuredClone(p);return p;};
+ const token=ctx.dispatch_({action:'login',username:settings.ADMIN_USER,password:settings.ADMIN_PASSWORD}).token;
+ writes.length=0;
  ctx.recoverStock_=()=>{throw Error('No ejecutar mantenimiento en quickUpdate');};
  ctx.ensureCotillonDepth3_=()=>{throw Error('No migrar categorías en quickUpdate');};
  const update=cambios=>ctx.dispatch_({action:'quickUpdate',token,area,id:'p1',cambios});
