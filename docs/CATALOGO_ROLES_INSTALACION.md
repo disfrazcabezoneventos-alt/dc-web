@@ -37,11 +37,19 @@ que no estén instalados ni ejecutes ninguna importación. No pegues código en 
    Devuelve milisegundos y registra únicamente `{iterations, ms}`: usa una
    contraseña ficticia y no guarda ni registra contraseña, sal, hash o tokens.
    Borrá el archivo al terminar. No aparece la función privada en el menú Ejecutar.
-   Si el costo de 600.000 supera **4.000 ms**, la propuesta es bajar
+   Para comparar costos, agregá también `scripts/apps-script-ensayo/EnsayoHashRepetido.gs`
+   solo al proyecto de ensayo y ejecutá `ejecutarEnsayoHashRepetido`. Hace una corrida
+   de calentamiento por costo y tres muestras alternadas por costo, en una única
+   ejecución, llamando al wrapper real. No modifica la constante ni cuentas.
+   Si las mediciones comparables de 600.000 superan **4.000 ms**, la propuesta es bajar
    `CATALOG_PBKDF2_ITERATIONS` a **210.000 para cuentas nuevas y próximos resets**,
    previa aprobación. No reescribir registros existentes: cada registro conserva
    su costo, validado como entero entre 100.000 y 1.000.000. La rama sigue creando
-   registros de 600.000 hasta aprobar el cambio. Medir varias veces en Google.
+   registros de 600.000 hasta aprobar el cambio. Medir varias veces en Google y
+   conservar los resultados completos, excluyendo el calentamiento del promedio.
+   Las seis muestras controladas de esta revisión dieron menos de 4 segundos;
+   ver los números en `CATALOGO_ROLES_REVISION_PR32.md`. No bajar el costo con los
+   dos valores aislados iniciales como única evidencia.
 
 ## Después del OK: actualizar la implementación actual
 

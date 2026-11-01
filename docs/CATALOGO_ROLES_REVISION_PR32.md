@@ -3,7 +3,7 @@
 La revisión continúa en la misma rama y en DRAFT. No se fusionó ni desplegó nada;
 no se cambió el proyecto de Apps Script ni la hoja de producción.
 
-Validación de esta revisión: **278/278 pruebas unitarias, 6/6 Playwright de ambos
+Validación de esta revisión: **280/280 pruebas unitarias, 6/6 Playwright de ambos
 roles en escritorio/celular y build estático sin errores**. La regresión anterior
 de 64 escenarios sigue documentada por separado; estas cifras no cuentan ensayos
 reales de Sheets que no se completaron.
@@ -35,23 +35,45 @@ En un proyecto nuevo de ensayo, sin implementación y con contraseña ficticia:
 | 600.000 | 4.470 ms |
 | 210.000 | 493 ms |
 
-Son muestras individuales, no garantías de latencia. El primer valor supera el
-umbral de 4 segundos solicitado: **se propone 210.000 para cuentas nuevas y los
-próximos resets**, previa aprobación. La constante de esta rama sigue en 600.000.
-Cambiarla más adelante no invalida los hashes existentes porque se verifica el
-costo de cada registro. No hay migración masiva ni se reescriben contraseñas.
-Las capturas y los enlaces privados del ensayo se entregan fuera del repositorio.
+Esas muestras individuales no permiten comparar proporcionalidad ni decidir un
+cambio de costo. Se reemplaza esa conclusión por la repetición controlada siguiente.
+
+### Repetición en una sola ejecución de Google Apps Script
+
+Se ejecutó `ejecutarEnsayoHashRepetido` en un proyecto exclusivo de hash, sin acceso
+a hojas ni correo. Reutiliza `ejecutarMedirHash` y su helper real, variando el costo
+solo durante esa ejecución; restaura el helper en `finally`. **No cambia la constante,
+propiedades de cuentas ni registros de contraseñas.**
+
+Primero una corrida de calentamiento por costo (no incluida en las seis muestras):
+600.000 → 2.747 ms; 210.000 → 871 ms. Luego se alternaron los costos en tres rondas:
+
+| Ronda | 600.000 iteraciones | 210.000 iteraciones |
+| --- | ---: | ---: |
+| 1 | 2.460 ms | 919 ms |
+| 2 | 3.089 ms | 1.103 ms |
+| 3 | 2.844 ms | 957 ms |
+| Promedio | 2.798 ms | 993 ms |
+
+La relación de promedios es aproximadamente 2,8×, compatible con la relación de
+costos de 2,9×. Ninguna de las seis muestras calientes supera 4 segundos. Tres
+muestras por costo no garantizan latencia futura ni bajo concurrencia. La constante
+sigue en **600.000**; no se aplica la propuesta anterior de bajarla a partir de dos
+muestras aisladas. Las capturas y los enlaces privados se entregan fuera de GitHub.
 
 ## Renombrado de categoría con 120 productos
 
 Se preparó una segunda copia privada en la cuenta del local y un proyecto de
 ensayo con permisos solicitados limitados a Sheets y activadores de ese proyecto.
-El propietario autorizó continuar con ese consentimiento. Antes de completarlo,
-el control de computadora se detuvo al no poder verificar la URL de Chrome.
+El propietario autorizó continuar con ese consentimiento. En la primera pasada,
+el control de computadora se detuvo al no poder verificar la URL de Chrome. Al
+retomar se encontró la ventana de Google, que requiere verificación del dispositivo
+por el propietario antes de conceder los permisos de Sheets y activadores.
 
 **La medición real del renombrado sigue pendiente. No hay un tiempo de Sheets
 medido para informar.** Tampoco quedó confirmada una ejecución real del activador
-privado. No se confunden las pruebas VM con esas dos comprobaciones de Google.
+privado. Ambas esperan esa verificación personal. No se confunden las pruebas VM
+con esas dos comprobaciones de Google; el ensayo de hash ya quedó completo.
 
 `scripts/apps-script-ensayo/EnsayoCategoria.gs` deja preparado el recorrido:
 agrega 120 productos ficticios en borrador y una categoría exclusiva en la copia,

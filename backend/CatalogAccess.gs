@@ -15,11 +15,12 @@ function passwordRecord_(password){
  return {algorithm:'pbkdf2-sha256',iterations:CATALOG_PBKDF2_ITERATIONS,salt,hash:DcPasswords.derive(password,salt,CATALOG_PBKDF2_ITERATIONS)};
 }
 function passwordMatches_(password,record){return typeof password==='string'&&password.length<=128&&record&&record.algorithm==='pbkdf2-sha256'&&Number.isInteger(record.iterations)&&record.iterations>=100000&&record.iterations<=1000000&&equal_(DcPasswords.derive(password,record.salt,record.iterations),record.hash);}
-function medirHashCatalogo_(){
+function medirHashCatalogo_(iterations=CATALOG_PBKDF2_ITERATIONS){
  need_(typeof DcPasswords!=='undefined','Falta AuthCrypto.gs.');
+ need_(Number.isInteger(iterations)&&iterations>=100000&&iterations<=1000000,'Costo de ensayo inválido.');
  const ficticia='ensayo-'+Utilities.getUuid(),salt=hash_(Utilities.getUuid()+Utilities.getUuid());
- const start=Date.now();DcPasswords.derive(ficticia,salt,CATALOG_PBKDF2_ITERATIONS);const ms=Date.now()-start;
- console.log(JSON.stringify({iterations:CATALOG_PBKDF2_ITERATIONS,ms}));return ms;
+ const start=Date.now();DcPasswords.derive(ficticia,salt,iterations);const ms=Date.now()-start;
+ console.log(JSON.stringify({iterations,ms}));return ms;
 }
 function catalogSessionVersion_(u){return hash_(JSON.stringify([u.id,u.username,u.active,u.password,u.sessionVersion]));}
 function catalogIdentity_(token){
