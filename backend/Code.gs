@@ -104,8 +104,7 @@ function dispatch_(b){
  // La edición rápida no dispara mantenimiento ni migraciones de otros campos.
  if(b.action==='quickUpdate'){session_(b.token);return quickUpdate_(b);}
  if(typeof incomingDispatch_==='function'){const incoming=incomingDispatch_(b);if(incoming)return incoming.data;}
- recoverStock_();
- if(['catalog','catalogData','admin','saveCategory','saveProduct','mapLegacyCategory'].includes(b.action))ensureCotillonDepth3_();
+ // Las lecturas públicas no reparan stock ni crean categorías.
  if(b.action==='catalog')return CATEGORY_AREAS.flatMap(a=>products_(a).filter(p=>a==='cotillon'||p.active));
  if(b.action==='catalogData')return {products:CATEGORY_AREAS.flatMap(a=>products_(a).filter(p=>a==='cotillon'||p.active)),categories:CATEGORY_AREAS.flatMap(categories_),campaign:siteCampaign_(),cotillonImportReady:config_('COTILLON_EXCEL_2026_STATE')==='ready'};
  if(b.action==='login'){
@@ -126,6 +125,8 @@ function dispatch_(b){
  }
  if(b.action==='cancel'){const d=b.data;need_(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email),'Correo inválido.');limit_('cancel:'+d.email,5,3600);const id=Utilities.getUuid();const r={id,code:'ARR-'+id.slice(0,8).toUpperCase(),name:text_(d.name,150),email:text_(d.email,200),reference:String(d.reference||'').slice(0,100),note:String(d.note||'').slice(0,2000),createdAt:now_(),resolved:false};put_('cancelaciones',r);return {code:r.code};}
  session_(b.token);
+ recoverStock_();
+ if(['admin','saveCategory','saveProduct','mapLegacyCategory'].includes(b.action))ensureCotillonDepth3_();
  if(b.action==='logout'){CacheService.getScriptCache().remove('session:'+hash_(b.token));return {ok:true};}
  if(b.action==='admin')return {products:CATEGORY_AREAS.flatMap(products_),categories:CATEGORY_AREAS.flatMap(categories_),requests:rows_('reservas').filter(r=>!r.deletedAt).map(({accessHash,terms,files,...r})=>r),movements:rows_('movimientos'),cancellations:rows_('cancelaciones'),bank:bank_(),mailMode:config_('MAIL_MODE'),siteTheme:siteTheme_(),campaign:siteCampaign_(),localFormsReady:config_('LOCAL_FORMS_ENABLED')==='yes'};
  if(b.action==='setSiteTheme'){need_(['default','halloween'].includes(b.theme),'Tema inválido.');props_().setProperty('SITE_THEME',b.theme);return {theme:siteTheme_()};}
