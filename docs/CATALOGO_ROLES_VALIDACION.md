@@ -5,9 +5,11 @@ La conciliación del backend y la instalación se describen en
 [Etapa 0](CATALOGO_ROLES_ETAPA_0.md) y
 [guía de instalación](CATALOGO_ROLES_INSTALACION.md).
 
-Resultado: **274/274 pruebas unitarias** y **64/64 pruebas Playwright** en la
-regresión conjunta, después de reforzar la creación y los puntos de entrada de
-mantenimiento. `npm ci` y build estático completados sin errores.
+Resultado original: **274/274 pruebas unitarias** y **64/64 pruebas Playwright**
+en la regresión conjunta. La revisión posterior agrega pruebas de costo de hash,
+wrappers temporales y benchmark; su resultado y las mediciones de Google figuran
+en [Revisión PR32](CATALOGO_ROLES_REVISION_PR32.md). `npm ci` y build estático
+completados sin errores.
 
 ## Cobertura
 
@@ -83,9 +85,10 @@ de ensayo desplegado. El servidor y los mocks no se incluyen en `out/`.
 - La copia del Code.gs desplegado fue suministrada por el propietario. Coincide
   con main normalizando saltos/BOM; no se inspeccionó de forma independiente el
   editor de Apps Script ni se afirmó cuál versión está activa en Google.
-- **No se desplegó ni ejecutó la aplicación en el runtime real de Google Apps
-  Script.** VM + persistencia de Sheets no sustituyen ese ensayo. Quedan pendientes
-  latencia/cupo de PBKDF2, permisos de Google y recorrido de la misma URL `/exec`.
+- No se desplegó ni recorrió la API de la aplicación en Google Apps Script.
+  VM + persistencia de Sheets no sustituyen ese ensayo. La revisión posterior sí
+  mide PBKDF2 en el runtime de Google; siguen pendientes la API real, el benchmark
+  de Sheets y el recorrido de la misma URL `/exec`. Ver Revisión PR32.
 - Cloudinary y correo se simularon. No se subieron fotos reales ni enviaron
   notificaciones. Los documentos y clientes de producción no se usaron en tests.
 - La copia es privada del propietario conectado al conector. La cuenta distinta

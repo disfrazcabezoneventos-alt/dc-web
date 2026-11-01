@@ -14,7 +14,13 @@ function passwordRecord_(password){
  const salt=hash_(Utilities.getUuid()+Utilities.getUuid());
  return {algorithm:'pbkdf2-sha256',iterations:CATALOG_PBKDF2_ITERATIONS,salt,hash:DcPasswords.derive(password,salt,CATALOG_PBKDF2_ITERATIONS)};
 }
-function passwordMatches_(password,record){return typeof password==='string'&&password.length<=128&&record&&record.algorithm==='pbkdf2-sha256'&&record.iterations===CATALOG_PBKDF2_ITERATIONS&&equal_(DcPasswords.derive(password,record.salt,record.iterations),record.hash);}
+function passwordMatches_(password,record){return typeof password==='string'&&password.length<=128&&record&&record.algorithm==='pbkdf2-sha256'&&Number.isInteger(record.iterations)&&record.iterations>=100000&&record.iterations<=1000000&&equal_(DcPasswords.derive(password,record.salt,record.iterations),record.hash);}
+function medirHashCatalogo_(){
+ need_(typeof DcPasswords!=='undefined','Falta AuthCrypto.gs.');
+ const ficticia='ensayo-'+Utilities.getUuid(),salt=hash_(Utilities.getUuid()+Utilities.getUuid());
+ const start=Date.now();DcPasswords.derive(ficticia,salt,CATALOG_PBKDF2_ITERATIONS);const ms=Date.now()-start;
+ console.log(JSON.stringify({iterations:CATALOG_PBKDF2_ITERATIONS,ms}));return ms;
+}
 function catalogSessionVersion_(u){return hash_(JSON.stringify([u.id,u.username,u.active,u.password,u.sessionVersion]));}
 function catalogIdentity_(token){
  need_(typeof token==='string'&&token.length>30,'Sesión vencida. Volvé a ingresar.');

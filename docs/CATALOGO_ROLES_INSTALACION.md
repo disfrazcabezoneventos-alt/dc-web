@@ -10,6 +10,8 @@ entregan al propietario por separado, fuera del repositorio público.
 - `backend/CatalogAccess.gs`: cuentas, permisos, borradores e historial.
 - `backend/AuthCrypto.gs`: bundle reproducible de PBKDF2-HMAC-SHA256.
 - `backend/AUTH_CRYPTO_LICENSE.txt`: licencia MIT de la biblioteca incluida.
+- `backend/MantenimientoTemporal.gs`: wrappers solo para ejecutar manualmente;
+  pegar, ejecutar y borrar. Nunca incluir este archivo en una versión desplegada.
 - Frontend Next.js de la misma rama. No cambian contratos ni formularios públicos.
 
 Conservá `Validation.gs`. Actualizá también `LocalForms.gs`, `LocalReceipts.gs`
@@ -31,10 +33,21 @@ que no estén instalados ni ejecutes ninguna importación. No pegues código en 
    en Sheets lee/escribe únicamente filas ficticias en la copia verificada.
 4. Generá credenciales de ensayo en memoria. Nunca las agregues al repositorio,
    capturas, logs o ejemplos de propiedades. Nunca cargues clientes reales en tests.
+5. Pegá temporalmente `MantenimientoTemporal.gs` y ejecutá `ejecutarMedirHash`.
+   Devuelve milisegundos y registra únicamente `{iterations, ms}`: usa una
+   contraseña ficticia y no guarda ni registra contraseña, sal, hash o tokens.
+   Borrá el archivo al terminar. No aparece la función privada en el menú Ejecutar.
+   Si el costo de 600.000 supera **4.000 ms**, la propuesta es bajar
+   `CATALOG_PBKDF2_ITERATIONS` a **210.000 para cuentas nuevas y próximos resets**,
+   previa aprobación. No reescribir registros existentes: cada registro conserva
+   su costo, validado como entero entre 100.000 y 1.000.000. La rama sigue creando
+   registros de 600.000 hasta aprobar el cambio. Medir varias veces en Google.
 
 ## Después del OK: actualizar la implementación actual
 
-1. Guardá el número de versión activo y respaldá la hoja. Guardá las propiedades
+1. **Primero listá Activadores y retiralos si pertenecen a importaciones ya
+   terminadas**, según la sección de disparadores. Solo migrar los que sigan en uso.
+   Guardá el número de versión activo y respaldá la hoja. Guardá las propiedades
    privadas por un medio seguro que no sea GitHub, chat ni capturas.
 2. En **web-dc**, reemplazá `Código.gs` con `backend/Code.gs` completo. Agregá o
    reemplazá **CatalogAccess.gs** y **AuthCrypto.gs** con los archivos de esta rama.
@@ -58,7 +71,10 @@ que no estén instalados ni ejecutes ninguna importación. No pegues código en 
    El campo `version` de `doGet` es metadato histórico; no es el número de implementación.
    El backend nuevo acepta las credenciales anteriores mientras no se migraron.
    Hacer el cambio en una ventana sin edición de catálogo.
-5. Ejecutá **prepararRolesCatalogo_** una vez, después de publicar esa versión. La función:
+   **Antes de crear esa versión, verificar que MantenimientoTemporal.gs no exista.**
+5. Después de publicar la versión limpia, pegá **MantenimientoTemporal.gs** en el
+   editor y ejecutá **ejecutarPrepararRoles** una vez. Es un wrapper de
+   `prepararRolesCatalogo_`; la función privada no aparece en Ejecutar. La función:
    - crea únicamente la pestaña `historial_cambios` si falta;
    - convierte la contraseña actual del Admin a PBKDF2-SHA256, con sal individual
      y 600.000 iteraciones, en `ADMIN_PASSWORD_RECORD`;
@@ -71,6 +87,11 @@ que no estén instalados ni ejecutes ninguna importación. No pegues código en 
 
    No ejecutar la migración mientras siga atendiendo la versión antigua: necesita
    la propiedad de contraseña que la preparación elimina.
+   Ejecutá `ejecutarMigrarDisparadores` solo después de la revisión de Activadores
+   detallada abajo. `ejecutarRecuperarHistorial` queda para una recuperación manual
+   autorizada si hace falta. **Borrá MantenimientoTemporal.gs al terminar** y
+   verificá que no quede en el proyecto antes de cualquier versión posterior.
+   No desplegar de nuevo mientras ese archivo público temporal esté presente.
 6. Publicá el frontend de este mismo PR en Render, únicamente cuando también esté
    aprobado: `npm ci && npm run build`, directorio `out`. Conservar la variable
    `NEXT_PUBLIC_APPS_SCRIPT_URL` que apunta a esa implementación. No cambiar DNS.
@@ -79,15 +100,33 @@ que no estén instalados ni ejecutes ninguna importación. No pegues código en 
 
 ## Funciones manuales y disparadores existentes
 
-Las funciones manuales ahora terminan en `_`: por ejemplo,
-`prepararRolesCatalogo_` y `reintentarAvisosSinCuota_`. Se ejecutan desde el editor
-de Apps Script; nunca desde la web. Así se cierra también el acceso alternativo de
+Las funciones privadas terminan en `_` y **no aparecen en el menú Ejecutar**.
+El archivo temporal contiene únicamente estos wrappers públicos:
+
+| Función visible | Llama únicamente a |
+| --- | --- |
+| `ejecutarPrepararRoles` | `prepararRolesCatalogo_` |
+| `ejecutarMigrarDisparadores` | `migrarDisparadoresCatalogo_` |
+| `ejecutarRecuperarHistorial` | `recuperarHistorialCatalogo_` |
+| `ejecutarMedirHash` | `medirHashCatalogo_` |
+
+Pegá el archivo, ejecutá lo necesario y **borrá el archivo completo**. Nunca
+desplegar estos wrappers públicos ni dejarlos instalados. El test de entrypoints
+solo admite esta excepción en ese archivo y exige llamadas directas, sin argumentos
+ni instrucciones adicionales. Al borrarlo se conserva el cierre del acceso alternativo de
 [google.script.run documentado por Google](https://developers.google.com/apps-script/guides/html/communication#private_functions).
 Las funciones de validación sin datos y `doGet`/`doPost` conservan sus nombres.
 
-Antes de instalar, anotá los disparadores existentes y su programación. En la
-misma ventana de mantenimiento, después de actualizar los archivos, ejecutá
-`migrarDisparadoresCatalogo_` **solo si hay tareas anteriores**. Cambia únicamente
+1. **Primero abrí Activadores**, listá todos (función, frecuencia y propietario)
+   y comprobá cuáles siguen en uso. No ejecutar ninguna importación para averiguarlo.
+2. Borrá los activadores de importaciones **ya terminadas** de cotillón 27,
+   seis Rappi, disfraces 28, limpieza de manuales y mover disfraces a cotillón,
+   incluyendo variantes de nombres con o sin `_`. Revisá también procesadores
+   generales de fotos; si no tienen trabajo pendiente, no migrarlos. Conservar
+   cualquier tarea que todavía esté trabajando o cuya finalización sea incierta.
+3. En la misma ventana de mantenimiento, después de actualizar los archivos,
+   pegá el archivo temporal y ejecutá `ejecutarMigrarDisparadores` **solo para las
+   tareas anteriores que sigan en uso**; luego borrá el archivo temporal. Cambia únicamente
 los tres procesadores de fotos creados por este repositorio a sus nombres privados,
 con el mismo intervalo de 5 minutos; no ejecuta sus tareas ni modifica productos.
 Si ya existe el disparador nuevo no lo duplica. Los disparadores ajenos se conservan
@@ -99,6 +138,35 @@ Si habías creado manualmente un disparador, por ejemplo para avisos sin cuota,
 recrealo con el nombre terminado en `_`, la misma programación y la misma cuenta
 propietaria; después quitá el anterior. Revisá también disparadores creados por
 otras cuentas. No habilites trabajos de importación que antes estaban detenidos.
+
+### Comprobar un activador privado en el proyecto de ensayo
+
+Sin desplegar nada y solo en un proyecto apuntado a la copia:
+
+1. Agregá `scripts/apps-script-ensayo/EnsayoCategoria.gs` junto con Code.gs,
+   CatalogAccess.gs, AuthCrypto.gs y Validation.gs. Este archivo **no va a producción**.
+2. Configurá `SPREADSHEET_ID` con la copia cuyo nombre empieza por `ENSAYO ` y
+   `PR32_ENSAYO=yes`, exclusivamente en las propiedades de ese proyecto de ensayo.
+3. Ejecutá `ejecutarProbarActivador`. Programa una sola ejecución de
+   `verificarActivadorPrivado_` después de un minuto. La función privada no necesita
+   aparecer en el desplegable.
+4. En **Ejecuciones**, esperá la ejecución de `verificarActivadorPrivado_`, tipo
+   activador, estado completado. Debe registrar «Activador privado de ensayo
+   ejecutado» y existir `PR32_PRIVATE_TRIGGER_OK` con la fecha en las propiedades.
+5. Anotá el resultado y quitá exclusivamente el activador de esa prueba. No usar
+   tareas de importación ni tocar activadores de producción para comprobarlo.
+
+### Medir un renombrado con más de 100 productos
+
+En ese mismo proyecto de ensayo, ejecutá `ejecutarEnsayoCategoria`. Agrega una
+categoría y 120 productos ficticios sin publicar, usa la API real para renombrarla
+y verifica los 120 eventos confirmados. La medición incluye las escrituras reales
+de Sheets: un producto y dos escrituras de historial por producto (pendiente y
+confirmado). No incluye la creación inicial de las filas de prueba ni la lectura
+de verificación posterior. Devuelve y registra solo cantidades y milisegundos;
+no copia filas de clientes a logs ni publica identificadores de la hoja.
+La función rechaza una copia con movimientos de stock pendientes para evitar
+que el mantenimiento previo de la API afecte productos ajenos al ensayo.
 
 ## Crear y usar la cuenta del colaborador
 
@@ -156,9 +224,12 @@ el editor no tienen una identidad del panel: no sustituyen este historial de API
 ## Volver atrás, con aprobación
 
 Restaurar frontend y versión anterior de Apps Script requiere aprobación y
-coordinación. **La versión antigua necesita `ADMIN_PASSWORD` en texto plano**:
-tras migrar no basta con seleccionar esa versión. El propietario debe restaurar
-la credencial por un canal privado, o conservar el backend nuevo hasta resolverlo.
+coordinación. `prepararRolesCatalogo_` **borra `ADMIN_PASSWORD`**. Para volver al
+backend anterior hay que abrir **Configuración del proyecto → Propiedades del
+script → Agregar propiedad** y cargar **a mano** `ADMIN_PASSWORD` con la contraseña
+privada elegida por el propietario. No alcanza con seleccionar la versión anterior;
+`ADMIN_PASSWORD_RECORD` no sustituye esa propiedad en el código antiguo. Mantener
+el backend nuevo hasta poder hacer la carga privada si todavía no está disponible.
 No reconstruirla desde el hash ni publicar propiedades. No borrar historial,
 cuentas ni marcas de borrador: una versión anterior puede mostrar borradores de
 Cotillón como agotados. Evitar volver a un backend que no filtre borradores.

@@ -4,20 +4,30 @@ import fs from 'node:fs';
 import ts from 'typescript';
 import {catalogHarness} from './catalog-access-harness.mjs';
 
-test('Apps Script no expone mantenimiento/importaciones mediante google.script.run',()=>{
+test('entrypoints privados salvo los cuatro wrappers estrictos de MantenimientoTemporal.gs',()=>{
  const allowed=new Set(['doGet','doPost']);
+ const temporary=new Map([['ejecutarPrepararRoles','prepararRolesCatalogo_'],['ejecutarMigrarDisparadores','migrarDisparadoresCatalogo_'],['ejecutarRecuperarHistorial','recuperarHistorialCatalogo_'],['ejecutarMedirHash','medirHashCatalogo_']]);
  const pureValidation=new Set(['dateAR','todayAR','windows','validate','localTotal','localSchedule','validateLocal','money','phoneDigits','norm','deposit','paid']);
  for(const file of fs.readdirSync('backend').filter(f=>f.endsWith('.gs'))){
   const ast=ts.createSourceFile(file,fs.readFileSync('backend/'+file,'utf8'),ts.ScriptTarget.Latest,true,ts.ScriptKind.JS);
+  const seen=new Set();
   for(const node of ast.statements){
    if(ts.isFunctionDeclaration(node)){
     const name=node.name.text;
+    if(file==='MantenimientoTemporal.gs'){
+     assert.ok(temporary.has(name),'Wrapper temporal inesperado: '+name);assert.ok(!seen.has(name));seen.add(name);
+     assert.equal(node.parameters.length,0);assert.equal(node.body.statements.length,1);
+     const statement=node.body.statements[0];assert.ok(ts.isReturnStatement(statement));assert.ok(ts.isCallExpression(statement.expression));
+     assert.equal(statement.expression.expression.getText(ast),temporary.get(name));assert.equal(statement.expression.arguments.length,0);continue;
+    }
     assert.ok(name.endsWith('_')||allowed.has(name)||file==='Validation.gs'&&pureValidation.has(name),file+': función pública inesperada '+name);
    }
+   if(file==='MantenimientoTemporal.gs')assert.ok(ts.isFunctionDeclaration(node),'El archivo temporal solo puede declarar wrappers públicos.');
    if(ts.isVariableStatement(node))for(const d of node.declarationList.declarations){
     if(d.initializer&&(ts.isFunctionExpression(d.initializer)||ts.isArrowFunction(d.initializer))){const name=d.name.getText(ast);assert.ok(name.endsWith('_')||file==='Validation.gs'&&pureValidation.has(name),file+': alias público de función '+name);}
    }
   }
+  if(file==='MantenimientoTemporal.gs')assert.equal(seen.size,temporary.size);
  }
 });
 
