@@ -1,5 +1,5 @@
 /* Disfraz Cabezón · API para Next.js estático. Secretos: Script Properties. */
-const TABLES = ['disfraces','cotillon','categorias_disfraces','categorias_cotillon','reservas','movimientos','cancelaciones','notifications','constancias'];
+const TABLES = ['disfraces','cotillon','categorias_disfraces','categorias_cotillon','reservas','movimientos','cancelaciones','notifications','constancias','historial_cambios'];
 const CATEGORY_AREAS = ['disfraces','cotillon'];
 const SUGGESTED_COSTUME_CATEGORIES = ['Hombres','Cabezones','Mujeres','Personajes','Profesiones','Superheroes y Princesas','Halloween','Históricos','Otros'];
 const COTILLON_GROUPS = {
@@ -22,14 +22,25 @@ function hash_(text){return hex_(Utilities.computeDigest(Utilities.DigestAlgorit
 function equal_(a,b){if(typeof a!=='string'||typeof b!=='string'||a.length!==b.length)return false;let v=0;for(let i=0;i<a.length;i++)v|=a.charCodeAt(i)^b.charCodeAt(i);return v===0;}
 function need_(ok,message){if(!ok)throw new Error(message);}
 function json_(value){return ContentService.createTextOutput(JSON.stringify(value)).setMimeType(ContentService.MimeType.JSON);}
-function sheet_(name){need_(TABLES.includes(name),'Tabla inválida.');const s=SpreadsheetApp.openById(config_('SPREADSHEET_ID')).getSheetByName(name);need_(s,'Ejecutá prepararConfiguracion primero.');return s;}
+function sheet_(name){need_(TABLES.includes(name),'Tabla inválida.');const s=SpreadsheetApp.openById(config_('SPREADSHEET_ID')).getSheetByName(name);need_(s,'Ejecutá prepararConfiguracion_ primero.');return s;}
 function rows_(name){const s=sheet_(name);return s.getLastRow()<2?[]:s.getRange(2,1,s.getLastRow()-1,2).getValues().map(r=>JSON.parse(r[1]));}
-function put_(name,obj){const s=sheet_(name),all=rows_(name),index=all.findIndex(r=>r.id===obj.id);const raw=JSON.stringify(obj);need_(raw.length<48000,'El registro excede el tamaño permitido.');s.getRange(index<0?s.getLastRow()+1:index+2,1,1,2).setValues([[obj.id,raw]]);SpreadsheetApp.flush();return obj;}
-function remove_(name,id){const index=rows_(name).findIndex(r=>r.id===id);need_(index>=0,'No se encontró el registro.');sheet_(name).deleteRow(index+2);}
+function putDirect_(name,obj){const s=sheet_(name),all=rows_(name),index=all.findIndex(r=>r.id===obj.id);const raw=JSON.stringify(obj);need_(raw.length<48000,'El registro excede el tamaño permitido.');s.getRange(index<0?s.getLastRow()+1:index+2,1,1,2).setValues([[obj.id,raw]]);SpreadsheetApp.flush();return obj;}
+function removeDirect_(name,id){const index=rows_(name).findIndex(r=>r.id===id);need_(index>=0,'No se encontró el registro.');sheet_(name).deleteRow(index+2);}
+var CATALOG_ACTOR_=null;
+var CATALOG_WRITE_DIRECT_=false;
+function put_(name,obj){
+ if(CATEGORY_AREAS.includes(name)&&CATALOG_ACTOR_&&!CATALOG_WRITE_DIRECT_&&typeof catalogRolesReady_==='function'&&catalogRolesReady_())return catalogWriteProduct_(CATALOG_ACTOR_,name,rows_(name).find(p=>p.id===obj.id)||null,obj,'related_update');
+ return putDirect_(name,obj);
+}
+function remove_(name,id){
+ if(CATEGORY_AREAS.includes(name)&&CATALOG_ACTOR_&&!CATALOG_WRITE_DIRECT_&&typeof catalogRolesReady_==='function'&&catalogRolesReady_())return catalogWriteProduct_(CATALOG_ACTOR_,name,rows_(name).find(p=>p.id===id)||null,null,'delete');
+ return removeDirect_(name,id);
+}
 function lock_(fn){const lock=LockService.getScriptLock();need_(lock.tryLock(15000),'El sistema está ocupado. Intentá nuevamente.');try{return fn()}finally{lock.releaseLock()}}
 function limit_(key,max,seconds){const cache=CacheService.getScriptCache();const k='limit:'+hash_(key);const count=Number(cache.get(k)||0);need_(count<max,'Demasiados intentos. Esperá unos minutos.');cache.put(k,String(count+1),seconds);}
-function adminSessionVersion_(){return 'admin-v2:'+hash_(JSON.stringify([config_('ADMIN_USER'),config_('ADMIN_PASSWORD'),config_('ADMIN_SESSION_VERSION')]));}
-function session_(token){
+function adminSessionVersion_(){return 'admin-v2:'+hash_(JSON.stringify([config_('ADMIN_USER'),config_('ADMIN_PASSWORD'),config_('ADMIN_SESSION_VERSION'),config_('ADMIN_PASSWORD_RECORD')]));}
+function session_(token,allowEditor=false){
+ if(typeof catalogIdentity_==='function'){const actor=catalogIdentity_(token);need_(allowEditor||actor.role==='admin','No tenés permiso para esta acción.');return actor;}
  need_(typeof token==='string'&&token.length>30,'Sesión vencida. Volvé a ingresar.');
  const cache=CacheService.getScriptCache(),key='session:'+hash_(token),valid=equal_(cache.get(key),adminSessionVersion_());
  if(!valid)cache.remove(key);
@@ -90,6 +101,7 @@ function reply_(e,result){
  const html='<!doctype html><html><body><script>window.top.postMessage('+message+','+JSON.stringify(origin)+');</script></body></html>';
  return HtmlService.createHtmlOutput(html).setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
+function validateFrame_(e){frameOrigin_(e);need_(/^[a-f0-9-]{36}$/.test(String(e.parameter.bridgeId||'')),'Identificador de respuesta inválido.');}
 function frameOrigin_(e){
  const sites=[config_('SITE_URL')||'https://dc-web-8ai4.onrender.com',...String(config_('EXTRA_SITE_URLS')).split(',')].map(s=>s.trim()).filter(Boolean);
  const origins=sites.map(s=>{try{const match=/^https:\/\/([a-z0-9.-]+)(?::([0-9]+))?(?:\/[^\s?#]*)?$/i.exec(s);return match?'https://'+match[1].toLowerCase()+(match[2]?':'+match[2]:''):''}catch(_){return ''}}).filter(Boolean);
@@ -97,17 +109,30 @@ function frameOrigin_(e){
  need_(origins.includes(origin),'Origen del sitio no configurado. Revisá SITE_URL y EXTRA_SITE_URLS.');
  return origin;
 }
-function doPost(e){let result;try{need_(e&&e.postData&&e.postData.contents.length<47000000,'Solicitud demasiado grande.');const raw=e.parameter&&e.parameter.transport==='frame'?e.parameter.payload:e.postData.contents;const b=JSON.parse(raw);need_(b&&typeof b.action==='string','Solicitud inválida.');result={ok:true,data:b.action==='siteTheme'?{theme:siteTheme_()}:lock_(()=>dispatch_(b))};}catch(error){result={ok:false,error:String(error.message||'No se pudo completar la operación.').slice(0,300)};}return reply_(e,result);}
+function doPost(e){let result;try{need_(e&&e.postData&&e.postData.contents.length<47000000,'Solicitud demasiado grande.');if(e.parameter&&e.parameter.transport==='frame')validateFrame_(e);const raw=e.parameter&&e.parameter.transport==='frame'?e.parameter.payload:e.postData.contents;const b=JSON.parse(raw);need_(b&&typeof b.action==='string','Solicitud inválida.');result={ok:true,data:b.action==='siteTheme'&&!b.token?{theme:siteTheme_()}:lock_(()=>dispatch_(b))};}catch(error){result={ok:false,error:String(error.message||'No se pudo completar la operación.').slice(0,300)};}return reply_(e,result);}
 function dispatch_(b){
+ const actor=typeof catalogApiActor_==='function'?catalogApiActor_(b):null;
+ const previous=CATALOG_ACTOR_;CATALOG_ACTOR_=actor;
+ try{return dispatchBody_(b,actor)}finally{CATALOG_ACTOR_=previous;}
+}
+function dispatchBody_(b,actor){
+ if(typeof catalogAccessDispatch_==='function'){const access=catalogAccessDispatch_(b,actor);if(access)return access.data;}
+ if(actor?.role==='editor'){
+  if(b.action==='admin')return {role:'editor',user:actor,products:catalogProductsForManagement_().map(catalogEditorProduct_),categories:CATEGORY_AREAS.flatMap(categories_)};
+  if(b.action==='saveProduct')return catalogSaveProduct_(b,actor);
+  if(b.action==='uploadImage')return uploadCatalogImage_(b,actor);
+  if(b.action==='logout'){CacheService.getScriptCache().remove('session:'+hash_(b.token));return {ok:true};}
+ }
  if(typeof receiptDispatch_==='function'){const receipt=receiptDispatch_(b);if(receipt)return receipt.data;}
   if(b.action==='siteTheme')return {theme:siteTheme_()};
  // La edición rápida no dispara mantenimiento ni migraciones de otros campos.
- if(b.action==='quickUpdate'){session_(b.token);return quickUpdate_(b);}
+ if(b.action==='quickUpdate'){if(!actor)session_(b.token);return quickUpdate_(b,actor);}
  if(typeof incomingDispatch_==='function'){const incoming=incomingDispatch_(b);if(incoming)return incoming.data;}
  // Las lecturas públicas no reparan stock ni crean categorías.
- if(b.action==='catalog')return CATEGORY_AREAS.flatMap(a=>products_(a).filter(p=>a==='cotillon'||p.active));
- if(b.action==='catalogData')return {products:CATEGORY_AREAS.flatMap(a=>products_(a).filter(p=>a==='cotillon'||p.active)),categories:CATEGORY_AREAS.flatMap(categories_),campaign:siteCampaign_(),cotillonImportReady:config_('COTILLON_EXCEL_2026_STATE')==='ready'};
+ if(b.action==='catalog')return CATEGORY_AREAS.flatMap(a=>products_(a).filter(p=>(typeof catalogPublicProduct_!=='function'||catalogPublicProduct_(p))&&(a==='cotillon'||p.active)));
+ if(b.action==='catalogData')return {products:CATEGORY_AREAS.flatMap(a=>products_(a).filter(p=>(typeof catalogPublicProduct_!=='function'||catalogPublicProduct_(p))&&(a==='cotillon'||p.active))),categories:CATEGORY_AREAS.flatMap(categories_),campaign:siteCampaign_(),cotillonImportReady:config_('COTILLON_EXCEL_2026_STATE')==='ready'};
  if(b.action==='login'){
+  if(typeof catalogLogin_==='function')return catalogLogin_(b);
   limit_('login-global',60,900);limit_('login:'+String(b.username).toLowerCase(),8,900);
   need_(config_('ADMIN_PASSWORD').length>=12,'Configurá una contraseña de al menos 12 caracteres.');
   need_(equal_(hash_(String(b.username)),hash_(config_('ADMIN_USER')))&&equal_(hash_(String(b.password)),hash_(config_('ADMIN_PASSWORD'))),'Usuario o contraseña incorrectos.');
@@ -128,7 +153,7 @@ function dispatch_(b){
  recoverStock_();
  if(['admin','saveCategory','saveProduct','mapLegacyCategory'].includes(b.action))ensureCotillonDepth3_();
  if(b.action==='logout'){CacheService.getScriptCache().remove('session:'+hash_(b.token));return {ok:true};}
- if(b.action==='admin')return {products:CATEGORY_AREAS.flatMap(products_),categories:CATEGORY_AREAS.flatMap(categories_),requests:rows_('reservas').filter(r=>!r.deletedAt).map(({accessHash,terms,files,...r})=>r),movements:rows_('movimientos'),cancellations:rows_('cancelaciones'),bank:bank_(),mailMode:config_('MAIL_MODE'),siteTheme:siteTheme_(),campaign:siteCampaign_(),localFormsReady:config_('LOCAL_FORMS_ENABLED')==='yes'};
+ if(b.action==='admin')return {role:'admin',user:actor||{role:'admin'},catalogRolesReady:typeof catalogRolesReady_==='function'&&catalogRolesReady_(),products:typeof catalogProductsForManagement_==='function'?catalogProductsForManagement_():CATEGORY_AREAS.flatMap(products_),categories:CATEGORY_AREAS.flatMap(categories_),requests:rows_('reservas').filter(r=>!r.deletedAt).map(({accessHash,terms,files,...r})=>r),movements:rows_('movimientos'),cancellations:rows_('cancelaciones'),bank:bank_(),mailMode:config_('MAIL_MODE'),siteTheme:siteTheme_(),campaign:siteCampaign_(),localFormsReady:config_('LOCAL_FORMS_ENABLED')==='yes'};
  if(b.action==='setSiteTheme'){need_(['default','halloween'].includes(b.theme),'Tema inválido.');props_().setProperty('SITE_THEME',b.theme);return {theme:siteTheme_()};}
  if(b.action==='setHalloweenCampaign'){need_(typeof b.enabled==='boolean','Estado de campaña inválido.');props_().setProperty('CAMPAIGN_HALLOWEEN',b.enabled?'on':'off');return siteCampaign_();}
  if(b.action==='saveCategory'){
@@ -148,9 +173,9 @@ function dispatch_(b){
  if(b.action==='mapLegacyCategory'){const source=categories_('cotillon').find(c=>c.id===b.id&&!c.group),target=categories_('cotillon').find(c=>c.id===b.targetId&&c.group&&c.storefront!==false);need_(source,'Elegí una categoría anterior.');need_(target,'Elegí una subcategoría nueva y visible.');const updated={...source,mappedToCategoryId:target.id,storefront:false};put_('categorias_cotillon',updated);return {category:updated,affected:rows_('cotillon').filter(p=>linkedCategory_(p,source)).length};}
  if(b.action==='deleteCategory'&&b.area==='cotillon'){const categories=categories_('cotillon');need_(!categories.some(c=>c.mappedToCategoryId===b.id),'Esta subcategoría recibe productos de una categoría anterior. Cambiá primero esa vinculación.');need_(!categories.some(c=>c.parentId===b.id),'Esta sección contiene subcategorías internas. Reorganizalas antes de eliminarla.');}
  if(b.action==='deleteCategory'){const area=b.area,table=categoryTable_(area),category=categories_(area).find(c=>c.id===b.id);need_(category,'Categoría inexistente.');const affected=rows_(area).filter(p=>linkedCategory_(p,category));need_(Number.isInteger(b.expectedCount)&&b.expectedCount===affected.length,'Cambió la cantidad de productos. Actualizá el panel y volvé a revisar.');need_(['otros','uncategorized','new'].includes(b.strategy),'Elegí qué hacer con los productos.');let target=null;if(b.strategy==='otros'){target=categories_(area).find(c=>c.id!==category.id&&categoryKey_(c.name)==='otros');if(!target){target={id:Utilities.getUuid(),area,name:'Otros'};put_(table,target);}}if(b.strategy==='new'){const name=categoryName_(b.newName,area,category.id);target={id:Utilities.getUuid(),area,name};put_(table,target);}need_(!target||target.id!==category.id,'Elegí otra categoría de destino.');affected.forEach(p=>{let ids=productCategoryIds_(p).filter(id=>id!==category.id);if(target&&!ids.includes(target.id))ids.push(target.id);const primary=p.categoryId===category.id?(ids[0]||''):p.categoryId;put_(area,{...p,categoryId:primary,categoryIds:ids,category:primary===target?.id?target.name:p.categoryId===category.id?'':p.category});});remove_(table,category.id);return {affected:affected.length,target};}
- if(b.action==='saveProduct'){const p=b.product;need_(CATEGORY_AREAS.includes(p.area),'Área inválida.');need_(['venta','alquiler','ambos'].includes(p.mode)&&(p.area!=='cotillon'||p.mode==='venta'),'Modalidad inválida.');need_(Number.isInteger(p.stock)&&p.stock>=0&&p.stock<=100000,'Stock inválido.');need_(!p.image||/^https:\/\/res\.cloudinary\.com\//.test(p.image),'Usá una imagen de Cloudinary.');need_(!p.thumbnail||/^https:\/\/res\.cloudinary\.com\//.test(p.thumbnail),'Usá una miniatura de Cloudinary.');const old=p.id?rows_(p.area).find(x=>x.id===p.id):null;need_(!p.id||old,'Producto inexistente.');const allCategories=categories_(p.area),requested=[...new Set([p.categoryId,...(p.area==='cotillon'&&Array.isArray(p.categoryIds)?p.categoryIds:[])].filter(Boolean))];need_(requested.every(id=>allCategories.some(c=>c.id===id)),'Elegí categorías existentes.');const category=allCategories.find(c=>c.id===(p.categoryId||requested[0]));const selectedGroups=[...new Set(requested.map(id=>allCategories.find(c=>c.id===id)?.group).filter(Boolean))];const saleCondition=p.area==='disfraces'&&p.mode!=='alquiler'?String(p.saleCondition||''):'';need_(!saleCondition||['Nuevo a pedido','Nuevo Inmediato','Usado inmediato'].includes(saleCondition),'Condición de venta inválida.');const deliveryTime=saleCondition==='Nuevo a pedido'?text_(p.deliveryTime||'aproximadamente 1 mes',120):'';const orderLimit=saleCondition==='Nuevo a pedido'?(Number.isInteger(p.orderLimit)?p.orderLimit:(p.stock>0?p.stock:1)):0;need_(saleCondition!=='Nuevo a pedido'||orderLimit>=1&&orderLimit<=100000,'Límite de pedidos inválido.');return put_(p.area,{...(old||{}),id:p.id||Utilities.getUuid(),area:p.area,name:text_(p.name,150),categoryId:category?category.id:'',categoryIds:p.area==='cotillon'?requested:category?[category.id]:[],category:category?category.name:old?.catalogGroups?.length?old.category:'',catalogGroups:p.area==='cotillon'?(selectedGroups.length?selectedGroups:old?.catalogGroups||[]):[],description:text_(p.description,2000),mode:p.mode,saleCondition,deliveryTime,orderLimit,price:p.mode==='alquiler'?0:amount_(p.price),priceKnown:p.area==='cotillon'?p.priceKnown!==false:true,rentPrice:p.mode==='venta'?0:amount_(p.rentPrice),stock:saleCondition==='Nuevo a pedido'&&p.mode==='venta'?0:p.stock,stockUnknown:p.area==='cotillon'&&p.stockUnknown===true,image:String(p.image||''),thumbnail:p.image?String(p.thumbnail||''):'',active:!!p.active,sourceId:old?.sourceId||'',sourceImage:old?.sourceImage||''});}
+ if(b.action==='saveProduct'){need_(typeof catalogSaveProduct_==='function','Falta CatalogAccess.gs. Revisá la instalación completa.');return catalogSaveProduct_(b,actor||session_(b.token));}
  if(b.action==='deleteProduct'){need_(['disfraces','cotillon'].includes(b.area),'Área inválida.');need_(!rows_('movimientos').some(m=>m.kind==='venta'&&m.area===b.area&&m.productId===b.id&&!m.voided),'No se puede eliminar este producto porque tiene ventas registradas sin anular. Ocultalo del catálogo o anulá esas ventas primero.');remove_(b.area,b.id);return {ok:true};}
- if(b.action==='uploadImage'){need_(config_('CLOUDINARY_API_SECRET'),'Configurá Cloudinary.');const f=checkFiles_({image:b.file},['image']).image;need_(f.type.startsWith('image/'),'Solo imágenes.');const timestamp=Math.floor(Date.now()/1000),folder='disfraz-cabezon/catalogo',eager='c_limit,h_160,w_160';const signature=hex_(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_1,'eager='+eager+'&folder='+folder+'&timestamp='+timestamp+config_('CLOUDINARY_API_SECRET'),Utilities.Charset.UTF_8));const result=UrlFetchApp.fetch('https://api.cloudinary.com/v1_1/'+encodeURIComponent(config_('CLOUDINARY_CLOUD_NAME'))+'/image/upload',{method:'post',payload:{file:Utilities.newBlob(f.bytes,f.type,'producto'),folder,eager,timestamp:String(timestamp),api_key:config_('CLOUDINARY_API_KEY'),signature},muteHttpExceptions:true});need_(result.getResponseCode()<300,'No se pudo subir la imagen a Cloudinary.');const uploaded=JSON.parse(result.getContentText());need_(uploaded.secure_url&&uploaded.eager&&uploaded.eager[0]&&uploaded.eager[0].secure_url,'Cloudinary no devolvió la miniatura.');return {url:uploaded.secure_url,thumbnail:uploaded.eager[0].secure_url};}
+ if(b.action==='uploadImage')return uploadCatalogImage_(b,actor);
  if(b.action==='status'){if(typeof needNoPendingReceipt_==='function')needNoPendingReceipt_(b.id);const r=rows_('reservas').find(r=>r.id===b.id);need_(r,'Reserva inexistente.');need_((STATES[r.status]||[]).includes(b.status),'Cambio de estado no permitido.');const note=text_(b.note,1000);r.status=b.status;r.updatedAt=now_();if(b.status==='correction')r.correctionDeadline=new Date(Date.now()+12*3600000).toISOString();if(b.status==='refund_pending'&&!r.refundDeadline)r.refundDeadline=new Date(Date.now()+24*3600000).toISOString();r.events.push({action:b.status,note,at:now_()});put_('reservas',r);return {ok:true};}
  if(b.action==='movement'){const d=b.data;if(d.requestId&&typeof needNoPendingReceipt_==='function')needNoPendingReceipt_(d.requestId);need_(['venta','alquiler','gasto','reintegro'].includes(d.kind),'Tipo inválido.');need_(['disfraces','cotillon'].includes(d.area),'Área inválida.');date_(d.date);need_(d.date<=today_(),'No registres cobros futuros.');need_(/^[a-f0-9-]{36}$/.test(d.id),'Identificador inválido.');const old=rows_('movimientos').find(x=>x.id===d.id);if(old){need_(old.inputHash===hash_(JSON.stringify(d)),'Conflicto de movimiento.');return old;}
   if(d.kind==='alquiler'){const r=rows_('reservas').find(x=>x.id===d.requestId);need_(r&&!r.deletedAt&&['confirmed','returned','incident'].includes(r.status),'Elegí un alquiler confirmado.');const collected=rows_('movimientos').filter(x=>x.requestId===r.id&&x.kind==='alquiler'&&!x.voided).reduce((s,x)=>s+x.amount,0);need_(collected+amount_(d.amount)<=(r.managementData||r.data).total,'El cobro supera el total del alquiler.');}
@@ -163,7 +188,8 @@ function dispatch_(b){
  if(b.action==='bankSettings'){const d=b.data;need_(d.alias||d.cbu,'Ingresá alias o CBU.');need_(!d.cbu||/^\d{22}$/.test(d.cbu),'CBU de 22 dígitos.');need_(!d.alias||/^[a-zA-Z0-9._-]{6,20}$/.test(d.alias),'Alias inválido.');['holder','bank','alias','cbu','cuit'].forEach(k=>props_().setProperty('BANK_'+k.toUpperCase(),String(d[k]||'').slice(0,150)));return bank_();}
  throw new Error('Acción desconocida.');
 }
-function quickUpdate_(b){
+function quickUpdate_(b,actor){
+ if(actor?.role==='editor')need_(b.cambios&&Object.keys(b.cambios).length===1&&Object.prototype.hasOwnProperty.call(b.cambios,'active'),'El editor solo puede cambiar active con quickUpdate.');
  need_(CATEGORY_AREAS.includes(b.area),'Área inválida.');
  need_(typeof b.id==='string'&&b.id.length>0&&b.id.length<=150,'Identificador inválido.');
  const changes=b.cambios;
@@ -172,6 +198,8 @@ function quickUpdate_(b){
  need_(keys.length>0&&keys.every(k=>allowed.includes(k)),'Solo se permiten active, stock, price y rentPrice.');
  const product=rows_(b.area).find(p=>p.id===b.id);
  need_(product&&product.area===b.area,'Producto inexistente en esta área.');
+ if(actor?.role==='editor')need_(catalogPublicProduct_(product),'Solo el administrador puede publicar borradores.');
+ if(b.revision)need_(b.revision===hash_(JSON.stringify(product)),'El producto cambió. Recargá antes de guardar.');
  const patch={};
  keys.forEach(key=>{
   const value=changes[key];
@@ -183,12 +211,12 @@ function quickUpdate_(b){
   }
  });
  if(keys.includes('stock'))need_(!rows_('movimientos').some(m=>m.area===b.area&&m.productId===b.id&&m.stockPending),'Hay un movimiento de stock pendiente. Resolvelo en Caja antes de editar el stock.');
- return put_(b.area,{...product,...patch});
+ return typeof catalogWriteProduct_==='function'?catalogWriteProduct_(actor||session_(b.token),b.area,product,{...product,...patch},'quick_update',b.operationId):put_(b.area,{...product,...patch});
 }
 // Diario recuperable: si Sheets interrumpe entre caja y stock, la siguiente llamada completa la operación una sola vez.
 function recoverStock_(){rows_('movimientos').filter(r=>r.stockPending).forEach(r=>{const p=rows_(r.area).find(p=>p.id===r.productId);need_(p,'Revisá el producto de un movimiento pendiente.');need_(p.stock===r.stockPending.before||p.stock===r.stockPending.after,'Stock modificado durante una operación pendiente.');p.stock=r.stockPending.after;put_(r.area,p);delete r.stockPending;put_('movimientos',r);});}
 function bank_(){return {configured:!!(config_('BANK_HOLDER')&&(config_('BANK_ALIAS')||config_('BANK_CBU'))),holder:config_('BANK_HOLDER'),alias:config_('BANK_ALIAS'),cbu:config_('BANK_CBU'),bank:config_('BANK_BANK'),cuit:config_('BANK_CUIT')};}
-function validateRental_(r,step){need_(r&&typeof r==='object'&&JSON.stringify(r).length<20000,'Datos inválidos.');Object.keys(EMPTY).forEach(k=>{if(k!=='items')need_(typeof r[k]===typeof EMPTY[k]&&(typeof r[k]!=='string'||r[k].length<=1500),'Campo inválido: '+k);});need_(Array.isArray(r.items)&&r.items.every(i=>i&&typeof i.name==='string'&&i.name.length<=150),'Personajes inválidos.');['birthDate','pickupDate','returnDate','docDate'].forEach(k=>{if(r[k])date_(r[k]);});const errors=validate(r,step,today_());need_(!Object.keys(errors).length,Object.values(errors).join(' ').slice(0,280));if(step>=1)r.items.forEach(i=>{need_(typeof i.catalogCategory==='string'&&i.catalogCategory.length<=80&&i.catalogCategory,'Elegí la categoría del disfraz.');const category=i.catalogCategoryId?categories_('disfraces').find(c=>c.id===i.catalogCategoryId):null;need_(!i.catalogCategoryId||category,'La categoría elegida ya no existe. Volvé a cargar el formulario.');need_(category?category.name===i.catalogCategory:i.catalogCategory==='Sin categoría','La categoría cambió. Volvé a cargar el formulario.');if(i.productId){const p=products_('disfraces').find(p=>p.id===i.productId&&p.active&&p.mode!=='venta');need_(p&&p.name===i.name&&p.categoryId===(i.catalogCategoryId||''),'El disfraz elegido cambió. Volvé a seleccionarlo.');need_(p.stock>=i.quantity,'No hay suficientes unidades de ese disfraz para alquilar.');}});if(step>=1){const quantities={};r.items.forEach(i=>{if(i.productId)quantities[i.productId]=(quantities[i.productId]||0)+i.quantity});Object.keys(quantities).forEach(id=>{const p=products_('disfraces').find(p=>p.id===id);need_(p&&p.stock>=quantities[id],'No hay suficientes unidades de ese disfraz para alquilar.');});}}
+function validateRental_(r,step){need_(r&&typeof r==='object'&&JSON.stringify(r).length<20000,'Datos inválidos.');Object.keys(EMPTY).forEach(k=>{if(k!=='items')need_(typeof r[k]===typeof EMPTY[k]&&(typeof r[k]!=='string'||r[k].length<=1500),'Campo inválido: '+k);});need_(Array.isArray(r.items)&&r.items.every(i=>i&&typeof i.name==='string'&&i.name.length<=150),'Personajes inválidos.');['birthDate','pickupDate','returnDate','docDate'].forEach(k=>{if(r[k])date_(r[k]);});const errors=validate(r,step,today_());need_(!Object.keys(errors).length,Object.values(errors).join(' ').slice(0,280));if(step>=1)r.items.forEach(i=>{need_(typeof i.catalogCategory==='string'&&i.catalogCategory.length<=80&&i.catalogCategory,'Elegí la categoría del disfraz.');const category=i.catalogCategoryId?categories_('disfraces').find(c=>c.id===i.catalogCategoryId):null;need_(!i.catalogCategoryId||category,'La categoría elegida ya no existe. Volvé a cargar el formulario.');need_(category?category.name===i.catalogCategory:i.catalogCategory==='Sin categoría','La categoría cambió. Volvé a cargar el formulario.');if(i.productId){const p=products_('disfraces').find(p=>p.id===i.productId&&(typeof catalogPublicProduct_!=='function'||catalogPublicProduct_(p))&&p.active&&p.mode!=='venta');need_(p&&p.name===i.name&&p.categoryId===(i.catalogCategoryId||''),'El disfraz elegido cambió. Volvé a seleccionarlo.');need_(p.stock>=i.quantity,'No hay suficientes unidades de ese disfraz para alquilar.');}});if(step>=1){const quantities={};r.items.forEach(i=>{if(i.productId)quantities[i.productId]=(quantities[i.productId]||0)+i.quantity});Object.keys(quantities).forEach(id=>{const p=products_('disfraces').find(p=>p.id===id);need_(p&&p.stock>=quantities[id],'No hay suficientes unidades de ese disfraz para alquilar.');});}}
 function checkFiles_(files,slots){const out={};slots.forEach(slot=>{const f=files&&files[slot];need_(f&&typeof f.base64==='string'&&f.base64.length<11200000,'Falta un archivo o supera 8 MB.');const bytes=Utilities.base64Decode(f.base64);need_(bytes.length>=40&&bytes.length<=8*1024*1024,'Archivo inválido o demasiado grande.');const u=bytes.map(b=>(b+256)%256);let type='';if(u[0]===137&&u[1]===80&&u[2]===78&&u[3]===71)type='image/png';if(u[0]===255&&u[1]===216&&u[2]===255)type='image/jpeg';if(String.fromCharCode(...u.slice(0,4))==='RIFF'&&String.fromCharCode(...u.slice(8,12))==='WEBP')type='image/webp';if(String.fromCharCode(...u.slice(0,5))==='%PDF-')type='application/pdf';need_(type&&type===f.type,'Formato de archivo inválido.');if(['dniFront','dniBack','image'].includes(slot))need_(type.startsWith('image/'),'Usá una imagen.');if(slot==='signature')need_(type==='image/png'&&bytes.length<=1024*1024,'Firma inválida.');out[slot]={bytes,type,hash:hex_(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256,bytes))};});return out;}
 function saveFiles_(files,prefix){const folder=DriveApp.getFolderById(config_('PRIVATE_FOLDER_ID')),saved={};try{Object.keys(files).forEach(k=>{const f=files[k],file=folder.createFile(Utilities.newBlob(f.bytes,f.type,prefix+'-'+k));saved[k]={id:file.getId(),hash:f.hash,type:f.type};});return saved;}catch(e){Object.values(saved).forEach(f=>{try{DriveApp.getFileById(f.id).setTrashed(true)}catch(_){}});throw e;}}
 function authorizedRequest_(b){const r=rows_('reservas').find(r=>r.id===b.id);need_(r,'Solicitud inexistente.');if(b.token)session_(b.token);else need_(typeof b.access==='string'&&(equal_(hash_(b.access),r.accessHash)||(typeof localCopyAccess_==='function'&&localCopyAccess_(r,b.access))),'Acceso privado inválido.');return r;}
@@ -215,7 +243,7 @@ function notify_(r){const mode=config_('MAIL_MODE');if(!['test','production'].in
  return sendNotice_(r,kind,mode,row);
 });return mode==='test'?'test':results.every(s=>s==='sent')?'sent':'review';}
 // Ejecutar manualmente desde el editor. Sólo retoma avisos que nunca llegaron a MailApp por falta de cuota.
-function reintentarAvisosSinCuota(){
+function reintentarAvisosSinCuota_(){
  const mode=config_('MAIL_MODE');need_(['test','production'].includes(mode),'MAIL_MODE debe ser test o production.');
  return lock_(()=>{
   const batch=rows_('notifications').filter(row=>row.status==='retry'&&typeof row.id==='string'&&row.id.startsWith(mode+':')).slice(0,10);
@@ -232,18 +260,18 @@ function reintentarAvisosSinCuota(){
   console.log(JSON.stringify(result));return result;
  });
 }
-function prepararConfiguracion(){const p=props_();if(!config_('SPREADSHEET_ID')){const ss=SpreadsheetApp.create('Disfraz Cabezón — tienda y reservas');p.setProperty('SPREADSHEET_ID',ss.getId());}const ss=SpreadsheetApp.openById(config_('SPREADSHEET_ID'));TABLES.forEach(name=>{let s=ss.getSheetByName(name);if(!s){s=ss.insertSheet(name);s.appendRow(['id','registro_json']);s.setFrozenRows(1);}});if(!config_('PRIVATE_FOLDER_ID'))p.setProperty('PRIVATE_FOLDER_ID',DriveApp.createFolder('Disfraz Cabezón — documentación privada').getId());if(!config_('ADMIN_USER'))p.setProperty('ADMIN_USER','admin');if(!config_('ADMIN_PASSWORD'))p.setProperty('ADMIN_PASSWORD',Utilities.getUuid()+Utilities.getUuid());if(!config_('MAIL_MODE'))p.setProperty('MAIL_MODE','test');if(!config_('BUSINESS_EMAIL'))p.setProperty('BUSINESS_EMAIL','disfrazcabezoneventos@gmail.com');}
+function prepararConfiguracion_(){const p=props_();if(!config_('SPREADSHEET_ID')){const ss=SpreadsheetApp.create('Disfraz Cabezón — tienda y reservas');p.setProperty('SPREADSHEET_ID',ss.getId());}const ss=SpreadsheetApp.openById(config_('SPREADSHEET_ID'));TABLES.forEach(name=>{let s=ss.getSheetByName(name);if(!s){s=ss.insertSheet(name);s.appendRow(['id','registro_json']);s.setFrozenRows(1);}});if(!config_('PRIVATE_FOLDER_ID'))p.setProperty('PRIVATE_FOLDER_ID',DriveApp.createFolder('Disfraz Cabezón — documentación privada').getId());if(!config_('ADMIN_USER'))p.setProperty('ADMIN_USER','admin');if(!config_('ADMIN_PASSWORD')&&!config_('ADMIN_PASSWORD_RECORD'))p.setProperty('ADMIN_PASSWORD',Utilities.getUuid()+Utilities.getUuid());if(!config_('MAIL_MODE'))p.setProperty('MAIL_MODE','test');if(!config_('BUSINESS_EMAIL'))p.setProperty('BUSINESS_EMAIL','disfrazcabezoneventos@gmail.com');}
 // Ejecutar una vez después de actualizar Code.gs. Se puede repetir sin duplicar datos.
-function prepararCategorias(){prepararConfiguracion();return lock_(()=>{const summary={};CATEGORY_AREAS.forEach(area=>{const table=categoryTable_(area),existing=categories_(area),products=rows_(area),firstRun=!config_('CATEGORIES_SEEDED_V1'),names=firstRun?(area==='disfraces'?SUGGESTED_COSTUME_CATEGORIES.slice():['Otros']):[];if(firstRun)products.forEach(p=>{if(!p.categoryId&&p.category&&categoryKey_(p.category)!==categoryKey_('Sin categoría'))names.push(p.category);});names.forEach(name=>{if(!existing.some(c=>categoryKey_(c.name)===categoryKey_(name))){const category={id:Utilities.getUuid(),area,name:String(name).trim()};put_(table,category);existing.push(category);}});products.forEach(p=>{const category=existing.find(c=>c.id===p.categoryId)||existing.find(c=>categoryKey_(c.name)===categoryKey_(p.category));if(category&&(p.categoryId!==category.id||p.category!==category.name))put_(area,{...p,categoryId:category.id,category:category.name});});summary[area]={categorias:existing.length,productos:products.length};});props_().setProperty('CATEGORIES_SEEDED_V1','yes');return summary;});}
+function prepararCategorias_(){prepararConfiguracion_();return lock_(()=>{const summary={};CATEGORY_AREAS.forEach(area=>{const table=categoryTable_(area),existing=categories_(area),products=rows_(area),firstRun=!config_('CATEGORIES_SEEDED_V1'),names=firstRun?(area==='disfraces'?SUGGESTED_COSTUME_CATEGORIES.slice():['Otros']):[];if(firstRun)products.forEach(p=>{if(!p.categoryId&&p.category&&categoryKey_(p.category)!==categoryKey_('Sin categoría'))names.push(p.category);});names.forEach(name=>{if(!existing.some(c=>categoryKey_(c.name)===categoryKey_(name))){const category={id:Utilities.getUuid(),area,name:String(name).trim()};put_(table,category);existing.push(category);}});products.forEach(p=>{const category=existing.find(c=>c.id===p.categoryId)||existing.find(c=>categoryKey_(c.name)===categoryKey_(p.category));if(category&&(p.categoryId!==category.id||p.category!==category.name))put_(area,{...p,categoryId:category.id,category:category.name});});summary[area]={categorias:existing.length,productos:products.length};});props_().setProperty('CATEGORIES_SEEDED_V1','yes');return summary;});}
 
 // Migración de los ocho rubros públicos del sitio anterior. Nunca reemplaza productos ya importados o editados.
 const COTILLON_IMPORT_URL='https://raw.githubusercontent.com/disfrazcabezoneventos-alt/dc-web/main/backend/import-cotillon.json';
 function cotillonSnapshot_(){const response=UrlFetchApp.fetch(COTILLON_IMPORT_URL,{muteHttpExceptions:true});need_(response.getResponseCode()===200,'No se pudo leer el archivo de migración publicado en GitHub.');const data=JSON.parse(response.getContentText());need_(Array.isArray(data.categories)&&data.categories.length===8&&Array.isArray(data.products)&&data.products.length===635,'El archivo de migración no coincide con el catálogo revisado.');const keys=data.categories.map(c=>c.key);need_(new Set(keys).size===8,'Categorías repetidas en la migración.');data.products.forEach(item=>{need_(/^[a-f0-9-]{36}$/.test(item.sourceId),'ID de origen inválido.');need_(Array.isArray(item.categoryKeys)&&item.categoryKeys.length>0&&item.categoryKeys.every(k=>keys.includes(k)),'Categoría de origen inválida.');need_(typeof item.name==='string'&&item.name.trim().length>0&&item.name.length<=150,'Nombre de origen inválido.');need_(item.price===null||typeof item.price==='number'&&item.price>=0,'Precio de origen inválido.');need_(item.stock===null||Number.isInteger(item.stock)&&item.stock>=0,'Stock de origen inválido.');need_(!item.sourceImage||/^https:\/\/ajgiwtpbwhfffoimqkwj\.supabase\.co\/storage\/v1\/object\/public\/catalogo\//.test(item.sourceImage),'Foto de origen inválida.');});return data;}
-function importarCotillonAnterior(){prepararConfiguracion();return lock_(()=>{const source=cotillonSnapshot_(),known=categories_('cotillon'),categoryByKey={};source.categories.forEach(c=>{let found=known.find(x=>categoryKey_(x.name)===categoryKey_(c.name));if(!found){found={id:Utilities.getUuid(),area:'cotillon',name:c.name};put_('categorias_cotillon',found);known.push(found);}categoryByKey[c.key]=found;});known.forEach(c=>{const visible=source.categories.some(item=>categoryKey_(item.name)===categoryKey_(c.name));if(c.storefront!==visible){c.storefront=visible;put_('categorias_cotillon',c);}});const existing=rows_('cotillon'),ids=new Set(existing.map(p=>p.sourceId).filter(Boolean)),newRows=[];source.products.forEach(item=>{if(ids.has(item.sourceId))return;const linked=[...new Set(item.categoryKeys.map(k=>categoryByKey[k].id))],primary=categoryByKey[item.categoryKeys[0]];const product={id:'legacy-'+item.sourceId,area:'cotillon',name:item.name.trim(),description:String(item.description||item.name).slice(0,2000),categoryId:primary.id,categoryIds:linked,category:primary.name,mode:'venta',price:item.price===null?0:item.price,priceKnown:item.price!==null,rentPrice:0,stock:item.stock===null?0:item.stock,stockUnknown:item.stock===null,image:'',thumbnail:'',active:true,sourceId:item.sourceId,sourceImage:item.sourceImage||'',sku:item.sku||''};newRows.push([product.id,JSON.stringify(product)]);ids.add(item.sourceId);});if(newRows.length){const sheet=sheet_('cotillon');sheet.getRange(sheet.getLastRow()+1,1,newRows.length,2).setValues(newRows);SpreadsheetApp.flush();}const result={agregados:newRows.length,yaExistian:source.products.length-newRows.length,categorias:source.categories.length,fotosPendientes:rows_('cotillon').filter(p=>p.sourceImage&&!p.image).length};console.log(JSON.stringify(result));return result;});}
+function importarCotillonAnterior_(){prepararConfiguracion_();return lock_(()=>{const source=cotillonSnapshot_(),known=categories_('cotillon'),categoryByKey={};source.categories.forEach(c=>{let found=known.find(x=>categoryKey_(x.name)===categoryKey_(c.name));if(!found){found={id:Utilities.getUuid(),area:'cotillon',name:c.name};put_('categorias_cotillon',found);known.push(found);}categoryByKey[c.key]=found;});known.forEach(c=>{const visible=source.categories.some(item=>categoryKey_(item.name)===categoryKey_(c.name));if(c.storefront!==visible){c.storefront=visible;put_('categorias_cotillon',c);}});const existing=rows_('cotillon'),ids=new Set(existing.map(p=>p.sourceId).filter(Boolean)),newRows=[];source.products.forEach(item=>{if(ids.has(item.sourceId))return;const linked=[...new Set(item.categoryKeys.map(k=>categoryByKey[k].id))],primary=categoryByKey[item.categoryKeys[0]];const product={id:'legacy-'+item.sourceId,area:'cotillon',name:item.name.trim(),description:String(item.description||item.name).slice(0,2000),categoryId:primary.id,categoryIds:linked,category:primary.name,mode:'venta',price:item.price===null?0:item.price,priceKnown:item.price!==null,rentPrice:0,stock:item.stock===null?0:item.stock,stockUnknown:item.stock===null,image:'',thumbnail:'',active:true,sourceId:item.sourceId,sourceImage:item.sourceImage||'',sku:item.sku||''};newRows.push([product.id,JSON.stringify(product)]);ids.add(item.sourceId);});if(newRows.length){const sheet=sheet_('cotillon');sheet.getRange(sheet.getLastRow()+1,1,newRows.length,2).setValues(newRows);SpreadsheetApp.flush();}const result={agregados:newRows.length,yaExistian:source.products.length-newRows.length,categorias:source.categories.length,fotosPendientes:rows_('cotillon').filter(p=>p.sourceImage&&!p.image).length};console.log(JSON.stringify(result));return result;});}
 function subirFotoCotillon_(url,sourceId){const cloud=config_('CLOUDINARY_CLOUD_NAME'),key=config_('CLOUDINARY_API_KEY'),secret=config_('CLOUDINARY_API_SECRET');need_(cloud&&key&&secret,'Configurá CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY y CLOUDINARY_API_SECRET en Propiedades del script.');const folder='disfraz-cabezon/catalogo',eager='c_limit,h_160,w_160',publicId='anterior-'+sourceId,timestamp=Math.floor(Date.now()/1000);const signed='eager='+eager+'&folder='+folder+'&public_id='+publicId+'&timestamp='+timestamp+secret;const signature=hex_(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_1,signed,Utilities.Charset.UTF_8));const response=UrlFetchApp.fetch('https://api.cloudinary.com/v1_1/'+encodeURIComponent(cloud)+'/image/upload',{method:'post',payload:{file:url,folder,eager,public_id:publicId,timestamp:String(timestamp),api_key:key,signature},muteHttpExceptions:true});need_(response.getResponseCode()<300,'Cloudinary devolvió HTTP '+response.getResponseCode());const uploaded=JSON.parse(response.getContentText());need_(uploaded.secure_url&&uploaded.eager?.[0]?.secure_url,'Cloudinary no devolvió la miniatura.');return {image:uploaded.secure_url,thumbnail:uploaded.eager[0].secure_url};}
-function procesarFotosCotillon(){return lock_(()=>{const pending=rows_('cotillon').filter(p=>p.sourceImage&&!p.image&&!p.imageImportError).slice(0,10),result={procesadas:0,fallidas:0,pendientes:0};pending.forEach(p=>{try{const photo=subirFotoCotillon_(p.sourceImage,p.sourceId);put_('cotillon',{...p,...photo});result.procesadas++;}catch(error){put_('cotillon',{...p,imageImportError:String(error.message||error).slice(0,200)});result.fallidas++;}});result.pendientes=rows_('cotillon').filter(p=>p.sourceImage&&!p.image&&!p.imageImportError).length;if(!result.pendientes)ScriptApp.getProjectTriggers().filter(t=>t.getHandlerFunction()==='procesarFotosCotillon').forEach(t=>ScriptApp.deleteTrigger(t));console.log(JSON.stringify(result));return result;});}
-function iniciarFotosCotillon(){need_(config_('CLOUDINARY_CLOUD_NAME')&&config_('CLOUDINARY_API_KEY')&&config_('CLOUDINARY_API_SECRET'),'Primero configurá las tres propiedades de Cloudinary.');const pending=rows_('cotillon').filter(p=>p.sourceImage&&!p.image&&!p.imageImportError).length;need_(pending>0,'No hay fotos pendientes de migrar.');if(!ScriptApp.getProjectTriggers().some(t=>t.getHandlerFunction()==='procesarFotosCotillon'))ScriptApp.newTrigger('procesarFotosCotillon').timeBased().everyMinutes(5).create();return procesarFotosCotillon();}
-function reintentarFotosCotillon(){return lock_(()=>{let count=0;rows_('cotillon').filter(p=>p.imageImportError&&p.sourceImage&&!p.image).forEach(p=>{delete p.imageImportError;put_('cotillon',p);count++;});return {habilitadas:count};});}
+function procesarFotosCotillon_(){return lock_(()=>{const pending=rows_('cotillon').filter(p=>p.sourceImage&&!p.image&&!p.imageImportError).slice(0,10),result={procesadas:0,fallidas:0,pendientes:0};pending.forEach(p=>{try{const photo=subirFotoCotillon_(p.sourceImage,p.sourceId);put_('cotillon',{...p,...photo});result.procesadas++;}catch(error){put_('cotillon',{...p,imageImportError:String(error.message||error).slice(0,200)});result.fallidas++;}});result.pendientes=rows_('cotillon').filter(p=>p.sourceImage&&!p.image&&!p.imageImportError).length;if(!result.pendientes)ScriptApp.getProjectTriggers().filter(t=>t.getHandlerFunction()==='procesarFotosCotillon_').forEach(t=>ScriptApp.deleteTrigger(t));console.log(JSON.stringify(result));return result;});}
+function iniciarFotosCotillon_(){need_(config_('CLOUDINARY_CLOUD_NAME')&&config_('CLOUDINARY_API_KEY')&&config_('CLOUDINARY_API_SECRET'),'Primero configurá las tres propiedades de Cloudinary.');const pending=rows_('cotillon').filter(p=>p.sourceImage&&!p.image&&!p.imageImportError).length;need_(pending>0,'No hay fotos pendientes de migrar.');if(!ScriptApp.getProjectTriggers().some(t=>t.getHandlerFunction()==='procesarFotosCotillon_'))ScriptApp.newTrigger('procesarFotosCotillon_').timeBased().everyMinutes(5).create();return procesarFotosCotillon_();}
+function reintentarFotosCotillon_(){return lock_(()=>{let count=0;rows_('cotillon').filter(p=>p.imageImportError&&p.sourceImage&&!p.image).forEach(p=>{delete p.imageImportError;put_('cotillon',p);count++;});return {habilitadas:count};});}
 
 // Importación revisada de la pestaña "Web dc" (Excel 2026). La versión pública de
 // GitHub contiene únicamente los 790 productos marcados "Sí"; no contiene borradores.
@@ -277,11 +305,11 @@ function cotillonExcel2026Status_(){
  const all=rows_('cotillon'),batch=all.filter(p=>p.importBatch===COTILLON_EXCEL_2026_BATCH);
  return {estado:config_('COTILLON_EXCEL_2026_STATE')||'sin_iniciar',productosNuevos:batch.length,conFoto:batch.filter(p=>!!p.image&&!!p.thumbnail).length,pendientes:batch.filter(p=>!!p.sourceImage&&(!p.image||!p.thumbnail)&&!p.imageImportError).length,fallidas:batch.filter(p=>!!p.imageImportError).length,sinFotoEnRevision:batch.filter(p=>p.photoReview&&!p.image).length,publicadas:batch.filter(p=>p.active).length,anterioresArchivadosEn:config_('COTILLON_EXCEL_2026_ARCHIVE_SHEET')||'',errores:batch.filter(p=>p.imageImportError).slice(0,5).map(p=>({nombre:p.name,error:p.imageImportError}))};
 }
-function estadoImportacionCotillonExcel2026(){const status=cotillonExcel2026Status_();console.log(JSON.stringify(status));return status;}
-function iniciarImportacionCotillonExcel2026(){
+function estadoImportacionCotillonExcel2026_(){const status=cotillonExcel2026Status_();console.log(JSON.stringify(status));return status;}
+function iniciarImportacionCotillonExcel2026_(){
  need_(config_('SPREADSHEET_ID'),'Falta SPREADSHEET_ID en Propiedades del script.');
  if(config_('COTILLON_EXCEL_2026_STATE')&&config_('COTILLON_EXCEL_2026_STATE')!=='preparando')return lock_(()=>{
-  if(config_('COTILLON_EXCEL_2026_STATE')==='photos'&&!ScriptApp.getProjectTriggers().some(t=>t.getHandlerFunction()==='procesarFotosCotillonExcel2026'))ScriptApp.newTrigger('procesarFotosCotillonExcel2026').timeBased().everyMinutes(5).create();
+  if(config_('COTILLON_EXCEL_2026_STATE')==='photos'&&!ScriptApp.getProjectTriggers().some(t=>t.getHandlerFunction()==='procesarFotosCotillonExcel2026_'))ScriptApp.newTrigger('procesarFotosCotillonExcel2026_').timeBased().everyMinutes(5).create();
   return cotillonExcel2026Status_();
  });
  need_(config_('CLOUDINARY_CLOUD_NAME')&&config_('CLOUDINARY_API_KEY')&&config_('CLOUDINARY_API_SECRET'),'Configurá primero las tres propiedades de Cloudinary. No se modificó la hoja.');
@@ -289,7 +317,7 @@ function iniciarImportacionCotillonExcel2026(){
  const summary=lock_(()=>{
   const state=config_('COTILLON_EXCEL_2026_STATE');
   if(state&&state!=='preparando'){
-   if(state==='photos'&&!ScriptApp.getProjectTriggers().some(t=>t.getHandlerFunction()==='procesarFotosCotillonExcel2026'))ScriptApp.newTrigger('procesarFotosCotillonExcel2026').timeBased().everyMinutes(5).create();
+   if(state==='photos'&&!ScriptApp.getProjectTriggers().some(t=>t.getHandlerFunction()==='procesarFotosCotillonExcel2026_'))ScriptApp.newTrigger('procesarFotosCotillonExcel2026_').timeBased().everyMinutes(5).create();
    return cotillonExcel2026Status_();
   }
   ensureCotillonDepth3_();
@@ -302,7 +330,7 @@ function iniciarImportacionCotillonExcel2026(){
    need_(existing.filter(p=>p.importBatch===COTILLON_EXCEL_2026_BATCH).length===790,'La carga anterior quedó incompleta. Conservá las pestañas y revisá el estado antes de continuar.');
    need_(config_('COTILLON_EXCEL_2026_ARCHIVE_SHEET')&&ss.getSheetByName(config_('COTILLON_EXCEL_2026_ARCHIVE_SHEET')),'Falta la pestaña de respaldo de la carga anterior.');
    props_().setProperty('COTILLON_EXCEL_2026_STATE','photos');
-   if(!ScriptApp.getProjectTriggers().some(t=>t.getHandlerFunction()==='procesarFotosCotillonExcel2026'))ScriptApp.newTrigger('procesarFotosCotillonExcel2026').timeBased().everyMinutes(5).create();
+   if(!ScriptApp.getProjectTriggers().some(t=>t.getHandlerFunction()==='procesarFotosCotillonExcel2026_'))ScriptApp.newTrigger('procesarFotosCotillonExcel2026_').timeBased().everyMinutes(5).create();
    return cotillonExcel2026Status_();
   }
   const categories=categories_('cotillon');
@@ -333,14 +361,14 @@ function iniciarImportacionCotillonExcel2026(){
   try{stage.setName('cotillon');}catch(error){current.setName('cotillon');throw error;}
   props_().setProperties({COTILLON_EXCEL_2026_STATE:'photos',COTILLON_EXCEL_2026_ARCHIVE_SHEET:archiveName,COTILLON_EXCEL_2026_SOURCE_SHA256:COTILLON_EXCEL_2026_SHA256});
   // El disparador anterior ya no debe trabajar sobre el nuevo lote.
-  ScriptApp.getProjectTriggers().filter(t=>t.getHandlerFunction()==='procesarFotosCotillon').forEach(t=>ScriptApp.deleteTrigger(t));
-  if(!ScriptApp.getProjectTriggers().some(t=>t.getHandlerFunction()==='procesarFotosCotillonExcel2026'))ScriptApp.newTrigger('procesarFotosCotillonExcel2026').timeBased().everyMinutes(5).create();
+  ScriptApp.getProjectTriggers().filter(t=>t.getHandlerFunction()==='procesarFotosCotillon_').forEach(t=>ScriptApp.deleteTrigger(t));
+  if(!ScriptApp.getProjectTriggers().some(t=>t.getHandlerFunction()==='procesarFotosCotillonExcel2026_'))ScriptApp.newTrigger('procesarFotosCotillonExcel2026_').timeBased().everyMinutes(5).create();
   return {estado:'photos',importados:staged.length,anterioresArchivados:existing.length,pestañaRespaldo:archiveName};
  });
  console.log(JSON.stringify(summary));
  return summary;
 }
-function procesarFotosCotillonExcel2026(){return lock_(()=>{
+function procesarFotosCotillonExcel2026_(){return lock_(()=>{
  if(config_('COTILLON_EXCEL_2026_STATE')==='ready')return cotillonExcel2026Status_();
  need_(config_('COTILLON_EXCEL_2026_STATE')==='photos','Esta importación no está en la etapa de fotos.');
  const sheet=sheet_('cotillon'),last=sheet.getLastRow();
@@ -360,7 +388,7 @@ function procesarFotosCotillonExcel2026(){return lock_(()=>{
  const missing=items.filter(item=>item.product.sourceImage&&(!item.product.image||!item.product.thumbnail)&&!item.product.imageImportError).length;
  const failed=items.filter(item=>!!item.product.imageImportError).length;
  if(!missing){
-  ScriptApp.getProjectTriggers().filter(t=>t.getHandlerFunction()==='procesarFotosCotillonExcel2026').forEach(t=>ScriptApp.deleteTrigger(t));
+  ScriptApp.getProjectTriggers().filter(t=>t.getHandlerFunction()==='procesarFotosCotillonExcel2026_').forEach(t=>ScriptApp.deleteTrigger(t));
   if(failed)props_().setProperty('COTILLON_EXCEL_2026_STATE','photo_errors');
   else{
    need_(items.every(item=>item.product.photoReview&&!item.product.image||/^https:\/\/res\.cloudinary\.com\//.test(item.product.image)&&/^https:\/\/res\.cloudinary\.com\//.test(item.product.thumbnail)),'Al menos una foto o miniatura no está en Cloudinary.');
@@ -373,13 +401,13 @@ function procesarFotosCotillonExcel2026(){return lock_(()=>{
  }
  const status={...result,...cotillonExcel2026Status_()};console.log(JSON.stringify(status));return status;
 });}
-function reintentarFotosCotillonExcel2026(){
+function reintentarFotosCotillonExcel2026_(){
  const reset=lock_(()=>{
   need_(config_('COTILLON_EXCEL_2026_STATE')==='photo_errors','No hay una importación con fotos fallidas.');
   const sheet=sheet_('cotillon'),data=sheet.getRange(2,1,sheet.getLastRow()-1,2).getValues();let count=0;
   data.forEach((row,index)=>{const p=JSON.parse(row[1]);if(p.importBatch!==COTILLON_EXCEL_2026_BATCH||!p.imageImportError)return;delete p.imageImportError;sheet.getRange(index+2,1,1,2).setValues([[p.id,JSON.stringify(p)]]);count++;});
   SpreadsheetApp.flush();props_().setProperty('COTILLON_EXCEL_2026_STATE','photos');
-  if(!ScriptApp.getProjectTriggers().some(t=>t.getHandlerFunction()==='procesarFotosCotillonExcel2026'))ScriptApp.newTrigger('procesarFotosCotillonExcel2026').timeBased().everyMinutes(5).create();
+  if(!ScriptApp.getProjectTriggers().some(t=>t.getHandlerFunction()==='procesarFotosCotillonExcel2026_'))ScriptApp.newTrigger('procesarFotosCotillonExcel2026_').timeBased().everyMinutes(5).create();
   return {reintentosHabilitados:count};
  });console.log(JSON.stringify(reset));return reset;
 }
@@ -412,12 +440,12 @@ function agotadosCotillon2026Status_(){
  const batch=rows_('cotillon').filter(p=>p.importBatch===COTILLON_AGOTADOS_2026_BATCH);
  return {estado:config_('COTILLON_AGOTADOS_2026_STATE')||'sin_iniciar',productosAgotados:batch.length,conFoto:batch.filter(p=>!!p.image&&!!p.thumbnail).length,pendientes:batch.filter(p=>p.sourceImage&&(!p.image||!p.thumbnail)&&!p.imageImportError).length,fallidas:batch.filter(p=>!!p.imageImportError).length,visiblesComoAgotados:batch.length,errores:batch.filter(p=>p.imageImportError).slice(0,5).map(p=>({nombre:p.name,error:p.imageImportError}))};
 }
-function estadoAgotadosCotillonExcel2026(){const result=agotadosCotillon2026Status_();console.log(JSON.stringify(result));return result;}
+function estadoAgotadosCotillonExcel2026_(){const result=agotadosCotillon2026Status_();console.log(JSON.stringify(result));return result;}
 function iniciarFotosAgotadosCotillon_(){
- if(!ScriptApp.getProjectTriggers().some(t=>t.getHandlerFunction()==='procesarFotosAgotadosCotillonExcel2026'))ScriptApp.newTrigger('procesarFotosAgotadosCotillonExcel2026').timeBased().everyMinutes(5).create();
+ if(!ScriptApp.getProjectTriggers().some(t=>t.getHandlerFunction()==='procesarFotosAgotadosCotillonExcel2026_'))ScriptApp.newTrigger('procesarFotosAgotadosCotillonExcel2026_').timeBased().everyMinutes(5).create();
  props_().setProperty('COTILLON_AGOTADOS_2026_STATE','photos');
 }
-function importarAgotadosCotillonExcel2026(){
+function importarAgotadosCotillonExcel2026_(){
  need_(config_('SPREADSHEET_ID'),'Falta SPREADSHEET_ID en Propiedades del script.');
  need_(config_('CLOUDINARY_CLOUD_NAME')&&config_('CLOUDINARY_API_KEY')&&config_('CLOUDINARY_API_SECRET'),'Faltan las propiedades de Cloudinary.');
  const source=cotillonAgotados2026Source_();
@@ -446,7 +474,7 @@ function importarAgotadosCotillonExcel2026(){
   const result={agregados:add.length,totalCotillon:rows_('cotillon').length,...agotadosCotillon2026Status_()};console.log(JSON.stringify(result));return result;
  });
 }
-function procesarFotosAgotadosCotillonExcel2026(){return lock_(()=>{
+function procesarFotosAgotadosCotillonExcel2026_(){return lock_(()=>{
  if(config_('COTILLON_AGOTADOS_2026_STATE')==='ready')return agotadosCotillon2026Status_();
  need_(config_('COTILLON_AGOTADOS_2026_STATE')==='photos','Esta carga no está en la etapa de fotos.');
  const sheet=sheet_('cotillon'),data=sheet.getRange(2,1,sheet.getLastRow()-1,2).getValues();
@@ -457,14 +485,16 @@ function procesarFotosAgotadosCotillonExcel2026(){return lock_(()=>{
  pending.forEach(item=>{const p=item.product;try{Object.assign(p,subirFotoCotillon_(p.sourceImage,'excel-agotado-2026-'+p.sourceId));result.procesadas++;}catch(error){p.imageImportError=String(error.message||error).slice(0,200);result.fallidas++;}sheet.getRange(item.row,1,1,2).setValues([[p.id,JSON.stringify(p)]]);});
  SpreadsheetApp.flush();
  if(!batch.some(item=>item.product.sourceImage&&(!item.product.image||!item.product.thumbnail)&&!item.product.imageImportError)){
-  ScriptApp.getProjectTriggers().filter(t=>t.getHandlerFunction()==='procesarFotosAgotadosCotillonExcel2026').forEach(t=>ScriptApp.deleteTrigger(t));
+  ScriptApp.getProjectTriggers().filter(t=>t.getHandlerFunction()==='procesarFotosAgotadosCotillonExcel2026_').forEach(t=>ScriptApp.deleteTrigger(t));
   props_().setProperty('COTILLON_AGOTADOS_2026_STATE',batch.some(item=>item.product.imageImportError)?'photo_errors':'ready');
  }
  const status={...result,...agotadosCotillon2026Status_()};console.log(JSON.stringify(status));return status;
 });}
-function reintentarFotosAgotadosCotillonExcel2026(){return lock_(()=>{
+function reintentarFotosAgotadosCotillonExcel2026_(){return lock_(()=>{
  need_(config_('COTILLON_AGOTADOS_2026_STATE')==='photo_errors','No hay fotos fallidas en la segunda carga.');
  const sheet=sheet_('cotillon'),data=sheet.getRange(2,1,sheet.getLastRow()-1,2).getValues();let count=0;
  data.forEach((row,index)=>{const p=JSON.parse(row[1]);if(p.importBatch!==COTILLON_AGOTADOS_2026_BATCH||!p.imageImportError)return;delete p.imageImportError;sheet.getRange(index+2,1,1,2).setValues([[p.id,JSON.stringify(p)]]);count++;});
  SpreadsheetApp.flush();iniciarFotosAgotadosCotillon_();const result={reintentosHabilitados:count};console.log(JSON.stringify(result));return result;
 });}
+
+function uploadCatalogImage_(b,actor){if(actor?.role==='editor')need_(b.file&&b.file.type?.startsWith('image/'),'Solo fotos de catálogo.');need_(config_('CLOUDINARY_API_SECRET'),'Configurá Cloudinary.');const f=checkFiles_({image:b.file},['image']).image;need_(f.type.startsWith('image/'),'Solo imágenes.');const timestamp=Math.floor(Date.now()/1000),folder='disfraz-cabezon/catalogo',eager='c_limit,h_160,w_160';const signature=hex_(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_1,'eager='+eager+'&folder='+folder+'&timestamp='+timestamp+config_('CLOUDINARY_API_SECRET'),Utilities.Charset.UTF_8));const result=UrlFetchApp.fetch('https://api.cloudinary.com/v1_1/'+encodeURIComponent(config_('CLOUDINARY_CLOUD_NAME'))+'/image/upload',{method:'post',payload:{file:Utilities.newBlob(f.bytes,f.type,'producto'),folder,eager,timestamp:String(timestamp),api_key:config_('CLOUDINARY_API_KEY'),signature},muteHttpExceptions:true});need_(result.getResponseCode()<300,'No se pudo subir la imagen a Cloudinary.');const uploaded=JSON.parse(result.getContentText());need_(uploaded.secure_url&&uploaded.eager&&uploaded.eager[0]&&uploaded.eager[0].secure_url,'Cloudinary no devolvió la miniatura.');return {url:uploaded.secure_url,thumbnail:uploaded.eager[0].secure_url};}

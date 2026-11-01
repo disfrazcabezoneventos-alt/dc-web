@@ -100,8 +100,8 @@ function cotillonInc27Preview_(spreadsheetId,production){
  const plan=cotillonInc27Plan_(spreadsheetId,cotillonInc27Source_(),production?cotillonInc27Failed_():[]);
  console.log(JSON.stringify(plan.summary));return plan.summary;
 }
-function previsualizarCotillon27Copia(){return cotillonInc27Preview_(config_('COTILLON_INC_20261027_TEST_ID'),false);}
-function previsualizarCotillon27Produccion(){return cotillonInc27Preview_(config_('SPREADSHEET_ID'),true);}
+function previsualizarCotillon27Copia_(){return cotillonInc27Preview_(config_('COTILLON_INC_20261027_TEST_ID'),false);}
+function previsualizarCotillon27Produccion_(){return cotillonInc27Preview_(config_('SPREADSHEET_ID'),true);}
 
 function cotillonInc27Approved_(){
  need_(config_('COTILLON_INC_20261027_APPROVED')===COTILLON_INC_20261027_SHA256,'Falta aprobación de esta importación. No se modificó producción.');
@@ -157,16 +157,16 @@ function cotillonInc27Apply_(spreadsheetId,mode){return lock_(()=>{
  if(mode==='production'&&photoFailures)props_().setProperty('COTILLON_INC_20261027_FAILED_IDS',JSON.stringify([...failedSet]));
  const result={...plan.summary,procesados:processed,reactivadasEnEsteLote:reactivated,fotosFallidasEnEsteLote:photoFailures,respaldo:backup};console.log(JSON.stringify(result));return result;
 });}
-function probarLoteCotillon27Copia(){return cotillonInc27Apply_(config_('COTILLON_INC_20261027_TEST_ID'),'test');}
-function aplicarLoteCotillon27Produccion(){return cotillonInc27Apply_(config_('SPREADSHEET_ID'),'production');}
+function probarLoteCotillon27Copia_(){return cotillonInc27Apply_(config_('COTILLON_INC_20261027_TEST_ID'),'test');}
+function aplicarLoteCotillon27Produccion_(){return cotillonInc27Apply_(config_('SPREADSHEET_ID'),'production');}
 
-function verFotosFallidasCotillon27Produccion(){
+function verFotosFallidasCotillon27Produccion_(){
  const failed=new Set(cotillonInc27Failed_());
  const result=cotillonInc27Source_().filter(p=>failed.has(p.sourceId)).map(p=>({id:p.sourceId,producto:p.name,tipo:p.reactivate?'reactivacion':'alta'}));
  console.log(JSON.stringify(result));return result;
 }
 
-function reintentarFotosCotillon27Produccion(){return lock_(()=>{
+function reintentarFotosCotillon27Produccion_(){return lock_(()=>{
  cotillonInc27Approved_();
  const ids=cotillonInc27Failed_();
  props_().deleteProperty('COTILLON_INC_20261027_FAILED_IDS');

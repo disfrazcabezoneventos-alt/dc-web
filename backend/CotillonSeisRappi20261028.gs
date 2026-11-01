@@ -122,11 +122,11 @@ function cotillonSix28Apply_(spreadsheetId,mode,limit=15,retry=false){return loc
  const result={...plan.summary,procesados:processed,fotosFallidas:photoErrors,respaldo:backup};console.log(JSON.stringify(result));return result;
 });}
 
-function previsualizarCotillon6Copia(){
+function previsualizarCotillon6Copia_(){
  const id=config_(COTILLON_SIX_20261028_PREFIX+'TEST_ID');cotillonSix28Target_(id,'test');
  const summary=cotillonSix28Plan_(id,cotillonSix28Source_()).summary;console.log(JSON.stringify(summary));return summary;
 }
-function probarLoteCotillon6Copia(){return cotillonSix28Apply_(config_(COTILLON_SIX_20261028_PREFIX+'TEST_ID'),'test');}
+function probarLoteCotillon6Copia_(){return cotillonSix28Apply_(config_(COTILLON_SIX_20261028_PREFIX+'TEST_ID'),'test');}
 // Solo para una autorización posterior y explícita. No ejecutar con este PR draft.
-function aplicarLoteCotillon6Produccion(){return cotillonSix28Apply_(config_('SPREADSHEET_ID'),'production');}
-function reintentarFotosCotillon6Produccion(){return cotillonSix28Apply_(config_('SPREADSHEET_ID'),'production',15,true);}
+function aplicarLoteCotillon6Produccion_(){return cotillonSix28Apply_(config_('SPREADSHEET_ID'),'production');}
+function reintentarFotosCotillon6Produccion_(){return cotillonSix28Apply_(config_('SPREADSHEET_ID'),'production',15,true);}

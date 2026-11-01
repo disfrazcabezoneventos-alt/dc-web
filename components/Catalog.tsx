@@ -41,7 +41,7 @@ export default function Catalog({area,featured=false}:{area?:Product['area'];fea
  useEffect(()=>{if(!selected)return;const dialog=dialogRef.current;if(dialog&&!dialog.open)dialog.showModal();const close=(event:KeyboardEvent)=>{if(event.key==='Escape')setSelected(null)};window.addEventListener('keydown',close);return()=>window.removeEventListener('keydown',close)},[selected]);
  useEffect(()=>setVisible(36),[query,category,mode,mainCategory,subCategory,innerCategory,sectionAll]);
 
- const pool=publicProducts.filter(p=>(p.area==='cotillon'||p.active)&&(!area||p.area===area));
+ const pool=publicProducts.filter(p=>(!p.publicationState||p.publicationState==='published')&&(p.area==='cotillon'||p.active)&&(!area||p.area===area));
  const categoryNames=area==='disfraces'?categories.filter(c=>c.area===area).map(c=>c.name):[];
  if(pool.some(p=>!p.categoryId&&p.category==='Sin categoría'))categoryNames.push('Sin categoría');
  const filtered=area==='cotillon'?filterCotillonProducts(pool,categories,mainCategory,subCategory,innerCategory,sectionAll,query):pool.filter(p=>{

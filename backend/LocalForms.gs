@@ -11,8 +11,8 @@ function safeIncoming_(r){
  return {id:r.id,code:r.code,source:formSource_(r),status:r.status,formState:r.formState||'reserved',createdAt:r.createdAt,updatedAt:r.updatedAt,revision:r.managementRevision||0,data:formData_(r),originalData:r.data,events:r.events||[],fileSlots:Object.keys({...r.files,...r.managementFiles}),hasEdits:!!r.managementData,terms:r.terms,termsVersion:r.termsVersion,signedHash:r.signedHash,receiptsReady:config_('LOCAL_RECEIPTS_ENABLED')==='yes'};
 }
 // Run once before deploying the frontend. No new spreadsheet or Drive folder is created.
-function prepararFormulariosLocales(){
- prepararConfiguracion();
+function prepararFormulariosLocales_(){
+ prepararConfiguracion_();
  return lock_(()=>{
   const prices=rentalPrices_();
   if(!config_('LOCAL_PRICE_ADULTO'))props_().setProperty('LOCAL_PRICE_ADULTO',String(prices.adulto));
@@ -26,7 +26,7 @@ function incomingDispatch_(b){
  const actions=['localConfig','submitLocal','incomingForms','incomingRequest','incomingNotifications','dismissFormNotifications','saveRentalPrices','updateIncomingForm','deleteIncomingForm','incomingFile'];
  if(!actions.includes(b.action))return null;
  if(!['localConfig','submitLocal'].includes(b.action))session_(b.token);
- need_(config_('LOCAL_FORMS_ENABLED')==='yes','Primero ejecutá prepararFormulariosLocales y publicá Apps Script.');
+ need_(config_('LOCAL_FORMS_ENABLED')==='yes','Primero ejecutá prepararFormulariosLocales_ y publicá Apps Script.');
  if(b.action==='localConfig')return {data:{version:1,prices:rentalPrices_()}};
  if(b.action==='submitLocal')return {data:submitLocal_(b)};
  if(b.action==='saveRentalPrices'){

@@ -96,13 +96,13 @@ function disfraces28Plan_(id,source){
  });
  return {sheet,ops,summary};
 }
-function previsualizarDisfraces28Copia(){
+function previsualizarDisfraces28Copia_(){
  const testId=config_('DISFRACES_20261028_TEST_ID');
  need_(testId&&testId!==config_('SPREADSHEET_ID'),'La copia de prueba apunta a producción.');
  const result=disfraces28Plan_(testId,disfraces28Source_('test')).summary;
  console.log(JSON.stringify(result));return result;
 }
-function previsualizarDisfraces28Produccion(){
+function previsualizarDisfraces28Produccion_(){
  const result=disfraces28Plan_(config_('SPREADSHEET_ID'),disfraces28Source_('production')).summary;
  console.log(JSON.stringify(result));return result;
 }
@@ -176,8 +176,8 @@ function disfraces28Apply_(mode){return lock_(()=>{
  const result={...plan.summary,procesados:processed,activadosEnEsteLote:active,fotosFallidasEnEsteLote:photoFailed,respaldo:backup};
  console.log(JSON.stringify(result));return result;
 });}
-function probarLoteDisfraces28Copia(){return disfraces28Apply_('test');}
-function aplicarLoteDisfraces28Produccion(){return disfraces28Apply_('production');}
+function probarLoteDisfraces28Copia_(){return disfraces28Apply_('test');}
+function aplicarLoteDisfraces28Produccion_(){return disfraces28Apply_('production');}
 function disfraces28Status_(id){
  const imported=disfraces28Rows_(disfraces28Sheet_(id,'disfraces')).map(x=>x.product).filter(p=>p.importBatch===DISFRACES_20261028_BATCH);
  const result={importadas:imported.length,activas:imported.filter(p=>p.active).length,
@@ -186,9 +186,9 @@ function disfraces28Status_(id){
   sinCategoria:imported.filter(p=>!p.categoryId).map(p=>({id:p.sourceId,nombre:p.name}))};
  console.log(JSON.stringify(result));return result;
 }
-function estadoDisfraces28Copia(){return disfraces28Status_(config_('DISFRACES_20261028_TEST_ID'));}
-function estadoDisfraces28Produccion(){return disfraces28Status_(config_('SPREADSHEET_ID'));}
-function reintentarFotosDisfraces28Produccion(){return lock_(()=>{
+function estadoDisfraces28Copia_(){return disfraces28Status_(config_('DISFRACES_20261028_TEST_ID'));}
+function estadoDisfraces28Produccion_(){return disfraces28Status_(config_('SPREADSHEET_ID'));}
+function reintentarFotosDisfraces28Produccion_(){return lock_(()=>{
  need_(config_('DISFRACES_20261028_APPROVED')===DISFRACES_20261028_SHA256,'Falta aprobación expresa de esta importación.');
  const id=config_('SPREADSHEET_ID'),source=disfraces28Source_('production');
  const sourceById=new Map(source.products.map(p=>[p.sourceId,p]));

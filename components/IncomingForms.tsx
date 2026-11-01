@@ -13,7 +13,7 @@ export type IncomingRequest={id:string;code:string;source:FormSource;formState:F
 type Notice={id:string;code:string;source:FormSource;createdAt:string;costumes:string};
 const normalize=(text:string)=>text.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
 const time=(value:string)=>new Date(value).toLocaleString('es-AR',{timeZone:'America/Argentina/Buenos_Aires'});
-const setup=<p className="notice">Para habilitar esta sección, actualizá Apps Script y ejecutá prepararFormulariosLocales siguiendo docs/FORMULARIO_LOCAL.md.</p>;
+const setup=<p className="notice">Para habilitar esta sección, actualizá Apps Script y ejecutá prepararFormulariosLocales_ siguiendo docs/FORMULARIO_LOCAL.md.</p>;
 
 export function FormNotifications({token,ready,onOpen}:{token:string;ready:boolean;onOpen:(r:IncomingRequest)=>void}){
  const [items,setItems]=useState<Notice[]>([]),[open,setOpen]=useState(false),[error,setError]=useState(''),[busy,setBusy]=useState(false);

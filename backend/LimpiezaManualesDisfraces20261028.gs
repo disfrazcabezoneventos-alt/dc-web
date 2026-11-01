@@ -140,7 +140,7 @@ function lm28Apply_(mode){return lock_(()=>{
  const result={estado:'aplicado',bajas:5,altas:2,respaldo:backup,Scream:mode==='test'?'inactivo: ensayo sin Cloudinary':'activo',Woody:'inactivo: pendiente de foto nueva'};
  console.log(JSON.stringify(result));return result;
 });}
-function previsualizarLimpiezaManuales28Copia(){return lm28Preview_('test');}
-function probarLimpiezaManuales28Copia(){return lm28Apply_('test');}
-function previsualizarLimpiezaManuales28Produccion(){return lm28Preview_('production');}
-function aplicarLimpiezaManuales28Produccion(){return lm28Apply_('production');}
+function previsualizarLimpiezaManuales28Copia_(){return lm28Preview_('test');}
+function probarLimpiezaManuales28Copia_(){return lm28Apply_('test');}
+function previsualizarLimpiezaManuales28Produccion_(){return lm28Preview_('production');}
+function aplicarLimpiezaManuales28Produccion_(){return lm28Apply_('production');}

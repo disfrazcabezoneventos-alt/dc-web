@@ -101,20 +101,20 @@ test('la fuente conserva los 443 IDs, fotos y reglas de selección',()=>{
 test('la previsualización no escribe y producción queda bloqueada',()=>{
  const {context,copies}=setup();
  const before=JSON.stringify(copies.test.get('disfraces').rows);
- const summary=context.previsualizarDisfraces28Copia();
+ const summary=context.previsualizarDisfraces28Copia_();
  assert.equal(summary.altas,441);assert.equal(summary.omitidasManuales,2);
  assert.equal(summary.activasPotenciales,308);assert.equal(summary.inactivasPorAncho,133);
  assert.equal(summary.conflictos,0);assert.equal(summary.categoriasSinEquivalencia,1);
  assert.equal(JSON.stringify(copies.test.get('disfraces').rows),before);
- assert.throws(()=>context.aplicarLoteDisfraces28Produccion(),/aprobación expresa/);
+ assert.throws(()=>context.aplicarLoteDisfraces28Produccion_(),/aprobación expresa/);
  assert.equal(copies.production.get('disfraces').rows.length,6);
 });
 test('los 30 lotes en la copia crean respaldo y preservan fichas manuales y Cotillón',()=>{
  const {context,copies,products,getCloudinaryCalls}=setup();
  const before=JSON.stringify(copies.test.get('disfraces').rows);
  let batches=0,total=0;
- while(context.previsualizarDisfraces28Copia().altas){
-  const result=context.probarLoteDisfraces28Copia();
+ while(context.previsualizarDisfraces28Copia_().altas){
+  const result=context.probarLoteDisfraces28Copia_();
   assert.ok(result.procesados>0&&result.procesados<=15);
   batches++;total+=result.procesados;
   assert.ok(batches<=30);
@@ -127,7 +127,7 @@ test('los 30 lotes en la copia crean respaldo y preservan fichas manuales y Coti
  assert.equal(JSON.stringify(copies.test.get('disfraces_respaldo_20261028_test').rows),before);
  assert.equal(JSON.stringify(copies.test.get('cotillon').rows),JSON.stringify(copies.production.get('cotillon').rows));
  assert.equal(getCloudinaryCalls(),0);
- assert.equal(context.probarLoteDisfraces28Copia().procesados,0);
+ assert.equal(context.probarLoteDisfraces28Copia_().procesados,0);
  if(process.env.DC_DISFRACES_EXPORT_COPY_ROWS)fs.writeFileSync(process.env.DC_DISFRACES_EXPORT_COPY_ROWS,JSON.stringify({rows:copies.test.get('disfraces').rows,backup:copies.test.get('disfraces_respaldo_20261028_test').rows,batches}));
 });
 test('simulación local: solo se activa una ficha cuando Cloudinary entrega foto y miniatura',()=>{
@@ -136,7 +136,7 @@ test('simulación local: solo se activa una ficha cuando Cloudinary entrega foto
  settings.CLOUDINARY_CLOUD_NAME='test';
  settings.CLOUDINARY_API_KEY='test';
  settings.CLOUDINARY_API_SECRET='test';
- const result=context.aplicarLoteDisfraces28Produccion();
+ const result=context.aplicarLoteDisfraces28Produccion_();
  assert.equal(result.procesados,15);
  assert.equal(result.fotosFallidasEnEsteLote,1);
  assert.ok(result.activadosEnEsteLote>0);
