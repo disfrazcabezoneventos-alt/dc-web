@@ -4,6 +4,11 @@
 explícita posterior.** El ensayo usa una copia privada; su URL y evidencia se
 entregan al propietario por separado, fuera del repositorio público.
 
+**Pendiente antes de instalar:** el ensayo real de 120 productos quedó incompleto
+por tiempo máximo de Apps Script (91 actualizados y 29 sin actualizar). No seguir
+con producción hasta resolver y repetir ese recorrido; ver
+[los resultados de la revisión](CATALOGO_ROLES_REVISION_PR32.md).
+
 ## Archivos que se revisan y prueban
 
 - `backend/Code.gs`: API actual más origen múltiple, revocación y autorización.
@@ -175,6 +180,12 @@ de verificación posterior. Devuelve y registra solo cantidades y milisegundos;
 no copia filas de clientes a logs ni publica identificadores de la hoja.
 La función rechaza una copia con movimientos de stock pendientes para evitar
 que el mantenimiento previo de la API afecte productos ajenos al ensayo.
+
+Si Google corta la ejecución, no informar el tiempo total como un renombrado
+exitoso ni volver a ejecutarla a ciegas: crea otro lote de 120 productos ficticios.
+Guardar el error y leer los productos y eventos sintéticos para conocer el estado
+parcial. Recuperar eventos pendientes no completa productos aún no registrados.
+El ensayo del 1 de noviembre alcanzó ese límite; requiere corrección antes de instalar.
 
 ## Crear y usar la cuenta del colaborador
 

@@ -86,14 +86,23 @@ de ensayo desplegado. El servidor y los mocks no se incluyen en `out/`.
   con main normalizando saltos/BOM; no se inspeccionó de forma independiente el
   editor de Apps Script ni se afirmó cuál versión está activa en Google.
 - No se desplegó ni recorrió la API de la aplicación en Google Apps Script.
-  VM + persistencia de Sheets no sustituyen ese ensayo. La revisión posterior sí
-  mide PBKDF2 en el runtime de Google; siguen pendientes la API real, el benchmark
-  de Sheets y el recorrido de la misma URL `/exec`. Ver Revisión PR32.
+  VM + persistencia de Sheets no sustituyen ese ensayo de extremo a extremo.
+  La revisión posterior sí mide PBKDF2 y ejecuta `dispatch_` contra Sheets en el
+  runtime de Google, sin endpoint desplegado. El benchmark real de 120 productos
+  **falló por tiempo máximo** a los 360,707 s totales: 91 productos actualizados,
+  91 eventos confirmados y 29 productos sin actualizar. Es un impedimento para
+  instalar hasta corregir y repetir. Sigue pendiente el recorrido por `/exec`.
+  Ver Revisión PR32.
+- El activador privado real `verificarActivadorPrivado_` terminó correctamente
+  en Google (2,906 s), con su registro y marca de fecha comprobados. No se
+  ejecutaron importadores ni se modificaron activadores de producción.
 - Cloudinary y correo se simularon. No se subieron fotos reales ni enviaron
   notificaciones. Los documentos y clientes de producción no se usaron en tests.
 - La copia es privada del propietario conectado al conector. La cuenta distinta
   abierta en el navegador no pudo verla; no se amplió el acceso. La verificación
   de Sheets fue por API y lectura posterior, sin captura de su interfaz nativa.
+  Para la revisión posterior se creó otra copia privada en la cuenta del local y
+  se autorizó un proyecto de ensayo separado; los enlaces siguen fuera de GitHub.
 - El bloqueo de Apps Script serializa escrituras y login; medir la carga real.
   CacheService puede expirar antes sus entradas; en ese caso se requiere ingresar
   de nuevo. El límite de intentos es el de esa caché, no un firewall permanente.
