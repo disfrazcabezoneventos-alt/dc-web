@@ -4,10 +4,9 @@
 explícita posterior.** El ensayo usa una copia privada; su URL y evidencia se
 entregan al propietario por separado, fuera del repositorio público.
 
-**Pendiente antes de instalar:** el ensayo real de 120 productos quedó incompleto
-por tiempo máximo de Apps Script (91 actualizados y 29 sin actualizar). No seguir
-con producción hasta resolver y repetir ese recorrido; ver
-[los resultados de la revisión](CATALOGO_ROLES_REVISION_PR32.md).
+El fallo del primer ensayo (91 actualizados y 29 sin actualizar) se corrigió por
+lotes en la misma rama. Consultá [las mediciones y la recuperación de categorías](CATALOGO_CATEGORIAS_LOTES_PR32.md).
+La instalación continúa requiriendo aprobación explícita; no se publicó esta rama.
 
 ## Archivos que se revisan y prueban
 
@@ -173,9 +172,10 @@ Sin desplegar nada y solo en un proyecto apuntado a la copia:
 
 En ese mismo proyecto de ensayo, ejecutá `ejecutarEnsayoCategoria`. Agrega una
 categoría y 120 productos ficticios sin publicar, usa la API real para renombrarla
-y verifica los 120 eventos confirmados. La medición incluye las escrituras reales
-de Sheets: un producto y dos escrituras de historial por producto (pendiente y
-confirmado). No incluye la creación inicial de las filas de prueba ni la lectura
+y verifica los 120 productos en el historial compacto confirmado. La medición incluye
+las escrituras reales de Sheets: un rango de productos y el historial por lote
+(pendiente y confirmado, dividido si hace falta por el límite de 48.000 caracteres).
+No incluye la creación inicial de las filas de prueba ni la lectura
 de verificación posterior. Devuelve y registra solo cantidades y milisegundos;
 no copia filas de clientes a logs ni publica identificadores de la hoja.
 La función rechaza una copia con movimientos de stock pendientes para evitar
@@ -184,8 +184,16 @@ que el mantenimiento previo de la API afecte productos ajenos al ensayo.
 Si Google corta la ejecución, no informar el tiempo total como un renombrado
 exitoso ni volver a ejecutarla a ciegas: crea otro lote de 120 productos ficticios.
 Guardar el error y leer los productos y eventos sintéticos para conocer el estado
-parcial. Recuperar eventos pendientes no completa productos aún no registrados.
-El ensayo del 1 de noviembre alcanzó ese límite; requiere corrección antes de instalar.
+parcial. La implementación nueva puede recuperar o deshacer todos los productos
+registrados en un lote pendiente. Para las 29 fichas del ensayo viejo, sin evento,
+volver a guardar el mismo nombre ahora completa las diferencias por producto.
+
+`scripts/apps-script-ensayo/EnsayoLotes.gs` ejecuta el ensayo ampliado: reanudar
+esas 29 fichas, renombrar 120 y 441, borrar una categoría con 120 productos y
+deshacer ese borrado. Usa 441 fichas existentes de la copia, deja un diario de
+preparación y restaura sus datos al terminar. Requiere `MAIL_MODE=disabled` y
+registra solo cantidades, tiempos y contadores de lectura/escritura. **No instalar
+este script en producción ni desplegar el proyecto de ensayo.**
 
 ## Crear y usar la cuenta del colaborador
 
@@ -216,6 +224,14 @@ y deja un evento nuevo. Nunca se elimina la imagen anterior de Cloudinary.
 Si hubo una interrupción, aparece **Recuperar cambios pendientes**. Se recupera
 solo si el producto sigue coincidiendo con el estado anterior o posterior
 registrado. Un conflicto requiere revisión; no se sobrescribe otro cambio.
+
+Las categorías usan entradas `category_bulk`. Cada producto registra únicamente
+`id` y los campos `categoryId`, `category`, `categoryIds` antes/después. El último
+campo se incluye con aprobación del propietario para conservar categorías
+secundarias al deshacer. Si hay varias partes, recuperar o **Deshacer cambio de
+categoría** procesa la operación completa. Deshacer requiere confirmación en el
+panel y conserva los demás campos del producto. Se rechazan conflictos de
+categorías, nombres duplicados y destinos que recibieron otros productos.
 
 Los cambios de producto relacionados con otras operaciones administrativas
 (renombrar/eliminar una categoría o recuperar un movimiento pendiente) también

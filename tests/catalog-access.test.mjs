@@ -56,7 +56,7 @@ test('Admin: H001/H002, reemplazo/restauración de foto y cambios relacionados a
  const p=h.ctx.dispatch_({action:'saveProduct',token:h.admin,product:{...h.product,image,description:''}});assert.deepEqual([...p.categoryIds],['d-primary','d-secondary']);
  const photo=h.tables.historial_cambios.at(-1);assert.equal(photo.changes.image.before,h.product.image);
  const restored=h.ctx.dispatch_({action:'restoreProductPhoto',token:h.admin,area:p.area,id:p.id,historyId:photo.id,revision:h.ctx.hash_(JSON.stringify(h.tables.disfraces[0]))});assert.equal(restored.image,h.product.image);
- h.ctx.dispatch_({action:'saveCategory',token:h.admin,area:'disfraces',id:'d-primary',name:'Categoría renombrada'});assert.equal(h.tables.historial_cambios.at(-1).changes.category.after,'Categoría renombrada');
+ h.ctx.dispatch_({action:'saveCategory',token:h.admin,area:'disfraces',id:'d-primary',name:'Categoría renombrada'});assert.equal(h.tables.historial_cambios.at(-1).products[0].after.category,'Categoría renombrada');
 });
 test('sin sesión ni origen permitido no hay mantenimiento ni escrituras; se rechazan sesiones viejas',()=>{
  const h=catalogHarness();h.tables.movimientos.push({id:'pending',area:'disfraces',productId:h.product.id,stockPending:{before:4,after:3}});delete h.settings.COTILLON_DEPTH3_V1;

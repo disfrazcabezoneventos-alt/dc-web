@@ -3,14 +3,17 @@
 La revisión continúa en la misma rama y en DRAFT. No se fusionó ni desplegó nada;
 no se cambió el proyecto de Apps Script ni la hoja de producción.
 
-**No instalar todavía:** el ensayo real de renombrado con 120 productos agotó
-el tiempo de ejecución de Apps Script y dejó la operación incompleta. Los detalles
-y el alcance de la recuperación están abajo.
+El primer ensayo encontró un renombrado incompleto por tiempo máximo. Ese
+comportamiento anterior queda documentado abajo; la corrección por lotes y sus
+nuevas mediciones están en [Categorías por lotes](CATALOGO_CATEGORIAS_LOTES_PR32.md).
+La rama sigue en DRAFT, sin autorización de merge o despliegue.
 
-Validación de esta revisión: **280/280 pruebas unitarias, 6/6 Playwright de ambos
+Validación anterior a la corrección por lotes: **280/280 pruebas unitarias, 6/6 Playwright de ambos
 roles en escritorio/celular y build estático sin errores**. La regresión anterior
 de 64 escenarios sigue documentada por separado. El ensayo real de Sheets se
 informa por separado y no se cuenta como aprobado.
+La corrección posterior pasa 289/289 unitarias y 22/22 Playwright; su nuevo ensayo
+real sí completa los lotes de 120/441 y el borrado de 120 en menos de 60 segundos.
 
 ## Correcciones
 
@@ -65,7 +68,7 @@ muestras por costo no garantizan latencia futura ni bajo concurrencia. La consta
 sigue en **600.000**; no se aplica la propuesta anterior de bajarla a partir de dos
 muestras aisladas. Las capturas y los enlaces privados se entregan fuera de GitHub.
 
-## Renombrado de categoría con 120 productos
+## Primer ensayo de 120 productos: versión anterior a la corrección por lotes
 
 El 1 de noviembre se ejecutó el backend en un proyecto de ensayo sin
 implementaciones, apuntado a una segunda copia privada en la cuenta del local,
@@ -95,17 +98,17 @@ pero no puede completar los otros 29 productos, que todavía no tenían evento.
 Repetir `saveCategory` con el mismo nombre tampoco reanuda ese recorrido: la
 actualización de productos depende de que cambie `old.name`.
 
-Antes de instalar, hace falta reducir las llamadas de Sheets y resolver la
+El bloqueo que reveló ese ensayo era reducir las llamadas de Sheets y resolver la
 reanudación de la operación completa, conservando el historial de cada producto.
-Luego repetir este ensayo sobre copia y contrastarlo con los **120 segundos de
-espera del frontend**. Aumentar solamente ese timeout no resuelve el corte del
-servidor ni la actualización parcial. Esta revisión documenta el hallazgo; no
-introduce una optimización o migración adicional sin revisión.
+Se corrigió después, por instrucción del propietario, en esta misma rama. No se
+modificó el timeout de **120 segundos del frontend**; ver la nueva validación.
 
-`scripts/apps-script-ensayo/EnsayoCategoria.gs` deja preparado el recorrido:
+El script original de `scripts/apps-script-ensayo/EnsayoCategoria.gs` preparó el recorrido:
 agrega 120 productos ficticios en borrador y una categoría exclusiva en la copia,
 ejecuta la API de renombrado y verifica 120 eventos confirmados. Cuenta las 120
-escrituras de productos, 240 de historial (pendiente/confirmado) y una de categoría.
+escrituras de productos, 240 de historial (pendiente/confirmado) y una de categoría
+en la implementación anterior. Su versión actual comprueba un historial por lote
+y una escritura del rango de productos.
 Mide la operación real, excluyendo la preparación de datos y lectura posterior.
 Rechaza hojas sin el nombre/bandera de ensayo y copias con stock pendiente.
 

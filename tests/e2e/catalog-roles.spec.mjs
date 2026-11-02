@@ -46,3 +46,18 @@ test('Admin: crea cuenta, restablece, desactiva y restaura la foto desde histori
  await page.getByRole('button',{name:'Actualizar historial',exact:true}).click();const item=page.locator('.catalog-history').filter({hasText:changed.name});await item.locator('summary').click();await item.getByRole('button',{name:'Restaurar foto anterior de Producto de ensayo',exact:true}).click();await expect(page.getByText('Foto anterior restaurada. El cambio quedó registrado.')).toBeVisible();expect(h.tables.disfraces[0].image).toBe(h.product.image);
  await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));await page.screenshot({path:info.outputPath('admin-usuarios-historial.png'),fullPage:true,animations:'disabled'});
 });
+
+test('Admin: ve un cambio de categoría en lote y puede cancelar o confirmar deshacerlo',async({page},info)=>{
+ const h=await setup(page,'admin'),before=structuredClone(h.tables.disfraces);
+ h.ctx.dispatch_({action:'saveCategory',token:h.admin,area:'disfraces',id:'d-primary',name:'Categoría nueva de ensayo'});
+ await page.getByRole('button',{name:'Usuarios e historial',exact:true}).click();
+ const item=page.locator('.catalog-history').filter({hasText:'Categoría nueva de ensayo'});await item.locator('summary').click();
+ await expect(item.getByText('Producto de ensayo',{exact:true})).toBeVisible();
+ page.once('dialog',dialog=>dialog.dismiss());await item.getByRole('button',{name:'Deshacer cambio de categoría',exact:true}).click();
+ expect(h.tables.historial_cambios[0].status).toBe('committed');
+ await page.screenshot({path:info.outputPath('admin-lote-categoria.png'),fullPage:true,animations:'disabled'});
+ page.once('dialog',dialog=>dialog.accept());await item.getByRole('button',{name:'Deshacer cambio de categoría',exact:true}).click();
+ await expect(page.getByText('Cambio de categoría deshecho. Se conservaron los demás datos de los productos.',{exact:true})).toBeVisible();
+ expect(h.tables.disfraces).toEqual(before);expect(h.tables.historial_cambios[0].status).toBe('rolled_back');
+ await expect(page.locator('.catalog-history').locator('summary')).toContainText('Deshecho');
+});

@@ -20,15 +20,15 @@ function ejecutarEnsayoCategoria(){
  const sheet=sheet_('disfraces');sheet.getRange(sheet.getLastRow()+1,1,count,2).setValues(fixtures);SpreadsheetApp.flush();
  const token=Utilities.getUuid()+Utilities.getUuid(),cache=CacheService.getScriptCache(),key='session:'+hash_(token);
  cache.put(key,adminSessionVersion_(),600);
- const originalPut=putDirect_,writes={products:0,history:0,categories:0};
- putDirect_=function(table,obj){if(table==='disfraces')writes.products++;if(table==='historial_cambios')writes.history++;if(table==='categorias_disfraces')writes.categories++;return originalPut(table,obj)};
+ const originalWrite=catalogBulkWrite_,writes={products:0,history:0,categories:0};
+ catalogBulkWrite_=function(state,updates){if(updates.size){if(state.name==='disfraces')writes.products++;if(state.name==='historial_cambios')writes.history++;if(state.name==='categorias_disfraces')writes.categories++;}return originalWrite(state,updates)};
  let ms;
  try{const start=Date.now();lock_(()=>dispatch_({action:'saveCategory',token,area:'disfraces',id:category.id,name:category.name+' renombrada'}));ms=Date.now()-start;}
- finally{putDirect_=originalPut;cache.remove(key);}
- const events=rows_('historial_cambios').filter(h=>ids.has(h.productId));
- need_(events.length===count&&events.every(h=>h.status==='committed'),'El historial no quedó completo. Revisar el ensayo.');
+ finally{catalogBulkWrite_=originalWrite;cache.remove(key);}
+ const events=rows_('historial_cambios').filter(h=>h.action==='category_bulk'&&h.products.some(p=>ids.has(p.id)));
+ need_(events.flatMap(h=>h.products).length===count&&events.every(h=>h.status==='committed'),'El historial no quedó completo. Revisar el ensayo.');
  need_(rows_('disfraces').filter(p=>ids.has(p.id)&&p.category===category.name+' renombrada').length===count,'Renombrado incompleto.');
- const result={products:count,ms,committedEvents:events.length,writes};
+ const result={products:count,ms,committedEvents:events.length,historyProducts:events.flatMap(h=>h.products).length,writes};
  props.setProperty('PR32_CATEGORY_RESULT',JSON.stringify(result));console.log(JSON.stringify(result));return result;
 }
 function ejecutarProbarActivador(){

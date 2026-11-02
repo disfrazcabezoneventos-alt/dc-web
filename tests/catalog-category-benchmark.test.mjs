@@ -5,17 +5,15 @@ import vm from 'node:vm';
 import {catalogHarness} from './catalog-access-harness.mjs';
 function setup(){
  const h=catalogHarness();h.settings.PR32_ENSAYO='yes';h.ctx.console={log(){}};
- const ss={getName:()=> 'ENSAYO copia sintética',getSheetByName:name=>h.tables[name]?{getLastRow:()=>h.tables[name].length+1,getRange:()=>({setValues:rows=>rows.forEach(r=>h.tables[name].push(JSON.parse(r[1])))})}:null,insertSheet:name=>{h.tables[name]=[];return {appendRow(){}}}};
- h.ctx.SpreadsheetApp={openById:()=>ss,flush(){}};
  vm.runInContext(fs.readFileSync('scripts/apps-script-ensayo/EnsayoCategoria.gs','utf8'),h.ctx);
- return {...h,ss};
+ return h;
 }
-test('benchmark usa la API real sobre 120 productos sintéticos y verifica las 360 escrituras del producto/historial',()=>{
+test('benchmark usa la API real sobre 120 productos sintéticos y verifica la escritura por lote',()=>{
  const h=setup(),originals=JSON.stringify({disfraces:h.tables.disfraces,cotillon:h.tables.cotillon});
- const result=h.ctx.ejecutarEnsayoCategoria();assert.equal(result.products,120);assert.equal(result.committedEvents,120);
- assert.deepEqual(JSON.parse(JSON.stringify(result.writes)),{products:120,history:240,categories:1});assert.ok(result.ms>=0);
+ const result=h.ctx.ejecutarEnsayoCategoria();assert.equal(result.products,120);assert.ok(result.committedEvents<120);assert.equal(result.historyProducts,120);
+ assert.deepEqual(JSON.parse(JSON.stringify(result.writes)),{products:1,history:2,categories:1});assert.ok(result.ms>=0);
  assert.equal(JSON.stringify({disfraces:h.tables.disfraces.slice(0,1),cotillon:h.tables.cotillon}),originals);
- assert.equal(h.tables.historial_cambios.length,120);assert.ok(h.tables.historial_cambios.every(h=>h.actor.username==='admin-ensayo'));
+ assert.equal(h.tables.historial_cambios.flatMap(h=>h.products).length,120);assert.ok(h.tables.historial_cambios.every(h=>h.actor.username==='admin-ensayo'));
 });
 test('benchmark rechaza hojas ajenas al ensayo o con movimientos pendientes antes de escribir',()=>{
  for(const mode of ['flag','name','pending']){

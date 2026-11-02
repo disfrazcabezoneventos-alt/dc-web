@@ -74,7 +74,7 @@ function catalogAccessDispatch_(b,actor){
  if(!['catalogUsers','createCatalogUser','setCatalogUserActive','resetCatalogUserPassword','productHistory','restoreProductPhoto','publishProduct','recoverProductHistory'].includes(b.action))return null;
  need_(actor&&actor.role==='admin','No tenés permiso para esta acción.');
  need_(catalogRolesReady_(),'Ejecutá prepararRolesCatalogo_ en la hoja autorizada.');
- if(b.action==='recoverProductHistory')return {data:recoverCatalogHistory_()};
+ if(b.action==='recoverProductHistory')return {data:recoverCatalogHistory_({historyId:b.historyId,mode:b.mode})};
  if(b.action==='catalogUsers')return {data:catalogAccounts_().map(catalogAccountView_)};
  if(b.action==='createCatalogUser'){
   const username=String(b.username||'').trim().toLowerCase();need_(/^[a-z0-9][a-z0-9._-]{2,49}$/.test(username),'Usuario: 3 a 50 letras, números, punto, guion o guion bajo.');
@@ -89,7 +89,7 @@ function catalogAccessDispatch_(b,actor){
  }
  if(b.action==='productHistory'){
   need_(!b.cursor||typeof b.cursor==='string'&&b.cursor.length<150,'Cursor inválido.');
-  const key=h=>h.at+'|'+h.id,all=rows_('historial_cambios').filter(h=>(!b.area||h.area===b.area)&&(!b.productId||h.productId===b.productId)).sort((a,b)=>key(b).localeCompare(key(a)));
+  const key=h=>h.at+'|'+h.id,all=rows_('historial_cambios').filter(h=>(!b.area||h.area===b.area)&&(!b.productId||h.productId===b.productId||h.action==='category_bulk'&&h.products.some(p=>p.id===b.productId))).sort((a,b)=>key(b).localeCompare(key(a)));
   const available=all.filter(h=>!b.cursor||key(h)<b.cursor),entries=available.slice(0,100);
   return {data:{entries,nextCursor:available.length>100?key(entries.at(-1)):null,pendingCount:all.filter(h=>h.status==='pending').length}};
  }
@@ -164,7 +164,7 @@ function catalogWriteProduct_(actor,area,before,after,action,operationId){
  const productId=after?.id||before.id,history=rows_('historial_cambios'),existing=history.find(h=>h.id===id);
  if(existing){need_(existing.area===area&&existing.productId===productId&&existing.actor.id===actor.id&&JSON.stringify(existing.after)===JSON.stringify(after),'Conflicto de cambio. Recargá el producto.');if(existing.status==='committed')return after;}
  need_(!collision||existing&&JSON.stringify(collision)===JSON.stringify(existing.after),'Ya existe un producto con ese identificador.');
- need_(!history.some(h=>h.area===area&&h.productId===productId&&h.status==='pending'&&h.id!==id),'Hay un cambio pendiente. El administrador debe recuperarlo desde Historial.');
+ need_(!history.some(h=>h.area===area&&h.status==='pending'&&h.id!==id&&(h.productId===productId||h.action==='category_bulk'&&h.products.some(p=>p.id===productId))),'Hay un cambio pendiente. El administrador debe recuperarlo desde Historial.');
  const h=existing||{id,area,productId,productName:after?.name||before.name,actor:{id:actor.id,username:actor.username,role:actor.role},action,at:now_(),before:before||null,after,changes,status:'pending'};
  put_('historial_cambios',h);raw();h.status='committed';put_('historial_cambios',h);return after;
 }
@@ -182,9 +182,24 @@ function migrarDisparadoresCatalogo_(){
  }
  return {migrated,manualReview:triggers.filter(t=>!t.getHandlerFunction().endsWith('_')&&!handlers.includes(t.getHandlerFunction())).map(t=>t.getHandlerFunction())};
 }
-function recoverCatalogHistory_(){
- need_(catalogRolesReady_(),'Prepará roles primero.');let recovered=0;
-  for(const h of rows_('historial_cambios').filter(h=>h.status==='pending')){
+function recoverCatalogHistory_(options={}){
+ need_(catalogRolesReady_(),'Prepará roles primero.');
+ need_(!options.mode||['forward','rollback'].includes(options.mode),'Modo de recuperación inválido.');
+ need_(!options.historyId||typeof options.historyId==='string','Identificador de historial inválido.');
+ const history=catalogBulkRead_('historial_cambios');let recovered=0;
+ if(options.historyId){
+  const entry=history.records.find(h=>h.id===options.historyId);
+  need_(entry&&entry.action==='category_bulk','Elegí un cambio de categoría en lote.');
+  const mode=options.mode||'forward';
+  recovered=catalogRecoverBulk_(history,entry,mode);return {recovered};
+ }
+ need_(options.mode!=='rollback','Elegí el lote que querés deshacer.');
+ const seen=new Set();
+ for(const entry of history.records.filter(h=>h.action==='category_bulk'&&h.status==='pending')){
+  if(seen.has(entry.operationId))continue;seen.add(entry.operationId);
+  recovered+=catalogRecoverBulk_(history,entry,entry.direction||'forward');
+ }
+  for(const h of history.records.filter(h=>h.action!=='category_bulk'&&h.status==='pending')){
    const current=rows_(h.area).find(p=>p.id===h.productId)||null;
    need_(JSON.stringify(current)===JSON.stringify(h.before)||JSON.stringify(current)===JSON.stringify(h.after),'Conflicto en '+h.productId+': revisar manualmente antes de recuperar.');
    if(JSON.stringify(current)!==JSON.stringify(h.after)){
@@ -194,4 +209,145 @@ function recoverCatalogHistory_(){
    h.status='committed';put_('historial_cambios',h);recovered++;
   }return {recovered};
 
+}
+
+// Snapshot y escrituras por rango. Los productos ajenos al cambio conservan su JSON exacto.
+function catalogBulkRead_(name){
+ const sheet=sheet_(name),count=Math.max(0,sheet.getLastRow()-1);
+ const values=count?sheet.getRange(2,1,count,2).getValues():[];
+ const records=values.map(row=>JSON.parse(row[1]));
+ need_(new Set(records.map(r=>r.id)).size===records.length,'La tabla tiene identificadores duplicados. Revisala antes de continuar.');
+ return {name,sheet,values,records};
+}
+function catalogBulkWrite_(state,updates){
+ if(!updates.size)return;
+ const remaining=new Map(updates),next=[];
+ for(const row of state.values){
+  if(!remaining.has(row[0])){next.push(row);continue;}
+  const value=remaining.get(row[0]);remaining.delete(row[0]);
+  if(value!==null){const raw=JSON.stringify(value);need_(raw.length<48000,'El registro excede el tamaño permitido.');next.push([value.id,raw]);}
+ }
+ for(const value of remaining.values())if(value!==null){const raw=JSON.stringify(value);need_(raw.length<48000,'El registro excede el tamaño permitido.');next.push([value.id,raw]);}
+ const count=Math.max(state.values.length,next.length);let first=-1,last=-1;
+ for(let i=0;i<count;i++)if(JSON.stringify(state.values[i]||['',''])!==JSON.stringify(next[i]||['',''])){if(first<0)first=i;last=i;}
+ if(first>=0)state.sheet.getRange(first+2,1,last-first+1,2).setValues(Array.from({length:last-first+1},(_,i)=>next[first+i]||['','']));
+ state.values=next;state.records=next.map(row=>JSON.parse(row[1]));
+}
+function catalogCategoryState_(product){
+ return Object.fromEntries(['categoryId','category','categoryIds'].filter(k=>Object.prototype.hasOwnProperty.call(product,k)).map(k=>[k,product[k]]));
+}
+function catalogCategoryApply_(product,state){
+ const after={...product};for(const key of ['categoryId','category','categoryIds'])if(!Object.prototype.hasOwnProperty.call(state,key))delete after[key];return Object.assign(after,state);
+}
+function catalogBulkContext_(area){
+ categoryTable_(area);return {area:catalogBulkRead_(area),categories:catalogBulkRead_(categoryTable_(area)),history:catalogRolesReady_()?catalogBulkRead_('historial_cambios'):null};
+}
+function catalogBulkEntries_(actor,area,kind,category,products,categories){
+ const operationId=Utilities.getUuid(),base={operationId,action:'category_bulk',kind,area,categoryId:category.id,actor:{id:actor.id,username:actor.username,role:actor.role},at:now_(),productName:'Categoría '+category.name,changes:{},totalProducts:products.length,status:'pending',direction:'forward'};
+ const entries=[];let entry={...base,id:Utilities.getUuid(),part:0,parts:999999,categories,products:[]};
+ need_(JSON.stringify(entry).length<47000,'Los datos de la categoría exceden el tamaño permitido.');
+ for(const product of products){
+  if(JSON.stringify({...entry,products:entry.products.concat([product])}).length>=47000){
+   need_(entry.products.length>0,'Los vínculos de un producto exceden el tamaño permitido.');entries.push(entry);
+   entry={...base,id:Utilities.getUuid(),part:entries.length,parts:999999,categories:[],products:[]};
+  }
+  entry.products.push(product);need_(JSON.stringify(entry).length<47000,'Los vínculos de un producto exceden el tamaño permitido.');
+ }
+ entries.push(entry);entries.forEach(e=>{e.parts=entries.length;need_(JSON.stringify(e).length<48000,'El historial excede el tamaño permitido.');});return entries;
+}
+function catalogBulkPersist_(context,entries,products,categories,mode,isNew=false){
+ const history=context.history;
+ if(history&&(isNew||mode==='rollback')){
+  const pending=entries.map(h=>({...h,status:'pending',direction:mode}));
+  catalogBulkWrite_(history,new Map(pending.map(h=>[h.id,h])));entries=pending;
+ }
+ catalogBulkWrite_(context.area,products);catalogBulkWrite_(context.categories,categories);
+ // Un único flush de los datos, antes de confirmar el historial. No hay flush por producto.
+ SpreadsheetApp.flush();
+ if(history)catalogBulkWrite_(history,new Map(entries.map(h=>[h.id,{...h,status:mode==='rollback'?'rolled_back':'committed',direction:mode}])));
+}
+function catalogBulkChange_(context,actor,area,kind,category,updates,categoryUpdates){
+ const products=[...updates].map(([id,after])=>({id,before:catalogCategoryState_(context.area.records.find(p=>p.id===id)),after:catalogCategoryState_(after)}));
+ const categories=[...categoryUpdates].map(([id,after])=>({id,before:context.categories.records.find(c=>c.id===id)||null,after})).filter(c=>JSON.stringify(c.before)!==JSON.stringify(c.after));
+ if(!products.length&&!categories.length)return;
+ const ids=new Set(products.map(p=>p.id));
+ need_(!context.history?.records.some(h=>h.status==='pending'&&h.area===area&&(h.action==='category_bulk'||ids.has(h.productId))),'Hay un cambio pendiente. Recuperalo o deshacelo desde Historial antes de continuar.');
+ // Validar todos los productos y el tamaño de todas las partes antes de escribir el diario.
+ for(const value of [...updates.values(),...categoryUpdates.values()])need_(value===null||JSON.stringify(value).length<48000,'El registro excede el tamaño permitido.');
+ const entries=context.history?catalogBulkEntries_(actor,area,kind,category,products,categories):[];
+ catalogBulkPersist_(context,entries,updates,new Map(categories.map(c=>[c.id,c.after])),'forward',true);
+}
+function catalogBulkResume_(context,area,categoryId,kind){
+ const pending=context.history?.records.find(h=>h.status==='pending'&&h.action==='category_bulk'&&h.area===area);
+ if(!pending)return;
+ need_(pending.categoryId===categoryId&&pending.kind===kind&&pending.direction!=='rollback','Hay otro lote pendiente. Recuperalo o deshacelo desde Historial.');
+ catalogRecoverBulk_(context.history,pending,'forward',context);
+}
+function catalogRenameCategory_(actor,area,old,category){
+ const context=catalogBulkContext_(area);catalogBulkResume_(context,area,category.id,'rename');
+ const updates=new Map();
+ for(const p of context.area.records){
+  const primary=old&&(p.categoryId===category.id||(!p.categoryId&&categoryKey_(p.category)===categoryKey_(old.name)));
+  if(primary&&(p.category!==category.name||p.categoryId!==category.id))updates.set(p.id,{...p,categoryId:category.id,category:category.name});
+ }
+ catalogBulkChange_(context,actor,area,'rename',category,updates,new Map([[category.id,category]]));
+}
+function catalogDeleteCategory_(b,actor){
+ const area=b.area,context=catalogBulkContext_(area);
+ const pending=context.history?.records.find(h=>h.status==='pending'&&h.action==='category_bulk'&&h.categoryId===b.id&&h.kind==='delete');
+ if(pending){catalogBulkResume_(context,area,b.id,'delete');return {affected:pending.totalProducts,target:pending.categories.find(c=>c.after)?.after||null};}
+ const all=context.categories.records,category=all.find(c=>c.id===b.id);need_(category,'Categoría inexistente.');
+ if(area==='cotillon'){
+  need_(!all.some(c=>c.mappedToCategoryId===b.id),'Esta subcategoría recibe productos de una categoría anterior. Cambiá primero esa vinculación.');
+  need_(!all.some(c=>c.parentId===b.id),'Esta sección contiene subcategorías internas. Reorganizalas antes de eliminarla.');
+ }
+ const affected=context.area.records.filter(p=>linkedCategory_(p,category));
+ need_(Number.isInteger(b.expectedCount)&&b.expectedCount===affected.length,'Cambió la cantidad de productos. Actualizá el panel y volvé a revisar.');
+ need_(['otros','uncategorized','new'].includes(b.strategy),'Elegí qué hacer con los productos.');
+ let target=null;const categoryUpdates=new Map([[category.id,null]]);
+ if(b.strategy==='otros')target=all.find(c=>c.id!==category.id&&categoryKey_(c.name)==='otros')||{id:Utilities.getUuid(),area,name:'Otros'};
+ if(b.strategy==='new')target={id:Utilities.getUuid(),area,name:categoryName_(b.newName,area,category.id)};
+ if(target&&!all.some(c=>c.id===target.id))categoryUpdates.set(target.id,target);
+ const updates=new Map();
+ for(const p of affected){
+  const ids=productCategoryIds_(p).filter(id=>id!==category.id);if(target&&!ids.includes(target.id))ids.push(target.id);
+  const removedPrimary=p.categoryId===category.id||!p.categoryId;
+  const primary=removedPrimary?(ids[0]||''):p.categoryId;
+  const name=removedPrimary?(target?.id===primary?target.name:all.find(c=>c.id===primary)?.name||''):p.category;
+  updates.set(p.id,{...p,categoryId:primary,categoryIds:ids,category:name});
+ }
+ catalogBulkChange_(context,actor,area,'delete',category,updates,categoryUpdates);return {affected:affected.length,target};
+}
+function catalogRecoverBulk_(history,entry,mode,existingContext){
+ need_(['forward','rollback'].includes(mode),'Modo de recuperación inválido.');
+ const group=history.records.filter(h=>h.action==='category_bulk'&&h.operationId===entry.operationId).sort((a,b)=>a.part-b.part);
+ need_(group.length===entry.parts&&group.every((h,i)=>h.part===i&&h.parts===entry.parts&&h.area===entry.area),'El diario del lote está incompleto. Revisá el historial antes de recuperar.');
+ if(mode==='rollback'&&group.every(h=>h.status==='rolled_back')||mode==='forward'&&group.every(h=>h.status!=='pending'))return 0;
+ const context=existingContext||{area:catalogBulkRead_(entry.area),categories:catalogBulkRead_(categoryTable_(entry.area)),history};
+ const currentProducts=new Map(context.area.records.map(p=>[p.id,p])),currentCategories=new Map(context.categories.records.map(c=>[c.id,c]));
+ const products=new Map(),categories=new Map();
+ for(const h of group){
+  for(const change of h.products){
+   const p=currentProducts.get(change.id),state=p&&catalogCategoryState_(p);
+   need_(p&&(JSON.stringify(state)===JSON.stringify(change.before)||JSON.stringify(state)===JSON.stringify(change.after)),'Conflicto de categorías en '+change.id+': revisar antes de recuperar.');
+   products.set(p.id,catalogCategoryApply_(p,mode==='rollback'?change.before:change.after));
+  }
+  for(const change of h.categories){
+   const current=currentCategories.get(change.id)||null;
+   need_(JSON.stringify(current)===JSON.stringify(change.before)||JSON.stringify(current)===JSON.stringify(change.after),'Conflicto en la categoría del lote: revisar antes de recuperar.');
+   categories.set(change.id,mode==='rollback'?change.before:change.after);
+  }
+ }
+ // No quitar una categoría que recibió otros productos después del lote, ni
+ // restaurar un nombre que ahora ocupa otra categoría de la misma sección.
+ const nextCategories=new Map(currentCategories);
+ for(const [id,value] of categories){
+  if(value===null){
+   const category=currentCategories.get(id);
+   need_(!category||!context.area.records.some(p=>!products.has(p.id)&&linkedCategory_(p,category)),'Conflicto: la categoría tiene otros productos vinculados.');
+   nextCategories.delete(id);
+  }else nextCategories.set(id,value);
+ }
+ for(const value of categories.values())if(value)need_(![...nextCategories.values()].some(c=>c.id!==value.id&&categoryKey_(c.name)===categoryKey_(value.name)&&(entry.area!=='cotillon'||(c.group||'')===(value.group||'')&&(c.parentId||'')===(value.parentId||''))),'Conflicto: ya existe otra categoría con ese nombre.');
+ catalogBulkPersist_(context,group,products,categories,mode);return group.length;
 }

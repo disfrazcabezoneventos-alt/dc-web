@@ -11,6 +11,11 @@ wrappers temporales y benchmark; su resultado y las mediciones de Google figuran
 en [Revisión PR32](CATALOGO_ROLES_REVISION_PR32.md). `npm ci` y build estático
 completados sin errores.
 
+La corrección posterior de categorías por lotes pasa **289/289 unitarias y 22/22
+Playwright**, con build limpio. Los tiempos reales de renombrado de 120/441 y
+borrado de 120, todos inferiores a 60 s, y la restauración de la copia se detallan
+en [Categorías por lotes](CATALOGO_CATEGORIAS_LOTES_PR32.md).
+
 ## Cobertura
 
 - Autorización del servidor por rol y acción, antes de módulos y mantenimiento.
@@ -91,8 +96,10 @@ de ensayo desplegado. El servidor y los mocks no se incluyen en `out/`.
   runtime de Google, sin endpoint desplegado. El benchmark real de 120 productos
   **falló por tiempo máximo** a los 360,707 s totales: 91 productos actualizados,
   91 eventos confirmados y 29 productos sin actualizar. Es un impedimento para
-  instalar hasta corregir y repetir. Sigue pendiente el recorrido por `/exec`.
-  Ver Revisión PR32.
+  instalar que se corrigió posteriormente en la misma rama. Las nuevas mediciones
+  y la reanudación de las 29 fichas están en
+  [Categorías por lotes](CATALOGO_CATEGORIAS_LOTES_PR32.md).
+  Sigue pendiente el recorrido por `/exec`. Ver también Revisión PR32.
 - El activador privado real `verificarActivadorPrivado_` terminó correctamente
   en Google (2,906 s), con su registro y marca de fecha comprobados. No se
   ejecutaron importadores ni se modificaron activadores de producción.
