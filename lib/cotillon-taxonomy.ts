@@ -1,3 +1,4 @@
+import {matchesStoreSearch} from './store-search';
 import type {Category,Product} from './catalog';
 
 export const cotillonTaxonomy = [
@@ -104,7 +105,7 @@ export function filterCotillonProducts(products:Product[],categories:Category[],
  const needle=query.trim().toLocaleLowerCase();
  return products.filter(p=>{
   const names=p.categoryNames?.length?p.categoryNames:[p.category];
-  if(!(p.name+' '+p.description+' '+names.join(' ')).toLocaleLowerCase().includes(needle))return false;
+  if(!matchesStoreSearch(p,query,categories))return false;
   if(needle||!group)return true;
   if(!subcategoryId)return !!p.catalogGroups?.includes(group)||[p.categoryId,...p.categoryIds||[]].some(id=>categories.find(c=>c.id===id)?.group===group);
   const ids=[p.categoryId,...(p.categoryIds||[])];

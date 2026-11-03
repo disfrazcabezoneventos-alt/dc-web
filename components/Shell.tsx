@@ -6,6 +6,7 @@ import Link from 'next/link';
 import {api, demo, whatsapp} from '@/lib/api';
 import {applySiteTheme, isSiteTheme, readSiteTheme} from '@/lib/theme';
 import HalloweenAtmosphere from '@/components/HalloweenAtmosphere';
+import GlobalSearch from './GlobalSearch';
 import CartProvider,{StoreActions} from '@/components/CartProvider';
 
 export default function Shell({children}: {children: React.ReactNode}) {
@@ -45,6 +46,7 @@ export default function Shell({children}: {children: React.ReactNode}) {
           <span className="brand-mark" aria-hidden="true" />
           <span className="brand-copy">Disfraz<strong>Cabezón</strong></span>
         </Link>
+        <GlobalSearch/>
         <button className="menu-button" aria-label={open ? 'Cerrar menú' : 'Abrir menú'} aria-expanded={open} onClick={() => setOpen(!open)}>
           {open ? <X /> : <Menu />}
         </button>
