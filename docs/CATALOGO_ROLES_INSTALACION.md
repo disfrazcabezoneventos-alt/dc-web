@@ -203,9 +203,12 @@ este script en producción ni desplegar el proyecto de ensayo.**
    privado. No se muestra de nuevo ni se guarda en la hoja.
 3. El colaborador entra por `/admin/` con su propia cuenta. Ve solo Disfraces y
    Cotillón, con búsquedas, edición y estados adaptados al celular.
-4. Crear producto genera un **borrador con stock cero y sin publicar**. Debe tener
-   foto. El Admin revisa sus datos, carga stock si corresponde y pulsa
-   **Publicar borrador** desde la lista.
+4. El Editor usa **Agregar producto → Guardar y publicar**. El producto se publica
+   directamente, con foto obligatoria y stock cero, sin aprobación del Admin.
+   El Admin carga stock si corresponde; en Cotillón, stock cero conserva el
+   comportamiento actual de mostrarlo como agotado.
+   Los borradores anteriores siguen privados hasta que el Editor o el Admin pulse
+   **Publicar borrador** desde la lista. No se publican por instalar una actualización.
 5. El Editor puede cambiar nombre, descripción, precios, categorías y foto. El
    interruptor de estado solo sirve en productos ya publicados. No cambia stock.
 6. Para retirar acceso, pulsá **Desactivar** en Usuarios e historial. Para cambiar
@@ -214,6 +217,9 @@ este script en producción ni desplegar el proyecto de ensayo.**
 
 Las cuentas son de la aplicación, no cuentas Google. No hay que compartir la hoja,
 Apps Script ni Cloudinary con el colaborador.
+
+Este permiso de publicación fue ampliado por pedido del dueño después de PR32.
+Instalación incremental y pruebas: [Publicación directa del Editor](EDITOR_PUBLICACION_DIRECTA.md).
 
 ## Historial y fotos
 

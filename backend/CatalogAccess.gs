@@ -1,7 +1,7 @@
 /* Roles, cuentas individuales y auditoría. Propiedades privadas; nunca devolver hashes. */
 const CATALOG_PBKDF2_ITERATIONS=600000;
 const CATALOG_PUBLIC_ACTIONS=['siteTheme','catalog','catalogData','login','bank','submit','submitLocal','localConfig','request','file','correct','cancel','viewLocalReceipt'];
-const CATALOG_EDITOR_ACTIONS=['admin','logout','saveProduct','quickUpdate','uploadImage'];
+const CATALOG_EDITOR_ACTIONS=['admin','logout','saveProduct','quickUpdate','uploadImage','publishProduct'];
 const CATALOG_ADMIN_ACTIONS=['admin','logout','saveCategory','mapLegacyCategory','deleteCategory','saveProduct','deleteProduct','uploadImage','status','movement','voidMovement','resolveCancel','bankSettings','setSiteTheme','setHalloweenCampaign','incomingForms','incomingRequest','incomingNotifications','dismissFormNotifications','saveRentalPrices','updateIncomingForm','deleteIncomingForm','incomingFile','localReceiptInfo','issueLocalReceipt','sendLocalReceipt','quickUpdate','catalogUsers','createCatalogUser','setCatalogUserActive','resetCatalogUserPassword','productHistory','restoreProductPhoto','publishProduct','recoverProductHistory'];
 function catalogRolesReady_(){return config_('CATALOG_ROLES_ENABLED')==='yes';}
 function catalogPrivateJson_(raw){try{return JSON.parse(raw)}catch(_){throw new Error('Configuración de cuentas inválida. Consultá al administrador.');}}
@@ -72,7 +72,7 @@ function prepararRolesCatalogo_(){
 }
 function catalogAccessDispatch_(b,actor){
  if(!['catalogUsers','createCatalogUser','setCatalogUserActive','resetCatalogUserPassword','productHistory','restoreProductPhoto','publishProduct','recoverProductHistory'].includes(b.action))return null;
- need_(actor&&actor.role==='admin','No tenés permiso para esta acción.');
+ need_(actor&&(actor.role==='admin'||actor.role==='editor'&&b.action==='publishProduct'),'No tenés permiso para esta acción.');
  need_(catalogRolesReady_(),'Ejecutá prepararRolesCatalogo_ en la hoja autorizada.');
  if(b.action==='recoverProductHistory')return {data:recoverCatalogHistory_({historyId:b.historyId,mode:b.mode})};
  if(b.action==='catalogUsers')return {data:catalogAccounts_().map(catalogAccountView_)};
@@ -123,9 +123,11 @@ function catalogSaveProduct_(b,actor){
    const view=catalogEditorProduct_({...products_(p.area).find(x=>x.id===p.id),revision:hash_(JSON.stringify(old))});
    Object.keys(p).filter(k=>!editable.includes(k)).forEach(k=>need_(Object.prototype.hasOwnProperty.call(view,k)&&JSON.stringify(p[k])===JSON.stringify(view[k]),'El editor no puede cambiar '+k+'.'));
   }else{
-   need_(!p.stock&&!p.active&&(!p.publicationState||p.publicationState==='draft'),'Un producto nuevo del editor debe ser borrador, con stock cero y sin publicar.');
+   need_(p.stock===undefined||p.stock===0,'Un producto nuevo del editor debe tener stock cero.');
+   need_(p.active===undefined||typeof p.active==='boolean','Estado inválido.');
+   need_(p.publicationState===undefined||['draft','published'].includes(p.publicationState),'Estado de publicación inválido.');
    const allowed=editable.concat(['id','area','stock','active','mode','saleCondition','deliveryTime','orderLimit','priceKnown','stockUnknown','publicationState']);
-   need_(Object.keys(p).every(k=>allowed.includes(k)),'Campo no permitido para crear el borrador.');
+   need_(Object.keys(p).every(k=>allowed.includes(k)),'Campo no permitido para crear el producto.');
   }
   need_(typeof input.image==='string'&&input.image.length>0,'El editor no puede dejar un producto sin foto.');
  }
@@ -134,7 +136,7 @@ function catalogSaveProduct_(b,actor){
  const image=String(input.image||''),thumbnail=String(input.thumbnail||'');
  need_(image.length<=2000&&(!image||image===old?.image||/^https:\/\/res\.cloudinary\.com\//.test(image)),'Usá una imagen de Cloudinary.');
  need_(thumbnail.length<=2000&&(!thumbnail||thumbnail===old?.thumbnail||/^https:\/\/res\.cloudinary\.com\//.test(thumbnail)),'Usá una miniatura de Cloudinary.');
- need_(!old||!Object.prototype.hasOwnProperty.call(p,'publicationState')||p.publicationState===old.publicationState,'Publicá los borradores con la acción del administrador.');
+ need_(!old||!Object.prototype.hasOwnProperty.call(p,'publicationState')||p.publicationState===old.publicationState,'Usá Publicar borrador para cambiar su publicación.');
  const categories=categories_(p.area);
  const secondary=Array.isArray(p.categoryIds)?p.categoryIds:(old?productCategoryIds_(old).filter(id=>id!==old.categoryId):[]);
  const requested=[...new Set([input.categoryId,...secondary].filter(Boolean))];
@@ -146,8 +148,9 @@ function catalogSaveProduct_(b,actor){
  const orderLimit=saleCondition==='Nuevo a pedido'?(Number.isInteger(input.orderLimit)?input.orderLimit:(stock>0?stock:1)):0;
  need_(saleCondition!=='Nuevo a pedido'||orderLimit>=1&&orderLimit<=100000,'Límite de pedidos inválido.');
  const groups=[...new Set(requested.map(id=>categories.find(c=>c.id===id)?.group).filter(Boolean))];
- const after={...(old||{}),id:old?.id||b.operationId||Utilities.getUuid(),area:p.area,name:text_(input.name,150),description:catalogOptionalText_(input.description??'',2000),categoryId:category?.id||'',categoryIds:requested,category:category?category.name:old?.catalogGroups?.length?old.category:'',catalogGroups:p.area==='cotillon'?(groups.length?groups:old?.catalogGroups||[]):[],mode:input.mode,saleCondition,deliveryTime,orderLimit,price:input.mode==='alquiler'?0:amount_(input.price??0),rentPrice:input.mode==='venta'?0:amount_(input.rentPrice??0),priceKnown:p.area==='cotillon'?input.priceKnown!==false:true,stockUnknown:p.area==='cotillon'&&input.stockUnknown===true,stock:editor?stock:saleCondition==='Nuevo a pedido'&&input.mode==='venta'?0:stock,image,thumbnail:image?thumbnail:'',active:editor&&!old?false:!!input.active};
- if(!old&&(editor||input.publicationState==='draft'))after.publicationState='draft';
+ const after={...(old||{}),id:old?.id||b.operationId||Utilities.getUuid(),area:p.area,name:text_(input.name,150),description:catalogOptionalText_(input.description??'',2000),categoryId:category?.id||'',categoryIds:requested,category:category?category.name:old?.catalogGroups?.length?old.category:'',catalogGroups:p.area==='cotillon'?(groups.length?groups:old?.catalogGroups||[]):[],mode:input.mode,saleCondition,deliveryTime,orderLimit,price:input.mode==='alquiler'?0:amount_(input.price??0),rentPrice:input.mode==='venta'?0:amount_(input.rentPrice??0),priceKnown:p.area==='cotillon'?input.priceKnown!==false:true,stockUnknown:p.area==='cotillon'&&input.stockUnknown===true,stock:editor?stock:saleCondition==='Nuevo a pedido'&&input.mode==='venta'?0:stock,image,thumbnail:image?thumbnail:'',active:editor&&!old?input.publicationState!=='draft'&&input.active!==false:!!input.active};
+ if(!old&&editor)after.publicationState=input.publicationState==='draft'?'draft':'published';
+ else if(!old&&input.publicationState==='draft')after.publicationState='draft';
  // Existing editor changes are restricted even if a normalizer would alter a legacy field.
  if(editor&&old)for(const key of ['mode','saleCondition','deliveryTime','orderLimit','priceKnown','stockUnknown','stock','active','publicationState']){
   if(Object.prototype.hasOwnProperty.call(old,key))after[key]=old[key];else delete after[key];

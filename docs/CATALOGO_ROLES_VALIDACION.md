@@ -1,6 +1,8 @@
 # Validación de roles del catálogo — 2026-11-01
 
 Estado: propuesta DRAFT. No se fusionó, desplegó ni modificó producción.
+Este documento conserva los resultados originales de PR32. El permiso posterior
+para publicar sin aprobación se documenta en [Publicación directa del Editor](EDITOR_PUBLICACION_DIRECTA.md).
 La conciliación del backend y la instalación se describen en
 [Etapa 0](CATALOGO_ROLES_ETAPA_0.md) y
 [guía de instalación](CATALOGO_ROLES_INSTALACION.md).
