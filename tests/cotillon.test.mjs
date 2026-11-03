@@ -8,7 +8,7 @@ import {memorySheets} from './sheets-memory-adapter.mjs';
 
 function loadTS(file,dependencies={}){const module={exports:{}};const code=ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText;new Function('exports','require',code)(module.exports,id=>dependencies[id]);return module.exports;}
 const model=loadTS('lib/model.ts');
-const taxonomy=loadTS('lib/cotillon-taxonomy.ts');
+const taxonomy=loadTS('lib/cotillon-taxonomy.ts',{'./store-search':loadTS('lib/store-search.ts')});
 const catalog=loadTS('lib/catalog.ts',{'./cotillon-taxonomy':taxonomy});
 const cart=loadTS('lib/cotillon-cart.ts',{'./catalog':catalog,'./model':model});
 const product=(id,more={})=>({id,area:'cotillon',name:'Producto '+id,category:'Halloween',mode:'venta',price:1000,stock:4,image:'',description:'',active:true,...more});
