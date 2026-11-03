@@ -116,6 +116,8 @@ function dispatch_(b){
  try{return dispatchBody_(b,actor)}finally{CATALOG_ACTOR_=previous;}
 }
 function dispatchBody_(b,actor){
+ if(b.action==='recordSearchMiss')return recordSearchMiss_(b);
+ if(b.action==='searchDemand'){need_(actor&&actor.role==='admin','No tenés permiso para esta acción.');return searchDemand_();}
  if(typeof catalogAccessDispatch_==='function'){const access=catalogAccessDispatch_(b,actor);if(access)return access.data;}
  if(actor?.role==='editor'){
   if(b.action==='admin')return {role:'editor',user:actor,products:catalogProductsForManagement_().map(catalogEditorProduct_),categories:CATEGORY_AREAS.flatMap(categories_)};
@@ -496,3 +498,24 @@ function reintentarFotosAgotadosCotillonExcel2026_(){return lock_(()=>{
 });}
 
 function uploadCatalogImage_(b,actor){if(actor?.role==='editor')need_(b.file&&b.file.type?.startsWith('image/'),'Solo fotos de catálogo.');need_(config_('CLOUDINARY_API_SECRET'),'Configurá Cloudinary.');const f=checkFiles_({image:b.file},['image']).image;need_(f.type.startsWith('image/'),'Solo imágenes.');const timestamp=Math.floor(Date.now()/1000),folder='disfraz-cabezon/catalogo',eager='c_limit,h_160,w_160';const signature=hex_(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_1,'eager='+eager+'&folder='+folder+'&timestamp='+timestamp+config_('CLOUDINARY_API_SECRET'),Utilities.Charset.UTF_8));const result=UrlFetchApp.fetch('https://api.cloudinary.com/v1_1/'+encodeURIComponent(config_('CLOUDINARY_CLOUD_NAME'))+'/image/upload',{method:'post',payload:{file:Utilities.newBlob(f.bytes,f.type,'producto'),folder,eager,timestamp:String(timestamp),api_key:config_('CLOUDINARY_API_KEY'),signature},muteHttpExceptions:true});need_(result.getResponseCode()<300,'No se pudo subir la imagen a Cloudinary.');const uploaded=JSON.parse(result.getContentText());need_(uploaded.secure_url&&uploaded.eager&&uploaded.eager[0]&&uploaded.eager[0].secure_url,'Cloudinary no devolvió la miniatura.');return {url:uploaded.secure_url,thumbnail:uploaded.eager[0].secure_url};}
+
+// Solo texto buscado (JSON seguro contra fórmulas) y fecha. Sin IDs de visitantes.
+function searchMissSheet_(create){
+ const ss=SpreadsheetApp.openById(config_('SPREADSHEET_ID'));let s=ss.getSheetByName('busquedas_sin_resultados');
+ if(!s&&create){s=ss.insertSheet('busquedas_sin_resultados');s.appendRow(['query_json','fecha']);s.setFrozenRows(1);}return s;
+}
+function recordSearchMiss_(b){
+ need_(typeof b.query==='string'&&b.query.trim().length>=2&&b.query.length<=120,'Búsqueda inválida.');
+ if(config_('SEARCH_MISS_LOG_ENABLED')!=='yes')return {accepted:false};
+ const query=b.query.trim().replace(/\s+/g,' '),key=query.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+ limit_('search-miss-global',60,60);limit_('search-miss:'+hash_(key),1,60);
+ const s=searchMissSheet_(true);if(s.getLastRow()>10000)return {accepted:false};
+ s.appendRow([JSON.stringify(query),now_()]);return {accepted:true};
+}
+function searchDemand_(){
+ const s=searchMissSheet_(false);if(!s||s.getLastRow()<2)return [];
+ const grouped=new Map();s.getRange(2,1,Math.min(10000,s.getLastRow()-1),2).getValues().forEach(([raw,at])=>{
+  let query;try{query=JSON.parse(raw)}catch(_){return}if(typeof query!=='string')return;
+  const key=query.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();const old=grouped.get(key)||{query,count:0,lastAt:''};old.count++;if(String(at)>old.lastAt)old.lastAt=String(at);grouped.set(key,old);
+ });return [...grouped.values()].sort((a,b)=>b.count-a.count||b.lastAt.localeCompare(a.lastAt));
+}
