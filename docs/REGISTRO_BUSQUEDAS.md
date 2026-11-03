@@ -25,3 +25,5 @@ Nueva sección Lo que buscan y no tenemos, exclusiva del Administrador. Tabla co
 Las pruebas usan el código real de Apps Script con hojas ficticias aisladas: campos, fórmulas, frecuencia, capacidad y permisos. Playwright comprueba recepción desde el frontend y el informe del Administrador en cuatro tamaños. No se instaló este backend en Apps Script ni se escribió en una hoja real.
 
 Validación de esta rama: 3/3 pruebas unitarias de registro y permisos; 8/8 Playwright del registro y admin en 360, 390, 768 y escritorio; build estático correcto.
+
+Revisión de caché: recordSearchMiss no invalida dc-public-catalog-v1. La prueba espera la respuesta del registro y comprueba que navegar a otra consulta conserva la caché y no repite catalogData.

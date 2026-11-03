@@ -47,7 +47,7 @@ export async function api(action:string, data:Record<string,unknown>={}, token='
     form.submit();
   });
   if(!result.ok) throw new Error(result.error||'No se pudo completar la operación.');
-  if(!['catalogData','catalog','siteTheme'].includes(action))try{sessionStorage.removeItem(CATALOG_CACHE_KEY)}catch{}
+  if(!['catalogData','catalog','siteTheme','recordSearchMiss'].includes(action))try{sessionStorage.removeItem(CATALOG_CACHE_KEY)}catch{}
   return result.data;
 }
 export async function fileData(file:Blob){
