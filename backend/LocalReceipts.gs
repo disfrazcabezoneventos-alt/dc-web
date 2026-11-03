@@ -1,6 +1,6 @@
 /* Constancias presenciales. Datos firmados inmutables; cobros en Caja; enlaces con propósito. */
-function prepararConstanciasLocales(){
- prepararConfiguracion();
+function prepararConstanciasLocales_(){
+ prepararConfiguracion_();
  return lock_(()=>{
   need_(config_('LOCAL_FORMS_ENABLED')==='yes','Prepará primero los formularios locales.');
   if(!config_('LOCAL_RECEIPT_SECRET'))props_().setProperty('LOCAL_RECEIPT_SECRET',Utilities.getUuid()+Utilities.getUuid());
@@ -39,7 +39,7 @@ function receiptInfo_(r){
 function receiptDispatch_(b){
  if(!['localReceiptInfo','issueLocalReceipt','sendLocalReceipt','viewLocalReceipt'].includes(b.action))return null;
  if(b.action!=='viewLocalReceipt')session_(b.token);
- need_(receiptsReady_(),'Actualizá Apps Script y ejecutá prepararConstanciasLocales.');
+ need_(receiptsReady_(),'Actualizá Apps Script y ejecutá prepararConstanciasLocales_.');
  if(b.action==='viewLocalReceipt'){
   need_(typeof b.id==='string'&&typeof b.access==='string'&&equal_(b.access,receiptKey_('receipt',b.id)),'Enlace privado inválido.');
   const c=rows_('constancias').find(c=>c.id===b.id&&c.state==='issued');need_(c,'Constancia no disponible.');

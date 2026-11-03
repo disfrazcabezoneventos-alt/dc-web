@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 import crypto from 'node:crypto';
 import ts from 'typescript';
+import {memorySheets} from './sheets-memory-adapter.mjs';
 
 function loadTS(file,dependencies={}){const module={exports:{}};const code=ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText;new Function('exports','require',code)(module.exports,id=>dependencies[id]);return module.exports;}
 const model=loadTS('lib/model.ts');
@@ -125,12 +126,12 @@ test('Apps Script importa una vez y vincula Halloween sin duplicar productos',()
  const tables={cotillon:[{id:'existente',name:'Espuma',categoryId:'categoria-vieja',category:'cotillon',area:'cotillon',stock:10}],categorias_cotillon:[{id:'categoria-vieja',name:'cotillon',area:'cotillon'}]};
  const context=vm.createContext({console,JSON,Date,Utilities:{getUuid:()=>crypto.randomUUID()},UrlFetchApp:{fetch:()=>({getResponseCode:()=>200,getContentText:()=>snapshot})},SpreadsheetApp:{flush:()=>{}}});
  vm.runInContext(fs.readFileSync('backend/Code.gs','utf8'),context);
- context.prepararConfiguracion=()=>{};
+ context.prepararConfiguracion_=()=>{};
  context.lock_=fn=>fn();
  context.rows_=name=>structuredClone(tables[name]||[]);
  context.put_=(name,object)=>{const index=tables[name].findIndex(row=>row.id===object.id);if(index<0)tables[name].push(structuredClone(object));else tables[name][index]=structuredClone(object);return object};
  context.sheet_=()=>({getLastRow:()=>tables.cotillon.length+1,getRange:()=>({setValues:values=>values.forEach(([,row])=>tables.cotillon.push(JSON.parse(row)))})});
- const first=context.importarCotillonAnterior();
+ const first=context.importarCotillonAnterior_();
  assert.equal(first.agregados,635);
  assert.equal(tables.categorias_cotillon.length,9);
  assert.equal(tables.categorias_cotillon.find(c=>c.id==='categoria-vieja').storefront,false);
@@ -139,7 +140,7 @@ test('Apps Script importa una vez y vincula Halloween sin duplicar productos',()
  assert.equal(tables.cotillon.filter(p=>p.stockUnknown).length,598);
  assert.equal(tables.cotillon.filter(p=>p.priceKnown===false).length,132);
  assert.ok(tables.cotillon.some(p=>p.categoryIds?.length===2));
- assert.equal(context.importarCotillonAnterior().agregados,0);
+ assert.equal(context.importarCotillonAnterior_().agregados,0);
 });
 
 test('nueva jerarquía conserva productos y permite clasificar categorías anteriores sin reescribirlos',()=>{
@@ -151,7 +152,9 @@ test('nueva jerarquía conserva productos y permite clasificar categorías anter
  vm.runInContext(fs.readFileSync('backend/Code.gs','utf8'),context);
  context.rows_=name=>structuredClone(tables[name]||[]);
  context.put_=(name,item)=>{const index=tables[name].findIndex(row=>row.id===item.id);if(index<0)tables[name].push(structuredClone(item));else tables[name][index]=structuredClone(item);return item};
- context.sheet_=()=>({getLastRow:()=>tables.categorias_cotillon.length+1,getRange:()=>({setValues:values=>values.forEach(([,raw])=>tables.categorias_cotillon.push(JSON.parse(raw)))})});
+ vm.runInContext(fs.readFileSync('backend/CatalogAccess.gs','utf8'),context);
+ const ss=memorySheets(context,tables);context.sheet_=name=>ss.getSheetByName(name);
+ context.catalogApiActor_=()=>({id:'fixture-admin',username:'admin-ensayo',role:'admin'});
  context.recoverStock_=()=>{};context.session_=()=>{};
  context.ensureCotillonDepth3_();
  assert.equal(settings.COTILLON_STRUCTURE_V1,'ready');

@@ -8,9 +8,9 @@ import {ADMIN_PAGE_SIZE,adminCategoryPath,adminPrimaryCategory,filterAdminProduc
 import type {AdminProductFilters,QuickChanges} from '@/lib/admin-products';
 import styles from './AdminProducts.module.css';
 
-type Props={area:Area;products:Product[];categories:Category[];filters:AdminProductFilters;onFilters:(filters:AdminProductFilters)=>void;busy:boolean;onQuickUpdate:(product:Product,changes:QuickChanges)=>Promise<void>;onEdit:(product:Product)=>void;onClone?:(product:Product)=>void;onDelete:(product:Product)=>void};
+type Props={area:Area;products:Product[];categories:Category[];filters:AdminProductFilters;onFilters:(filters:AdminProductFilters)=>void;busy:boolean;onQuickUpdate:(product:Product,changes:QuickChanges)=>Promise<void>;onEdit:(product:Product)=>void;onClone?:(product:Product)=>void;onDelete?:(product:Product)=>void;editor?:boolean;onPublish?:(product:Product)=>void};
 
-export default function AdminProducts({area,products,categories,filters,onFilters,busy,onQuickUpdate,onEdit,onClone,onDelete}:Props){
+export default function AdminProducts({area,products,categories,filters,onFilters,busy,onQuickUpdate,onEdit,onClone,onDelete,editor=false,onPublish}:Props){
  const [pending,setPending]=useState<Set<string>>(new Set());
  const inFlight=useRef(new Set<string>());
  const areaProducts=useMemo(()=>products.filter(p=>p.area===area),[products,area]);
@@ -40,25 +40,25 @@ export default function AdminProducts({area,products,categories,filters,onFilter
   {area==='cotillon'&&<p className={styles.storeNote}>En la tienda, los productos deshabilitados siguen visibles como agotados; no se pueden agregar al carrito.</p>}
   <div className={styles.tableWrap}><table className={styles.table}><thead><tr>{['Foto','Nombre','Categoría principal','Precio','Stock','Estado','Acciones'].map(label=><th scope="col" key={label}>{label}</th>)}</tr></thead><tbody>
    {!visible.length&&<tr><td colSpan={7} className={styles.empty}>No encontramos productos con esos filtros.</td></tr>}
-   {visible.map(product=><ProductRow key={product.area+':'+product.id} product={product} categories={available} busy={busy||pending.has(product.area+':'+product.id)} save={changes=>save(product,changes)} edit={()=>onEdit(product)} clone={onClone?()=>onClone(product):undefined} remove={()=>onDelete(product)}/>)}
+   {visible.map(product=><ProductRow key={product.area+':'+product.id} product={product} categories={available} busy={busy||pending.has(product.area+':'+product.id)} save={changes=>save(product,changes)} edit={()=>onEdit(product)} clone={onClone?()=>onClone(product):undefined} remove={onDelete?()=>onDelete(product):undefined} editor={editor} publish={onPublish?()=>onPublish(product):undefined}/>)}
   </tbody></table></div>
   <nav className={styles.pagination} aria-label="Páginas de productos"><button type="button" className="button" disabled={page<=1} onClick={()=>onFilters({...filters,page:page-1})}>Anterior</button><span>Página {page} de {pages}{filtered.length>0&&<small>Resultados {offset+1}–{offset+visible.length} de {filtered.length}</small>}</span><button type="button" className="button" disabled={page>=pages} onClick={()=>onFilters({...filters,page:page+1})}>Siguiente</button></nav>
  </section>;
 }
 
-function ProductRow({product:p,categories,busy,save,edit,clone,remove}:{product:Product;categories:Category[];busy:boolean;save:(changes:QuickChanges)=>Promise<void>;edit:()=>void;clone?:()=>void;remove:()=>void}){
+function ProductRow({product:p,categories,busy,save,edit,clone,remove,editor,publish}:{product:Product;categories:Category[];busy:boolean;save:(changes:QuickChanges)=>Promise<void>;edit:()=>void;clone?:()=>void;remove?:()=>void;editor?:boolean;publish?:()=>void}){
  return <tr className={styles.row} aria-label={p.name} aria-busy={busy}>
   <td className={styles.photoCell}>{p.image?<img src={thumbnailUrl(p.image,p.thumbnail)} alt={'Foto de '+p.name} width={54} height={54} loading="lazy" decoding="async"/>:<span className={styles.placeholder}>Sin foto</span>}</td>
-  <td className={styles.nameCell}><strong>{p.name}</strong><small>{p.mode==='ambos'?'Alquiler y venta':p.mode==='alquiler'?'Alquiler':'Venta'}{p.mode!=='alquiler'&&p.saleCondition?' · '+p.saleCondition:''}</small></td>
+  <td className={styles.nameCell}><strong>{p.name}</strong>{p.publicationState==='draft'&&<span className="badge">Borrador · privado</span>}<small>{p.mode==='ambos'?'Alquiler y venta':p.mode==='alquiler'?'Alquiler':'Venta'}{p.mode!=='alquiler'&&p.saleCondition?' · '+p.saleCondition:''}</small></td>
   <td data-label="Categoría principal" className={styles.categoryCell}>{adminPrimaryCategory(p,categories)}</td>
   <td data-label="Precio" className={styles.priceCell}>
-   {p.mode!=='alquiler'&&<InlineNumber product={p} field="price" label="Venta" value={p.price} disabled={busy} save={save}/>}
-   {p.mode!=='venta'&&<InlineNumber product={p} field="rentPrice" label="Alquiler" value={p.rentPrice} disabled={busy} save={save}/>}
+   {p.mode!=='alquiler'&&(editor?<span>Venta: {p.price.toLocaleString('es-AR')}</span>:<InlineNumber product={p} field="price" label="Venta" value={p.price} disabled={busy} save={save}/>)}
+   {p.mode!=='venta'&&(editor?<span>Alquiler: {p.rentPrice.toLocaleString('es-AR')}</span>:<InlineNumber product={p} field="rentPrice" label="Alquiler" value={p.rentPrice} disabled={busy} save={save}/>)}
    {p.area==='cotillon'&&p.priceKnown===false&&<small>La tienda sigue mostrando «Precio a consultar». Cambialo desde Editar.</small>}
   </td>
-  <td data-label="Stock" className={styles.stockCell}><InlineNumber product={p} field="stock" label="Unidades" value={p.stock} disabled={busy} save={save}/>{p.stockUnknown&&<small>La disponibilidad sigue a confirmar. Cambialo desde Editar.</small>}{p.saleCondition==='Nuevo a pedido'&&<small>Stock físico. Límite a pedido: {purchaseLimit(p)} (se cambia en Editar).</small>}</td>
-  <td data-label="Estado" className={styles.stateCell}><div className={styles.state}><button className={styles.switch} role="switch" aria-checked={p.active} aria-label={'Estado de '+p.name} type="button" disabled={busy} onClick={()=>void save({active:!p.active})}><span className={styles.track} data-enabled={p.active}><span/></span></button><span>{p.active?'Habilitado':'Deshabilitado'}</span></div>{busy&&<small role="status">Guardando…</small>}</td>
-  <td data-label="Acciones" className={styles.actionsCell}><div className={styles.actions}><button type="button" disabled={busy} onClick={edit}>Editar</button>{clone&&<button type="button" disabled={busy} onClick={clone}>Clonar producto</button>}<button type="button" disabled={busy} onClick={remove}>Eliminar</button></div></td>
+  <td data-label="Stock" className={styles.stockCell}><>{editor?<span>{p.stock} unidades</span>:<InlineNumber product={p} field="stock" label="Unidades" value={p.stock} disabled={busy} save={save}/>}</>{p.stockUnknown&&<small>La disponibilidad sigue a confirmar. Cambialo desde Editar.</small>}{p.saleCondition==='Nuevo a pedido'&&<small>Stock físico. Límite a pedido: {purchaseLimit(p)} (se cambia en Editar).</small>}</td>
+  <td data-label="Estado" className={styles.stateCell}><div className={styles.state}><button className={styles.switch} role="switch" aria-checked={p.active} aria-label={'Estado de '+p.name} type="button" disabled={busy||p.publicationState==='draft'} onClick={()=>void save({active:!p.active})}><span className={styles.track} data-enabled={p.active}><span/></span></button><span>{p.publicationState==='draft'?'Pendiente de publicación':p.active?'Habilitado':'Deshabilitado'}</span></div>{busy&&<small role="status">Guardando…</small>}</td>
+  <td data-label="Acciones" className={styles.actionsCell}><div className={styles.actions}><button type="button" disabled={busy} onClick={edit}>Editar</button>{clone&&<button type="button" disabled={busy} onClick={clone}>Clonar producto</button>}{remove&&!editor&&<button type="button" disabled={busy} onClick={remove}>Eliminar</button>}{publish&&p.publicationState==='draft'&&<button type="button" disabled={busy} onClick={publish}>Publicar borrador</button>}</div></td>
  </tr>;
 }
 

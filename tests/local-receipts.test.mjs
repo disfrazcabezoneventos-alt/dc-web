@@ -21,7 +21,7 @@ test('constancia: confirma, registra una sola vez alquiler y garantía; el origi
 });
 test('constancia: sesión, preparación, revisión, exceso, fecha, cancelación y origen web',()=>{
  const h=receiptsHarness();assert.throws(()=>h.dispatch({...h.issue,token:''}),/Sesión/);
- h.settings.LOCAL_RECEIPTS_ENABLED='no';assert.throws(()=>h.dispatch(h.issue),/prepararConstanciasLocales/);h.settings.LOCAL_RECEIPTS_ENABLED='yes';
+ h.settings.LOCAL_RECEIPTS_ENABLED='no';assert.throws(()=>h.dispatch(h.issue),/prepararConstanciasLocales_/);h.settings.LOCAL_RECEIPTS_ENABLED='yes';
  for(const patch of [{revision:2},{payment:{...h.issue.payment,amount:60001}},{payment:{...h.issue.payment,amount:-1}},{payment:{...h.issue.payment,date:'2099-01-01'}}])assert.throws(()=>h.dispatch({...h.issue,...patch}));
  h.tables.reservas[0].status='correction';assert.throws(()=>h.dispatch(h.issue),/pendiente o confirmada/);
  h.tables.reservas[0].source='web';assert.throws(()=>h.dispatch(h.issue),/local/);assert.equal(h.tables.movimientos.length,0);

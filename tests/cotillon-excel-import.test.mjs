@@ -70,7 +70,7 @@ test('el segundo archivo conserva los 416 agotados y la clasificación pendiente
 
 test('checksum inválido impide tocar el catálogo viejo',()=>{
  const {context,sheets,settings}=setup({tampered:true});
- assert.throws(()=>context.iniciarImportacionCotillonExcel2026(),/catálogo publicado cambió/);
+ assert.throws(()=>context.iniciarImportacionCotillonExcel2026_(),/catálogo publicado cambió/);
  assert.equal(sheets.get('cotillon').getLastRow(),3);
  assert.equal(sheets.size,5);
  assert.equal(settings.COTILLON_EXCEL_2026_STATE,undefined);
@@ -78,7 +78,7 @@ test('checksum inválido impide tocar el catálogo viejo',()=>{
 
 test('la importación archiva la pestaña anterior, asigna categorías y se puede reanudar',()=>{
  const {context,settings,sheets,products,initial,triggers}=setup();
- const result=context.iniciarImportacionCotillonExcel2026();
+ const result=context.iniciarImportacionCotillonExcel2026_();
  assert.equal(result.importados,790);
  assert.equal(result.anterioresArchivados,2);
  assert.ok(sheets.has(result.pestañaRespaldo));
@@ -88,45 +88,45 @@ test('la importación archiva la pestaña anterior, asigna categorías y se pued
  assert.equal(products().find(p=>p.name==='Cortante Momia').category,'REPOSTERÍA › Accesorios');
  assert.equal(products().find(p=>p.name==='Cortante Momia').sourceImage,'');
  assert.deepEqual(JSON.parse(JSON.stringify(products().find(p=>p.excelRow===723).catalogGroups)),['DESCARTABLES']);
- assert.equal(context.iniciarImportacionCotillonExcel2026().productosNuevos,790);
+ assert.equal(context.iniciarImportacionCotillonExcel2026_().productosNuevos,790);
  settings.COTILLON_EXCEL_2026_STATE='preparando';
- assert.equal(context.iniciarImportacionCotillonExcel2026().productosNuevos,790);
+ assert.equal(context.iniciarImportacionCotillonExcel2026_().productosNuevos,790);
  assert.equal(settings.COTILLON_EXCEL_2026_STATE,'photos');
  assert.equal([...sheets.keys()].filter(k=>k.startsWith('cotillon_archivo_')).length,1);
  assert.equal(triggers.length,1);
- for(let i=0;i<79;i++)context.procesarFotosCotillonExcel2026();
+ for(let i=0;i<79;i++)context.procesarFotosCotillonExcel2026_();
  assert.equal(settings.COTILLON_EXCEL_2026_STATE,'ready');
  assert.equal(triggers.length,0);
  assert.equal(products().filter(p=>p.active).length,790);
  assert.equal(products().filter(p=>p.image).length,789);
- assert.equal(context.estadoImportacionCotillonExcel2026().sinFotoEnRevision,1);
+ assert.equal(context.estadoImportacionCotillonExcel2026_().sinFotoEnRevision,1);
 });
 
 test('una foto fallida detiene publicación y permite retomar sin duplicar productos',()=>{
  const {context,settings,products}=setup({failPhoto:true});
- context.iniciarImportacionCotillonExcel2026();
- for(let i=0;i<79;i++)context.procesarFotosCotillonExcel2026();
+ context.iniciarImportacionCotillonExcel2026_();
+ for(let i=0;i<79;i++)context.procesarFotosCotillonExcel2026_();
  assert.equal(settings.COTILLON_EXCEL_2026_STATE,'photo_errors');
  assert.equal(products().filter(p=>p.active).length,0);
- assert.equal(context.estadoImportacionCotillonExcel2026().fallidas,1);
- assert.equal(context.reintentarFotosCotillonExcel2026().reintentosHabilitados,1);
- context.procesarFotosCotillonExcel2026();
+ assert.equal(context.estadoImportacionCotillonExcel2026_().fallidas,1);
+ assert.equal(context.reintentarFotosCotillonExcel2026_().reintentosHabilitados,1);
+ context.procesarFotosCotillonExcel2026_();
  assert.equal(settings.COTILLON_EXCEL_2026_STATE,'ready');
  assert.equal(products().filter(p=>p.active).length,790);
 });
 
 test('un fallo al intercambiar las pestañas recupera cotillon anterior',()=>{
  const {context,sheets,settings}=setup({failSwap:true});
- assert.throws(()=>context.iniciarImportacionCotillonExcel2026(),/swap failed/);
+ assert.throws(()=>context.iniciarImportacionCotillonExcel2026_(),/swap failed/);
  assert.equal(sheets.get('cotillon').getLastRow(),3);
  assert.equal(settings.COTILLON_EXCEL_2026_STATE,'preparando');
 });
 
 test('los 416 agotados se agregan sin alterar los 790 y sus fotos se procesan por separado',()=>{
  const {context,settings,products,triggers}=setup();
- context.iniciarImportacionCotillonExcel2026();
+ context.iniciarImportacionCotillonExcel2026_();
  const before=JSON.stringify(products());
- const importedSecond=context.importarAgotadosCotillonExcel2026();
+ const importedSecond=context.importarAgotadosCotillonExcel2026_();
  assert.equal(importedSecond.agregados,416);
  assert.equal(importedSecond.totalCotillon,1206);
  assert.equal(importedSecond.estado,'waiting');
@@ -134,15 +134,15 @@ test('los 416 agotados se agregan sin alterar los 790 y sus fotos se procesan po
  assert.equal(products().filter(p=>p.importBatch==='cotillon-agotados-excel-2026').length,416);
  assert.ok(products().slice(790).every(p=>p.active===false&&p.stock===0));
  assert.equal(products().find(p=>p.name==='Bowl Blanco').category,'Repostería');
- assert.equal(context.importarAgotadosCotillonExcel2026().agregados,0);
- for(let i=0;i<79;i++)context.procesarFotosCotillonExcel2026();
+ assert.equal(context.importarAgotadosCotillonExcel2026_().agregados,0);
+ for(let i=0;i<79;i++)context.procesarFotosCotillonExcel2026_();
  assert.equal(settings.COTILLON_EXCEL_2026_STATE,'ready');
  assert.equal(settings.COTILLON_AGOTADOS_2026_STATE,'photos');
- assert.deepEqual(triggers.map(t=>t.getHandlerFunction()),['procesarFotosAgotadosCotillonExcel2026']);
+ assert.deepEqual(triggers.map(t=>t.getHandlerFunction()),['procesarFotosAgotadosCotillonExcel2026_']);
  assert.equal(products().filter(p=>p.active).length,790);
- for(let i=0;i<42;i++)context.procesarFotosAgotadosCotillonExcel2026();
+ for(let i=0;i<42;i++)context.procesarFotosAgotadosCotillonExcel2026_();
  assert.equal(settings.COTILLON_AGOTADOS_2026_STATE,'ready');
- assert.equal(context.estadoAgotadosCotillonExcel2026().conFoto,416);
+ assert.equal(context.estadoAgotadosCotillonExcel2026_().conFoto,416);
  assert.equal(products().filter(p=>p.active).length,790);
  assert.equal(products().filter(p=>!p.active&&p.stock===0).length,416);
  const catalog=context.dispatch_({action:'catalogData'});

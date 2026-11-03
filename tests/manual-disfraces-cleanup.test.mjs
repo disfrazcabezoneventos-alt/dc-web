@@ -13,7 +13,7 @@ test('plan y foto conservan SHA-256, nombres, tarifas y stocks del PR #11',()=>{
 });
 test('ensayo respalda exactamente, borra solo cinco y agrega dos sin Cloudinary; segunda ejecución no modifica',()=>{
  const h=setup(),before=structuredClone(h.sheet().values),production=structuredClone(h.sheet('production').values);
- const result=h.context.probarLimpiezaManuales28Copia();
+ const result=h.context.probarLimpiezaManuales28Copia_();
  assert.equal(result.bajas,5);assert.equal(result.altas,2);
  assert.deepEqual(h.sheet('copy',result.respaldo).values,before);
  assert.equal(h.products().length,3);assert.equal(h.products()[0].id,'untouched');
@@ -21,7 +21,7 @@ test('ensayo respalda exactamente, borra solo cinco y agrega dos sin Cloudinary;
  assert.equal(h.products().at(-1).photoStatus,'pendiente de foto nueva');
  assert.deepEqual(h.sheet('production').values,production);
  assert.equal(h.settings.LM28_COPY_PASSED,sha);
- assert.equal(h.context.probarLimpiezaManuales28Copia().estado,'ya aplicado');
+ assert.equal(h.context.probarLimpiezaManuales28Copia_().estado,'ya aplicado');
  assert.deepEqual(h.calls(),{cloud:0,writes:1});
 });
 for(const tab of ['reservas','movimientos','cancelaciones'])for(const match of ['id','name']){
@@ -29,19 +29,19 @@ for(const tab of ['reservas','movimientos','cancelaciones'])for(const match of [
   const h=setup(),before=structuredClone(h.sheet().values);
   const p={id:'ref-test',status:'cancelled',note:'prueba',data:{items:[match==='id'?{productId:source.delete[0].id}:{name:'SCREAM VENTA'}]}};
   h.sheet('copy',tab).values.push([p.id,JSON.stringify(p)]);
-  assert.throws(()=>h.context.probarLimpiezaManuales28Copia(),/Hay referencias/);
+  assert.throws(()=>h.context.probarLimpiezaManuales28Copia_(),/Hay referencias/);
   assert.deepEqual(h.sheet().values,before);assert.deepEqual(h.calls(),{cloud:0,writes:0});
  });
 }
 test('producción exige aprobación y ensayo de este manifiesto',()=>{
- const h=setup();assert.throws(()=>h.context.aplicarLimpiezaManuales28Produccion(),/Falta OK/);
- h.settings.LM28_APPROVED=sha;assert.throws(()=>h.context.aplicarLimpiezaManuales28Produccion(),/Falta OK/);
+ const h=setup();assert.throws(()=>h.context.aplicarLimpiezaManuales28Produccion_(),/Falta OK/);
+ h.settings.LM28_APPROVED=sha;assert.throws(()=>h.context.aplicarLimpiezaManuales28Produccion_(),/Falta OK/);
  assert.deepEqual(h.calls(),{cloud:0,writes:0});
 });
 test('producción simulada activa solo Scream con foto original y miniatura; Woody sigue sin foto',()=>{
- const h=setup();h.context.probarLimpiezaManuales28Copia();h.settings.LM28_APPROVED=sha;
+ const h=setup();h.context.probarLimpiezaManuales28Copia_();h.settings.LM28_APPROVED=sha;
  Object.assign(h.settings,{CLOUDINARY_CLOUD_NAME:'test',CLOUDINARY_API_KEY:'test',CLOUDINARY_API_SECRET:'test'});
- h.context.aplicarLimpiezaManuales28Produccion();
+ h.context.aplicarLimpiezaManuales28Produccion_();
  const [scream,woody]=h.products('production').slice(1);
  assert.equal(scream.active,true);assert.match(scream.image,/scream.jpg/);assert.match(scream.thumbnail,/thumb/);
  assert.equal(woody.active,false);assert.equal(woody.image,'');assert.equal(woody.thumbnail,'');
@@ -49,26 +49,26 @@ test('producción simulada activa solo Scream con foto original y miniatura; Woo
 });
 for(const failure of ['backupFail','batchFail','corruptPhoto'])test('frena sin borrar filas si falla '+failure,()=>{
  const h=setup(),before=structuredClone(h.sheet().values);h[failure]();
- assert.throws(()=>h.context.probarLimpiezaManuales28Copia());assert.deepEqual(h.sheet().values,before);assert.equal(h.calls().writes,0);
+ assert.throws(()=>h.context.probarLimpiezaManuales28Copia_());assert.deepEqual(h.sheet().values,before);assert.equal(h.calls().writes,0);
 });
 test('bloquea copia igual a producción, ficha editada, estado parcial y alta preexistente',()=>{
- let h=setup();h.settings.LM28_TEST_ID='production';assert.throws(()=>h.context.probarLimpiezaManuales28Copia(),/copia apunta/);
- h=setup();h.sheet().values[1][1]+=' ';assert.throws(()=>h.context.probarLimpiezaManuales28Copia(),/Cambió/);
- h=setup();h.sheet().values.splice(1,1);assert.throws(()=>h.context.probarLimpiezaManuales28Copia(),/Estado parcial/);
- h=setup();h.sheet().values.push(['catalogo-disfraz-154',JSON.stringify({id:'catalogo-disfraz-154',sourceId:'154',name:'Scream'})]);assert.throws(()=>h.context.probarLimpiezaManuales28Copia(),/Estado parcial/);
+ let h=setup();h.settings.LM28_TEST_ID='production';assert.throws(()=>h.context.probarLimpiezaManuales28Copia_(),/copia apunta/);
+ h=setup();h.sheet().values[1][1]+=' ';assert.throws(()=>h.context.probarLimpiezaManuales28Copia_(),/Cambió/);
+ h=setup();h.sheet().values.splice(1,1);assert.throws(()=>h.context.probarLimpiezaManuales28Copia_(),/Estado parcial/);
+ h=setup();h.sheet().values.push(['catalogo-disfraz-154',JSON.stringify({id:'catalogo-disfraz-154',sourceId:'154',name:'Scream'})]);assert.throws(()=>h.context.probarLimpiezaManuales28Copia_(),/Estado parcial/);
 });
 test('revisa referencias otra vez después del respaldo',()=>{
  const h=setup(),before=structuredClone(h.sheet().values);
  h.onBackup(ss=>ss.getSheetByName('reservas').values.push(['new',JSON.stringify({id:'new',data:{items:[{name:'Woody'}]}})]));
- assert.throws(()=>h.context.probarLimpiezaManuales28Copia(),/Hay referencias/);
+ assert.throws(()=>h.context.probarLimpiezaManuales28Copia_(),/Hay referencias/);
  assert.deepEqual(h.sheet().values,before);assert.equal(h.calls().writes,0);
 });
 test('rechaza respaldo anterior distinto y categoría faltante',()=>{
- let h=setup();h.context.probarLimpiezaManuales28Copia();
+ let h=setup();h.context.probarLimpiezaManuales28Copia_();
  h.sheet().values=structuredClone(h.sheet('copy','disfraces_respaldo_limpieza_20261028_test').values);
  h.sheet('copy','disfraces_respaldo_limpieza_20261028_test').values.pop();
- assert.throws(()=>h.context.probarLimpiezaManuales28Copia(),/respaldo no coincide/);
+ assert.throws(()=>h.context.probarLimpiezaManuales28Copia_(),/respaldo no coincide/);
  h=setup();h.sheet('copy','categorias_disfraces').values.splice(1,1);
- assert.throws(()=>h.context.probarLimpiezaManuales28Copia(),/Falta una categoría/);
+ assert.throws(()=>h.context.probarLimpiezaManuales28Copia_(),/Falta una categoría/);
  assert.equal(h.calls().writes,0);
 });

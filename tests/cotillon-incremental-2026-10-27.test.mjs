@@ -76,7 +76,7 @@ test('la fuente fija conserva 661 IDs de Rappi y prioriza las altas de Halloween
 test('previsualizar la copia no escribe y detecta solo 87 cambios reales',()=>{
  const {context,sheets,writeCounts}=setup();
  const before=JSON.stringify(sheets.get('cotillon').rows);
- const summary=context.previsualizarCotillon27Copia();
+ const summary=context.previsualizarCotillon27Copia_();
  assert.equal(summary.fuente,661);
  assert.equal(summary.altas,107);
  assert.equal(summary.actualizaciones,87);
@@ -95,8 +95,8 @@ test('la carga de prueba se reanuda por lotes, preserva campos ajenos y deja nue
  const {context,sheets,products}=setup();
  const old=products().find(p=>p.sourceId==='2115088426');
  let count=0;
- while(context.previsualizarCotillon27Copia().altas+context.previsualizarCotillon27Copia().actualizaciones){
-  assert.ok(context.probarLoteCotillon27Copia().procesados<=15);
+ while(context.previsualizarCotillon27Copia_().altas+context.previsualizarCotillon27Copia_().actualizaciones){
+  assert.ok(context.probarLoteCotillon27Copia_().procesados<=15);
   if(++count>20)throw Error('La carga no converge.');
  }
  assert.equal(products().length,1313);
@@ -111,7 +111,7 @@ test('la carga de prueba se reanuda por lotes, preserva campos ajenos y deja nue
  assert.ok(inactiveRestocked.every(p=>p.active===true&&p.stock>0&&p.image&&p.thumbnail));
  assert.ok(sheets.has('cotillon_respaldo_20261027_test'));
  assert.equal(sheets.get('cotillon_respaldo_20261027_test').rows.length,1207);
- assert.equal(context.probarLoteCotillon27Copia().procesados,0);
+ assert.equal(context.probarLoteCotillon27Copia_().procesados,0);
  if(process.env.DC_COTILLON_EXPORT_COPY_FINAL)fs.writeFileSync(process.env.DC_COTILLON_EXPORT_COPY_FINAL,JSON.stringify({rows:sheets.get('cotillon').rows,backup:sheets.get('cotillon_respaldo_20261027_test').rows,batches:count}));
 });
 
@@ -119,9 +119,9 @@ test('una edición manual del precio o stock se conserva, aun si la otra columna
  const {context,products,sheets}=setup();
  const row=sheets.get('cotillon').rows.find(r=>r[0]==='excel-2115053617');
  const changed=JSON.parse(row[1]);changed.price=12345;changed.categoryId='categoria-editada-manualmente';row[1]=JSON.stringify(changed);
- const preview=context.previsualizarCotillon27Copia();
+ const preview=context.previsualizarCotillon27Copia_();
  assert.equal(preview.camposManualesOmitidos,1);
- while(context.previsualizarCotillon27Copia().altas+context.previsualizarCotillon27Copia().actualizaciones)context.probarLoteCotillon27Copia();
+ while(context.previsualizarCotillon27Copia_().altas+context.previsualizarCotillon27Copia_().actualizaciones)context.probarLoteCotillon27Copia_();
  const current=products().find(p=>p.sourceId==='2115053617');
  assert.equal(current.price,12345);
  assert.equal(current.stock,8);
@@ -132,8 +132,8 @@ test('un conflicto de identidad bloquea el lote completo antes de crear un respa
  const {context,sheets}=setup();
  const newId=payload.find(p=>p.baselinePrice===null).sourceId;
  sheets.get('cotillon').rows.push([`excel-${newId}`,JSON.stringify({id:`excel-${newId}`,sourceId:'otro-id',area:'cotillon'})]);
- assert.ok(context.previsualizarCotillon27Copia().conflictos>0);
- assert.throws(()=>context.probarLoteCotillon27Copia(),/conflictos de identidad/);
+ assert.ok(context.previsualizarCotillon27Copia_().conflictos>0);
+ assert.throws(()=>context.probarLoteCotillon27Copia_(),/conflictos de identidad/);
  assert.ok(!sheets.has('cotillon_respaldo_20261027_test'));
 });
 
@@ -150,17 +150,17 @@ test('en producción simulada nunca escribe un alta sin foto y permite reintenta
   return {image:`https://res.cloudinary.com/test/image/upload/${id}.jpg`,thumbnail:`https://res.cloudinary.com/test/image/upload/w_160/${id}.jpg`};
  };
  for(let i=0;i<20;i++){
-  const pending=context.previsualizarCotillon27Produccion();
+  const pending=context.previsualizarCotillon27Produccion_();
   if(pending.altas+pending.actualizaciones===0)break;
-  context.aplicarLoteCotillon27Produccion();
+  context.aplicarLoteCotillon27Produccion_();
  }
  const added=products().filter(p=>p.importBatch==='cotillon-incremental-2026-10-27');
  assert.equal(added.filter(p=>p.active&&p.image&&p.thumbnail).length,106);
  assert.equal(added.filter(p=>p.sourceId===failing).length,0);
- assert.equal(context.previsualizarCotillon27Produccion().fotosFallidas,1);
- assert.equal(context.reintentarFotosCotillon27Produccion().reintentosHabilitados,1);
+ assert.equal(context.previsualizarCotillon27Produccion_().fotosFallidas,1);
+ assert.equal(context.reintentarFotosCotillon27Produccion_().reintentosHabilitados,1);
  context.subirFotoCotillon_=(url,id)=>({image:`https://res.cloudinary.com/test/image/upload/${id}.jpg`,thumbnail:`https://res.cloudinary.com/test/image/upload/w_160/${id}.jpg`});
- assert.equal(context.aplicarLoteCotillon27Produccion().procesados,1);
+ assert.equal(context.aplicarLoteCotillon27Produccion_().procesados,1);
  assert.equal(products().filter(p=>p.importBatch==='cotillon-incremental-2026-10-27'&&p.active).length,107);
  const after=products().filter(p=>p.importBatch!=='cotillon-incremental-2026-10-27');
  assert.equal(after.filter(p=>p.active&&!existingBefore.get(p.id).active).length,14);
@@ -170,7 +170,7 @@ test('en producción simulada nunca escribe un alta sin foto y permite reintenta
 test('la función de producción exige aprobación explícita',()=>{
  const {context,sheets}=setup();
  const before=JSON.stringify(sheets.get('cotillon').rows);
- assert.throws(()=>context.aplicarLoteCotillon27Produccion(),/Falta aprobación/);
+ assert.throws(()=>context.aplicarLoteCotillon27Produccion_(),/Falta aprobación/);
  assert.equal(JSON.stringify(sheets.get('cotillon').rows),before);
 });
 
@@ -181,9 +181,9 @@ test('Sorbetes no se publica si la foto local difiere de su SHA-256 revisado',()
  settings.CLOUDINARY_CLOUD_NAME='test';settings.CLOUDINARY_API_KEY='test';settings.CLOUDINARY_API_SECRET='test';
  context.UrlFetchApp.fetch=url=>url.endsWith('sorbetes-halloween__2115454079.jpg')?({getResponseCode:()=>200,getContent:()=>[1,2,3]}):({getResponseCode:()=>200,getContentText:()=>raw});
  context.subirFotoCotillon_=(url,id)=>({image:`https://res.cloudinary.com/test/image/upload/${id}.jpg`,thumbnail:`https://res.cloudinary.com/test/image/upload/w_160/${id}.jpg`});
- context.aplicarLoteCotillon27Produccion();
+ context.aplicarLoteCotillon27Produccion_();
  assert.equal(products().some(p=>p.sourceId==='2115454079'),false);
- assert.equal(context.previsualizarCotillon27Produccion().fotosFallidas,1);
+ assert.equal(context.previsualizarCotillon27Produccion_().fotosFallidas,1);
 });
 
 test('si una miniatura deja de responder 200, la ficha sigue inactiva y se registra para reintento',()=>{
@@ -196,17 +196,17 @@ test('si una miniatura deja de responder 200, la ficha sigue inactiva y se regis
  context.UrlFetchApp.fetch=(url,options)=>url===target.thumbnail?({getResponseCode:()=>404,getAllHeaders:()=>({'Content-Type':'text/html'})}):fetch(url,options);
  context.subirFotoCotillon_=(url,id)=>({image:`https://res.cloudinary.com/test/image/upload/${id}.jpg`,thumbnail:`https://res.cloudinary.com/test/image/upload/w_160/${id}.jpg`});
  for(let i=0;i<20;i++){
-  const preview=context.previsualizarCotillon27Produccion();
+  const preview=context.previsualizarCotillon27Produccion_();
   if(!preview.altas&&!preview.actualizaciones)break;
-  context.aplicarLoteCotillon27Produccion();
+  context.aplicarLoteCotillon27Produccion_();
  }
  const failed=products().find(p=>p.sourceId===target.sourceId);
  assert.equal(failed.active,false);
  assert.equal(failed.stock,target.stock);
- assert.equal(context.previsualizarCotillon27Produccion().fotosFallidas,1);
+ assert.equal(context.previsualizarCotillon27Produccion_().fotosFallidas,1);
  assert.equal(products().filter(p=>payload.some(q=>q.reactivate&&q.sourceId===p.sourceId)&&p.active).length,13);
- assert.equal(context.reintentarFotosCotillon27Produccion().reintentosHabilitados,1);
+ assert.equal(context.reintentarFotosCotillon27Produccion_().reintentosHabilitados,1);
  context.UrlFetchApp.fetch=fetch;
- assert.equal(context.aplicarLoteCotillon27Produccion().reactivadasEnEsteLote,1);
+ assert.equal(context.aplicarLoteCotillon27Produccion_().reactivadasEnEsteLote,1);
  assert.equal(products().find(p=>p.sourceId===target.sourceId).active,true);
 });

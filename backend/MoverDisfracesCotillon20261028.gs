@@ -93,8 +93,8 @@ function mover28Transformar_(p,m,category){
  need_(category,'No existe la categoría '+m.category);
  return {...p,area:'disfraces',categoryId:category.id,categoryIds:[category.id],category:category.name,catalogGroups:[],price:m.priceCorrect};
 }
-function previsualizarMovimientoDisfracesCopia(){const result=mover28Plan_('test').summary;console.log(JSON.stringify(result));return result;}
-function previsualizarMovimientoDisfracesProduccion(){const result=mover28Plan_('production').summary;console.log(JSON.stringify(result));return result;}
+function previsualizarMovimientoDisfracesCopia_(){const result=mover28Plan_('test').summary;console.log(JSON.stringify(result));return result;}
+function previsualizarMovimientoDisfracesProduccion_(){const result=mover28Plan_('production').summary;console.log(JSON.stringify(result));return result;}
 function mover28Respaldar_(plan,mode){
  const key='MOVER28_RESPALDO_'+mode.toUpperCase(),saved=config_(key),prefix='mover28_'+mode+'_';
  if(saved){const names=JSON.parse(saved);['cotillon','disfraces','categorias_disfraces'].forEach(n=>need_(plan.ss.getSheetByName(names[n]),'Falta el respaldo '+names[n]));return names;}
@@ -132,5 +132,5 @@ function mover28Ejecutar_(mode){return lock_(()=>{
  deletions.sort((a,b)=>b-a).forEach(row=>plan.cot.deleteRow(row));SpreadsheetApp.flush();
  const result={procesados:chosen.length,movidosNuevos:additions.length,reanudados:recovered,pendientes:105-s.yaMovidos-chosen.length,respaldo:backup};console.log(JSON.stringify(result));return result;
 });}
-function probarLoteMovimientoDisfracesCopia(){return mover28Ejecutar_('test');}
-function aplicarLoteMovimientoDisfracesProduccion(){return mover28Ejecutar_('production');}
+function probarLoteMovimientoDisfracesCopia_(){return mover28Ejecutar_('test');}
+function aplicarLoteMovimientoDisfracesProduccion_(){return mover28Ejecutar_('production');}
