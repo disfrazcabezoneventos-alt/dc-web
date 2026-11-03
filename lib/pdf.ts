@@ -1,3 +1,4 @@
+import {rentalPricingText} from './rental-pricing';
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import { BRAND, Rental, dateAR, money, paid, deposit, VERSION } from './model';
 import {localContractPdf} from './local-pdf';
@@ -16,6 +17,7 @@ async function fullContractPdf(r:Rental,code:string,createdAt:string,signature:A
  wrap(BRAND.address+' | CUIT '+BRAND.cuit+' | '+BRAND.email,9);y-=12;
  wrap('CONTRATANTE',12,true);wrap(r.fullName+' | DNI '+r.dni+' | Nacimiento '+dateAR(r.birthDate));wrap(r.address+' - '+r.city);wrap('Teléfono '+r.phone+' | Alternativo '+r.altPhone+' | '+r.email);
  wrap('ALQUILER ACORDADO',12,true);r.items.forEach(i=>wrap(i.quantity+' x '+i.name+' ('+(i.category==='adulto'?'Adulto':'Cabezón')+')'));wrap('Retiro: '+dateAR(r.pickupDate)+' de '+r.pickupWindow+' h. Devolución: '+dateAR(r.returnDate)+' de '+r.returnWindow+' h.');if(r.specialSchedule)wrap('Excepción previamente acordada, sujeta a verificación: '+r.scheduleAgreement);
+ if(r.pricing)wrap(rentalPricingText(r.pricing,money));
  if(source==='local')wrap('Alquiler presencial: '+money(r.total)+'. Modalidad acordada: '+(r.payMode==='full'?'alquiler completo':'50%')+'. Garantía al retirar: '+money(deposit(r))+'. El formulario no acredita pagos.');else wrap('Alquiler declarado: '+money(r.total)+'. Pago declarado: '+money(paid(r))+' ('+(r.payMode==='half'?'seña 50%':'pago total')+'). Garantía al retirar: '+money(deposit(r))+'. La acreditación del pago requiere verificación del local.');
  if(r.pickupBy==='other')wrap('Autorizo a retirar a '+r.authorizedName+', DNI '+r.authorizedDni+'. Esta autorización está comprendida en mi firma.');else wrap('Retira personalmente el contratante.');
  if(source==='local')wrap('Identidad: fotos del DNI frente y dorso conservadas en el registro privado. Sin comprobante de domicilio.');else wrap('Documento de domicilio: '+r.docType+'. '+(r.docType==='licencia'?'Vencimiento':'Emisión')+': '+dateAR(r.docDate)+'. Los documentos quedan en el registro privado y no se adjuntan a esta copia.');

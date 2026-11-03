@@ -12,7 +12,7 @@ export function localHarness(){
   CacheService:{getScriptCache:()=>({get:k=>cache.get(k),put:(k,v)=>cache.set(k,v),remove:k=>cache.delete(k)})},
   DriveApp:{getFileById:id=>({setTrashed:()=>files.delete(id),getBlob:()=>({getBytes:()=>files.get(id).bytes,getContentType:()=>files.get(id).type})})},
  });
- vm.runInContext(['Validation.gs','Code.gs','LocalForms.gs','LocalReceipts.gs','AuthCrypto.gs','CatalogAccess.gs'].map(p=>fs.readFileSync('backend/'+p,'utf8')).join('\n'),ctx);
+ vm.runInContext(['RentalPricing.gs','RentalPromotions.gs','Validation.gs','Code.gs','LocalForms.gs','LocalReceipts.gs','AuthCrypto.gs','CatalogAccess.gs'].map(p=>fs.readFileSync('backend/'+p,'utf8')).join('\n'),ctx);
  const writeHooks={put:ctx.put_,remove:ctx.remove_};
  ctx.rows_=name=>{reads++;return structuredClone(tables[name])};
  ctx.put_=(name,obj)=>{const index=tables[name].findIndex(row=>row.id===obj.id);if(index<0)tables[name].push(structuredClone(obj));else tables[name][index]=structuredClone(obj);return obj};

@@ -2,14 +2,11 @@ import {Rental, Costume, validate, norm, todayAR, windows} from './model';
 
 export type RentalPrices = {adulto:number;cabezon:number;revision:string};
 export const DEFAULT_RENTAL_PRICES:RentalPrices={adulto:60000,cabezon:75000,revision:'default'};
-export const LOCAL_TERMS_VERSION='DC-LOCAL-2026-10-29.1';
+export const LOCAL_TERMS_VERSION='DC-LOCAL-2026-11-03.2';
 export const FORM_STATES={reserved:'Reserva',dispatched:'Despachado',finished:'Finalizado'};
 export type FormState=keyof typeof FORM_STATES;
 export type FormSource='web'|'local';
 
-export function localTotal(items:Costume[],prices:RentalPrices){
- return Math.round(items.reduce((sum,item)=>sum+(prices[item.category]||0)*item.quantity,0)*100)/100;
-}
 export function localSchedule(r:Rental,now=todayAR()):Rental{
  return {...r,pickupWindow:windows(r.pickupDate,'pickup'),returnWindow:windows(r.returnDate,'return'),specialSchedule:false,scheduleAgreement:'',payMode:r.pickupDate===now?'full':r.payMode};
 }

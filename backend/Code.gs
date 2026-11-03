@@ -116,6 +116,7 @@ function dispatch_(b){
  try{return dispatchBody_(b,actor)}finally{CATALOG_ACTOR_=previous;}
 }
 function dispatchBody_(b,actor){
+ if(typeof rentalPromotionsDispatch_==='function'){const promotions=rentalPromotionsDispatch_(b);if(promotions)return promotions.data;}
  if(b.action==='recordSearchMiss')return recordSearchMiss_(b);
  if(b.action==='searchDemand'){need_(actor&&actor.role==='admin','No tenés permiso para esta acción.');return searchDemand_();}
  if(typeof catalogAccessDispatch_==='function'){const access=catalogAccessDispatch_(b,actor);if(access)return access.data;}
@@ -132,7 +133,7 @@ function dispatchBody_(b,actor){
  if(typeof incomingDispatch_==='function'){const incoming=incomingDispatch_(b);if(incoming)return incoming.data;}
  // Las lecturas públicas no reparan stock ni crean categorías.
  if(b.action==='catalog')return CATEGORY_AREAS.flatMap(a=>products_(a).filter(p=>(typeof catalogPublicProduct_!=='function'||catalogPublicProduct_(p))&&(a==='cotillon'||p.active)));
- if(b.action==='catalogData')return {products:CATEGORY_AREAS.flatMap(a=>products_(a).filter(p=>(typeof catalogPublicProduct_!=='function'||catalogPublicProduct_(p))&&(a==='cotillon'||p.active))),categories:CATEGORY_AREAS.flatMap(categories_),campaign:siteCampaign_(),cotillonImportReady:config_('COTILLON_EXCEL_2026_STATE')==='ready'};
+ if(b.action==='catalogData')return {rentalConfig:rentalConfig_(),products:CATEGORY_AREAS.flatMap(a=>products_(a).filter(p=>(typeof catalogPublicProduct_!=='function'||catalogPublicProduct_(p))&&(a==='cotillon'||p.active))),categories:CATEGORY_AREAS.flatMap(categories_),campaign:siteCampaign_(),cotillonImportReady:config_('COTILLON_EXCEL_2026_STATE')==='ready'};
  if(b.action==='login'){
   if(typeof catalogLogin_==='function')return catalogLogin_(b);
   limit_('login-global',60,900);limit_('login:'+String(b.username).toLowerCase(),8,900);
@@ -140,7 +141,7 @@ function dispatchBody_(b,actor){
   need_(equal_(hash_(String(b.username)),hash_(config_('ADMIN_USER')))&&equal_(hash_(String(b.password)),hash_(config_('ADMIN_PASSWORD'))),'Usuario o contraseña incorrectos.');
   const token=Utilities.getUuid()+Utilities.getUuid();CacheService.getScriptCache().put('session:'+hash_(token),adminSessionVersion_(),21600);return {token};
  }
- if(b.action==='bank'){validateRental_(b.data,2);checkFiles_(b.files,['dniFront','dniBack','addressProof']);return bank_();}
+ if(b.action==='bank'){const priced=rentalSubmission_(b);validateRental_(priced.data,2);checkFiles_(b.files,['dniFront','dniBack','addressProof']);return {...bank_(),rentalConfig:priced.config};}
  if(b.action==='submit')return submit_(b);
  if(['request','file','correct'].includes(b.action)){
   const r=authorizedRequest_(b);if(b.action==='request'){const {accessHash,files,...safe}=r;return safe;}
@@ -221,19 +222,21 @@ function checkFiles_(files,slots){const out={};slots.forEach(slot=>{const f=file
 function saveFiles_(files,prefix){const folder=DriveApp.getFolderById(config_('PRIVATE_FOLDER_ID')),saved={};try{Object.keys(files).forEach(k=>{const f=files[k],file=folder.createFile(Utilities.newBlob(f.bytes,f.type,prefix+'-'+k));saved[k]={id:file.getId(),hash:f.hash,type:f.type};});return saved;}catch(e){Object.values(saved).forEach(f=>{try{DriveApp.getFileById(f.id).setTrashed(true)}catch(_){}});throw e;}}
 function authorizedRequest_(b){const r=rows_('reservas').find(r=>r.id===b.id);need_(r,'Solicitud inexistente.');if(b.token)session_(b.token);else need_(typeof b.access==='string'&&(equal_(hash_(b.access),r.accessHash)||(typeof localCopyAccess_==='function'&&localCopyAccess_(r,b.access))),'Acceso privado inválido.');return r;}
 function submit_(b){
- const r=b.data;need_(r&&/^[a-f0-9-]{36}$/.test(r.requestKey)&&typeof b.access==='string'&&b.access.length>=64,'Acceso de solicitud inválido.');const previous=rows_('reservas').find(x=>x.requestKey===r.requestKey);if(previous){need_(equal_(previous.accessHash,hash_(b.access)),'Acceso inválido.');need_(JSON.stringify(previous.data)===JSON.stringify(r),'Esta solicitud ya fue recibida con otros datos. Consultá al local antes de volver a enviar.');return {id:previous.id,code:previous.code,mailStatus:previous.mailStatus,duplicate:true};}
+ const raw=b.data;need_(raw&&/^[a-f0-9-]{36}$/.test(raw.requestKey)&&typeof b.access==='string'&&b.access.length>=64,'Acceso de solicitud inválido.');
+ const previous=rows_('reservas').find(x=>x.requestKey===raw.requestKey);if(previous)return rentalDuplicate_(previous,b,'web');
+ const submittedDataHash=rentalSubmissionHash_(raw),priced=rentalSubmission_(b),r=priced.data;
  validateRental_(r,4);need_(bank_().configured,'La cuenta de cobro todavía no está habilitada.');limit_('submit:'+r.email,4,3600);limit_('submit-global',80,3600);
  const checked=checkFiles_(b.files,['dniFront','dniBack','addressProof','receipt','signature']);const id=Utilities.getUuid(),createdAt=now_(),code='DC-'+today_().replace(/-/g,'')+'-'+id.slice(0,6).toUpperCase();const signedHash=hash_(JSON.stringify({data:r,termsVersion:VERSION,terms:TERMS,createdAt,files:Object.fromEntries(Object.entries(checked).map(([k,v])=>[k,v.hash]))}));
- const files=saveFiles_(checked,id);const row={id,code,requestKey:r.requestKey,accessHash:hash_(b.access),status:'pending',data:r,files,signedFiles:JSON.parse(JSON.stringify(files)),createdAt,updatedAt:createdAt,terms:TERMS,termsVersion:VERSION,signedHash,events:[{action:'pending',note:'Solicitud y firma recibidas. Pago pendiente de verificación.',at:createdAt}],mailStatus:'pending'};
+ const files=saveFiles_(checked,id);const row={id,code,requestKey:r.requestKey,accessHash:hash_(b.access),status:'pending',data:r,pricingSnapshot:priced.snapshot,submittedDataHash,files,signedFiles:JSON.parse(JSON.stringify(files)),createdAt,updatedAt:createdAt,terms:TERMS,termsVersion:VERSION,signedHash,events:[{action:'pending',note:'Solicitud y firma recibidas. Pago pendiente de verificación.',at:createdAt}],mailStatus:'pending'};
  try{put_('reservas',row)}catch(e){Object.values(files).forEach(f=>{try{DriveApp.getFileById(f.id).setTrashed(true)}catch(_){}});throw e;}
  try{row.mailStatus=notify_(row);put_('reservas',row)}catch(_){/* La reserva ya quedó guardada: nunca devolver error de envío. */}
- return {id,code,mailStatus:row.mailStatus};
+ return {id,code,mailStatus:row.mailStatus,total:r.total,pricing:priced.snapshot};
 }
 /* Avisos privados sin adjuntos: conserva test/production e incertidumbre de envío. */
 function sendNotice_(r,kind,mode,row){
  const business=config_('BUSINESS_EMAIL'),to=mode==='test'||kind==='business'?business:r.data.email;
  const copyLink=r.source==='local'&&typeof localCopyLink_==='function'?localCopyLink_(r):'';
- const details='Solicitud: '+r.code+'\nCliente: '+r.data.fullName+'\nPersonajes: '+r.data.items.map(i=>i.quantity+' × '+i.name).join(', ')+'\nRetiro: '+r.data.pickupDate+'\nDevolución: '+r.data.returnDate+'\nAlquiler declarado: $ '+r.data.total+(r.source==='local'?'\nFormulario presencial. Modalidad acordada: '+(r.data.payMode==='full'?'alquiler completo':'50%')+'. No acredita pagos.':'\nPago declarado: $ '+paid(r.data)+' (pendiente de verificación)')+(copyLink?'\n\nTu formulario y contrato para descargar (enlace privado):\n'+copyLink:'');
+ const details='Solicitud: '+r.code+'\nCliente: '+r.data.fullName+'\nPersonajes: '+r.data.items.map(i=>i.quantity+' × '+i.name).join(', ')+'\nRetiro: '+r.data.pickupDate+'\nDevolución: '+r.data.returnDate+'\n'+(r.pricingSnapshot?rentalSnapshotText_(r.pricingSnapshot):'Alquiler declarado: $ '+r.data.total)+(r.source==='local'?'\nFormulario presencial. Modalidad acordada: '+(r.data.payMode==='full'?'alquiler completo':'50%')+'. No acredita pagos.':'\nPago declarado: $ '+paid(r.data)+' (pendiente de verificación)')+(copyLink?'\n\nTu formulario y contrato para descargar (enlace privado):\n'+copyLink:'');
  try{MailApp.sendEmail({to,subject:(mode==='test'?'[PRUEBA] ':'')+'Recibimos la solicitud '+r.code+' · Disfraz Cabezón',body:details+'\n\nPendiente de revisión. Este aviso NO confirma la reserva. Conservá el enlace privado del formulario. No enviamos documentos personales por correo.'+(kind==='business'?'\nPanel: '+config_('SITE_URL')+'/admin/':''),name:'Disfraz Cabezón',replyTo:business});row.status='sent';}catch(_){row.status='review';}
  row.updatedAt=now_();put_('notifications',row);return row.status;
 }

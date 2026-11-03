@@ -1,5 +1,5 @@
 import fs from 'node:fs';import ts from 'typescript';
-const model=fs.readFileSync('lib/model.ts','utf8').replace(/export /g,'');
+const model=fs.readFileSync('lib/model.ts','utf8').replace(/^import .*;\r?\n/gm,'').replace(/export /g,'');
 const conditions=fs.readFileSync('lib/terms.ts','utf8').replace('export const terms','const TERMS');
 const localModel=fs.readFileSync('lib/local-rental.ts','utf8').replace(/^import .*;\r?\n/gm,'').replace(/export /g,'');
 const localConditions=fs.readFileSync('lib/local-terms.ts','utf8').replace(/^import .*;\r?\n/gm,'').replace(/export /g,'').replace('terms.map','TERMS.map');

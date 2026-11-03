@@ -1,3 +1,4 @@
+import {rentalPricingText} from './rental-pricing';
 import {PDFDocument,StandardFonts,rgb} from 'pdf-lib';
 import {BRAND,dateAR} from './model';
 import {LocalReceipt,receiptMoney} from './receipt';
@@ -28,6 +29,7 @@ export async function receiptPdf(receipt:LocalReceipt){
  if(receipt.outdated){title('ATENCIÓN: HUBO CAMBIOS DESPUÉS DE ESTA EMISIÓN');line('Esta copia conserva los datos de la fecha de emisión. Consultá al local por la constancia actualizada.',9);}
  title('DISFRACES RESERVADOS');s.items.forEach(i=>line(i.quantity+' x '+i.name+' | '+i.category));
  title('RETIRO Y DEVOLUCIÓN');line('Retiro: '+dateAR(s.pickupDate)+' | '+s.pickupWindow+' h');line('Devolución: '+dateAR(s.returnDate)+' | '+s.returnWindow+' h');
+ if(s.pricing){title('CÁLCULO ORIGINAL DEL ALQUILER');line(rentalPricingText(s.pricing,receiptMoney));if(s.total!==s.pricing.total)line('Total ajustado por administración: '+receiptMoney(s.total));}
  title('IMPORTES DEL ALQUILER');line('Total: '+receiptMoney(s.total),12,true);line('Abonado: '+receiptMoney(s.paid),12,true);line('Saldo pendiente: '+receiptMoney(s.balance),12,true);
  title('SEGURO / GARANTÍA - SEPARADO DEL ALQUILER');line('Recibido: '+receiptMoney(s.guarantee));line('Este importe no se descuenta del saldo del alquiler.',9);
  title('COBROS REGISTRADOS A LA EMISIÓN');

@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 import crypto from 'node:crypto';
 
-const source=fs.readFileSync('backend/Code.gs','utf8');
+const source=['RentalPricing.gs','RentalPromotions.gs','Code.gs'].map(p=>fs.readFileSync('backend/'+p,'utf8')).join('\n');
 const snapshot=fs.readFileSync('backend/import-cotillon-excel-2026.json','utf8');
 const imported=JSON.parse(snapshot).products;
 const soldoutSnapshot=fs.readFileSync('backend/import-cotillon-agotados-2026.json','utf8');
