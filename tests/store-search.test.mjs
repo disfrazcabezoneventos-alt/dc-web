@@ -16,3 +16,7 @@ test('público excluye borradores e inactivos de Disfraces, conserva agotados de
  assert.deepEqual(search.searchProducts(list,'rojo').map(p=>p.id),['test','sold']);
  assert.equal(search.productSearchHref({...product,id:'id con /'}),'/disfraces/#producto=id%20con%20%2F');
 });
+test('plurales por palabra y sinónimos nuevos en ambas direcciones',()=>{
+ for(const [query,name] of [['globos','Globo'],['pelucas','Peluca'],['papeles rojos','Papel rojo'],['flores','Flor'],['mujer maravilla','Wonder Woman'],['wonder woman','Mujer Maravilla'],['hombre murciélago','Batman'],['batman','Hombre Murciélago'],['banderín','Guirnalda'],['guirnalda','Banderín'],['banderines','Guirnalda']])assert.ok(search.matchesStoreSearch({...product,name,category:'',description:''},query),query+' / '+name);
+ assert.equal(search.matchesStoreSearch({...product,name:'Ga',category:'',description:''},'gas'),false);
+});
