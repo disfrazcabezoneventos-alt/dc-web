@@ -2,7 +2,7 @@ import {test,expect} from '@playwright/test';
 import {setupSearch as setup} from '../search-fixture.mjs';
 async function searchField(page){
  await expect(page.locator('.product-card').first()).toBeVisible();
- if(page.viewportSize().width<=1100)await page.getByRole('button',{name:'Abrir búsqueda global',exact:true}).click();else await page.keyboard.press('/');
+ if(page.viewportSize().width<1000)await page.getByRole('button',{name:'Abrir búsqueda global',exact:true}).click();else await page.keyboard.press('/');
  const input=page.getByRole('combobox',{name:'Buscar en toda la tienda'}).filter({visible:true});await expect(input).toBeFocused();return input;
 }
 for(const theme of ['default','halloween']){
@@ -12,7 +12,7 @@ for(const theme of ['default','halloween']){
   const input=await searchField(page);await input.fill('heroe');await expect(page.getByRole('option').filter({visible:true})).toHaveCount(6);await input.press('ArrowUp');await expect(input).toHaveAttribute('aria-activedescendant',/-suggestion-5$/);await input.fill('rojo hombre araña');await expect(page.getByRole('option').filter({visible:true})).toHaveCount(1);
   expect(mock.catalogCalls()).toBe(1);await page.screenshot({path:info.outputPath(theme+'-busqueda.png'),fullPage:false});
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
-  if(page.viewportSize().width<=1100){const close=await page.getByRole('button',{name:'Cerrar búsqueda',exact:true}).boundingBox();expect(close.width).toBeGreaterThanOrEqual(44);expect(close.height).toBeGreaterThanOrEqual(44);await input.press('Escape');await expect(page.getByRole('button',{name:'Abrir búsqueda global'})).toBeFocused();await page.getByRole('button',{name:'Abrir búsqueda global'}).click()}
+  if(page.viewportSize().width<1000){const close=await page.getByRole('button',{name:'Cerrar búsqueda',exact:true}).boundingBox();expect(close.width).toBeGreaterThanOrEqual(44);expect(close.height).toBeGreaterThanOrEqual(44);await input.press('Escape');await expect(page.getByRole('button',{name:'Abrir búsqueda global'})).toBeFocused();await page.getByRole('button',{name:'Abrir búsqueda global'}).click()}
   await input.press('ArrowDown');await input.press('Enter');await expect(page).toHaveURL(/\/disfraces\/#producto=spider$/);await expect(page.getByRole('dialog')).toBeVisible();await expect(page.getByRole('dialog').getByRole('heading',{name:'Spider-Man rojo'})).toBeVisible();await page.getByRole('button',{name:'Cerrar detalle'}).click();
   await page.evaluate(()=>window.scrollTo(0,700));await expect.poll(()=>page.locator('.site-header').evaluate(el=>Math.round(el.getBoundingClientRect().top))).toBe(0);
   const hb=await page.locator('.site-header').boundingBox();for(const cls of ['.floating-cart','.floating-wa']){const b=await page.locator(cls).boundingBox();expect(b.y+b.height<=hb.y||b.y>=hb.y+hb.height).toBe(true);}
