@@ -40,6 +40,15 @@ no permitidos. Las pruebas de navegador cubren creación y publicación en ambas
 y celular. Usan el backend real del repositorio con hojas en memoria y servicios
 externos simulados; no envían correos ni cambian el catálogo de producción.
 
+Resultado del 3 de noviembre: 291 pruebas de la suite unitaria y 2 adicionales
+del nuevo ensayo, 20 Playwright en los cuatro tamaños y build estático correcto.
+El ensayo real en la copia privada de Sheets completó en **74.193 ms**: dos
+productos nuevos públicos, dos borradores publicados, seis eventos del Editor
+confirmados y rechazo de operaciones prohibidas. Después se retiraron las cuatro
+fichas y la cuenta ficticia. Se verificó igualdad de productos originales,
+categorías y propiedades de cuentas antes/después. El correo estaba deshabilitado
+y el proyecto de ensayo no tenía implementación.
+
 ## Vuelta atrás
 
 Volver a la versión anterior de la misma implementación y al frontend anterior
