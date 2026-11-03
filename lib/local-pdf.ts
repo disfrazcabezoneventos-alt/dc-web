@@ -1,3 +1,5 @@
+import {rentalPricingText} from './rental-pricing';
+import {money} from './model';
 import {PDFDocument,StandardFonts,rgb} from 'pdf-lib';
 import {BRAND,Rental,dateAR,norm} from './model';
 import {localTerms} from './local-terms';
@@ -8,7 +10,7 @@ const summaries:Record<string,[string,string]>={
  'Solicitud, revisión y confirmación':['Confirmación','El envío no acredita pagos ni entrega. El local verifica identidad, disponibilidad y condiciones antes de confirmar o despachar.'],
  'Identidad y documentación obligatoria':['Identidad','Contratante mayor de 18 años, datos y DNI auténticos. Se conservan frente y dorso del DNI; no se exige comprobante de domicilio.'],
  'Trajes, precio y seña':['Alquiler','Tarifa aceptada por tipo y cantidad. Retiro en el día: alquiler completo; fechas futuras: 50% o 100%. La garantía es separada.'],
- 'Saldo de reservas con pago parcial':['Precio y saldo','El 100% congela el precio. Con pago parcial se descuenta lo abonado del precio vigente previamente informado, respetando los derechos del consumidor.'],
+ 'Saldo de reservas con pago parcial':['Precio y saldo','Se conserva el cálculo aceptado. Saldo: total registrado menos cobros verificados. Los cambios de tarifa o promociones no recalculan reservas recibidas.'],
  'Datos de cobro y comprobante':['Cobros','El pago se verifica y registra por separado en el local. La modalidad elegida en este formulario no acredita un pago.'],
  'Depósito de garantía':['Garantía','Depósito reembolsable en efectivo al retirar. Se revisan las piezas frente al cliente y se devuelve al restituirlas completas y en condiciones.'],
  'Fechas, horarios y período incluido':['Horarios','Retiro: L-V 16-20 h; sáb. 10-12 h. Devolución: L-V 10-14 h; sáb. 10-12 h. Viernes a lunes integra el período base. Excepciones con autorización previa.'],
@@ -96,6 +98,7 @@ export async function localContractPdf(r:Rental,code:string,createdAt:string,sig
    tableRow([i.name,category+(detail&&!['adulto','adultos','cabezon','cabezones'].includes(norm(detail))?' / '+detail:''),String(i.quantity),'','']);
   });
   y-=7;
+  if(r.pricing)row([rentalPricingText(r.pricing,money).replace(/\n/g,' · ')],[width],size);
   row(['Alquiler / precio: $ __________','Seguro / garantía: $ __________','Modalidad: '+(r.payMode==='full'?'100%':'50%')],[width/3,width/3,width/3],size,true);
   row(['Cobros a verificar y registrar en el local. Este formulario no acredita pagos.'],[width],7.8);
   const yes=(value:boolean)=>value?'Sí':'No';

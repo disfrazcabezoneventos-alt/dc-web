@@ -13,7 +13,7 @@ function setup(mode='alquiler',area='disfraces'){
   CacheService:{getScriptCache:()=>({get:key=>cache.get(key),put:(key,value)=>cache.set(key,value),remove:key=>cache.delete(key)})},
   Utilities:{getUuid:()=>crypto.randomUUID(),Charset:{UTF_8:'utf8'},DigestAlgorithm:{SHA_256:'sha256'},computeDigest:(_a,value)=>[...crypto.createHash('sha256').update(value).digest()]}
  });
- vm.runInContext(fs.readFileSync('backend/Code.gs','utf8'),ctx);
+ vm.runInContext(['RentalPricing.gs','RentalPromotions.gs','Code.gs'].map(p=>fs.readFileSync('backend/'+p,'utf8')).join('\n'),ctx);
  ctx.rows_=name=>structuredClone(tables[name]||[]);
  ctx.put_=(name,p)=>{writes.push(name);const i=tables[name].findIndex(x=>x.id===p.id);tables[name][i]=structuredClone(p);return p;};
  ctx.recoverStock_=()=>{throw Error('No ejecutar mantenimiento en quickUpdate');};

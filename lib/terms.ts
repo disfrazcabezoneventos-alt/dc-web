@@ -13,11 +13,11 @@ export const terms: {title:string;body:string}[] = [
   },
   {
     "title": "Trajes, precio y seña",
-    "body": "Una contratación puede incluir varios trajes de adultos, cabezones o ambas categorías, con las mismas fechas de retiro y devolución. El contratante completa los personajes, cantidades, fechas, franjas horarias y precio total previamente acordados por WhatsApp, incluyendo las promociones aplicables. La seña equivale al 50% del precio total del alquiler: no incluye el depósito de garantía ni se calcula sobre alquiler más garantía. El saldo del alquiler se abona al retirar. Valores informados para esta versión, por traje: adulto, alquiler $60.000 y garantía $60.000; cabezón, alquiler $75.000 y garantía $100.000. El presupuesto particular y cualquier promoción deben quedar registrados para su revisión."
+    "body": "Una contratación puede incluir varios trajes de adultos, cabezones o ambas categorías, con las mismas fechas de retiro y devolución. El contratante completa personajes, cantidades, fechas y franjas horarias. El alquiler se calcula automáticamente con el precio de lista vigente por tipo de traje y las promociones activas al enviar, sin mezclar adultos y cabezones. Se conserva el detalle del cálculo aceptado; las reservas anteriores no se recalculan. La seña equivale al 50% del precio total del alquiler: no incluye el depósito de garantía ni se calcula sobre alquiler más garantía. El saldo del alquiler se abona al retirar. Valores informados para esta versión, por traje: adulto, alquiler $60.000 y garantía $60.000; cabezón, alquiler $75.000 y garantía $100.000. El resumen conserva subtotal, bonificaciones, descuento y total. Promociones solo para alquiler: 2x1 en disfraces de adulto y 3x2 en cabezones, sin mezclar categorías, mientras estén activas; no tienen fecha de vencimiento y el administrador puede apagarlas. La garantía se cobra por cada traje, incluidos los bonificados."
   },
   {
     "title": "Saldo de reservas con pago parcial",
-    "body": "El pago del 100% del alquiler congela el precio acordado. Según la política comercial informada, el pago parcial no congela el precio del alquiler: al retirar se descuenta del precio vigente la totalidad del dinero ya abonado. Ejemplo: si el precio inicial era $60.000, se abonaron $30.000 y el precio aplicable pasa a $80.000, el saldo resulta de $50.000, más el depósito de garantía. El importe y toda modificación deben informarse de forma clara y previa, respetando los derechos que correspondan al consumidor. Esta política no autoriza a desconocer una oferta o un precio que legalmente deba respetarse."
+    "body": "El pago del 100% congela el total calculado con la tarifa y las promociones aceptadas. Con seña del 50%, el saldo es el total del alquiler registrado menos los cobros verificados, con la garantía por separado. Apagar una promoción o cambiar la tarifa no recalcula reservas ya recibidas. Cualquier modificación posterior del acuerdo debe informarse y registrarse expresamente, respetando los derechos del consumidor."
   },
   {
     "title": "Datos de cobro y comprobante",
@@ -25,7 +25,7 @@ export const terms: {title:string;body:string}[] = [
   },
   {
     "title": "Depósito de garantía",
-    "body": "El importe denominado habitualmente seguro es un depósito de garantía reembolsable, separado del alquiler. Se entrega al retirar, en efectivo billete, por cada traje incluido. Al devolver, se revisan frente al cliente todas las piezas y su estado. Si todo está completo y en las condiciones correspondientes, el depósito se reintegra en ese mismo momento. Los daños, faltantes, suciedad excesiva o cargos por demora deben documentarse y liquidarse conforme a las condiciones siguientes. El depósito no representa una contratación de seguro con una aseguradora."
+    "body": "El depósito de garantía —habitualmente llamado “seguro”— es reembolsable y separado del alquiler: $60.000 por adulto y $100.000 por cabezón, por cada traje, incluidos los bonificados. Se entrega al retirar, en efectivo billete. Al devolver se revisan frente al cliente las piezas y su estado. Si todo está completo y en condiciones, se reintegra en ese momento. Daños, faltantes, suciedad excesiva y demoras deben documentarse y liquidarse según estas condiciones. No es un seguro contratado con una aseguradora."
   },
   {
     "title": "Fechas, horarios y período incluido",

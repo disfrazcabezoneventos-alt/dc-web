@@ -1,9 +1,10 @@
+import type {RentalCalculation} from './rental-pricing';
 export const BRAND = {name:'Disfraz Cabezón',owner:'Lorena Ughetti',cuit:'27-29478271-6',address:'Av. Rivadavia 3314, CABA',phone:'1149897969',email:'disfrazcabezoneventos@gmail.com'};
 export const OWNER_EMAIL = 'disfrazcabezoneventos@gmail.com';
-export const VERSION = 'DC-2026-10-09.1';
+export const VERSION = 'DC-2026-11-03.2';
 export const STATUS:Record<string,string>={pending:'Pendiente',correction:'A corregir',confirmed:'Confirmado',rejected:'Rechazado',refund_pending:'Reintegro pendiente',refunded:'Reintegrado',returned:'Devuelto',incident:'Con incidencia',cancel_requested:'Cancelación solicitada'};
 export type Costume={name:string;category:'adulto'|'cabezon';quantity:number;catalogCategoryId?:string;catalogCategory?:string;productId?:string};
-export type Rental={fullName:string;dni:string;birthDate:string;address:string;city:string;phone:string;altPhone:string;email:string;items:Costume[];pickupDate:string;returnDate:string;pickupWindow:string;returnWindow:string;specialSchedule:boolean;scheduleAgreement:string;total:number;payMode:'half'|'full';pickupBy:'self'|'other';authorizedName:string;authorizedDni:string;docType:string;docDate:string;namesMatch:boolean;adult:boolean;privacy:boolean;priorInfo:boolean;truth:boolean;terms:boolean;clarification:string;requestKey:string};
+export type Rental={pricing?:RentalCalculation;fullName:string;dni:string;birthDate:string;address:string;city:string;phone:string;altPhone:string;email:string;items:Costume[];pickupDate:string;returnDate:string;pickupWindow:string;returnWindow:string;specialSchedule:boolean;scheduleAgreement:string;total:number;payMode:'half'|'full';pickupBy:'self'|'other';authorizedName:string;authorizedDni:string;docType:string;docDate:string;namesMatch:boolean;adult:boolean;privacy:boolean;priorInfo:boolean;truth:boolean;terms:boolean;clarification:string;requestKey:string};
 export const EMPTY:Rental={fullName:'',dni:'',birthDate:'',address:'',city:'',phone:'',altPhone:'',email:'',items:[{name:'',category:'adulto',quantity:1}],pickupDate:'',returnDate:'',pickupWindow:'',returnWindow:'',specialSchedule:false,scheduleAgreement:'',total:0,payMode:'half',pickupBy:'self',authorizedName:'',authorizedDni:'',docType:'servicio',docDate:'',namesMatch:false,adult:false,privacy:false,priorInfo:false,truth:false,terms:false,clarification:'',requestKey:''};
 export const money=(v:number)=>new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',maximumFractionDigits:0}).format(v);
 export function dateAR(s:string){if(!s)return '—';return new Date(s.length===10?s+'T12:00:00Z':s).toLocaleDateString('es-AR',{timeZone:'America/Argentina/Buenos_Aires',day:'2-digit',month:'2-digit',year:'numeric'});}
@@ -29,7 +30,7 @@ export function validate(r:Rental,step:number,now=todayAR()):Record<string,strin
  if(!/^\d{4}-\d{2}-\d{2}$/.test(r.returnDate??'')||isNaN(Date.parse(r.returnDate+'T12:00:00Z'))||r.returnDate<r.pickupDate)e.returnDate='La devolución debe ser igual o posterior al retiro.';
  if(!r.pickupWindow)e.pickupWindow='Elegí el horario de retiro.';if(!r.returnWindow)e.returnWindow='Elegí el horario de devolución.';
  if(r.specialSchedule){if(!r.scheduleAgreement?.trim())e.scheduleAgreement='Indicá la excepción ya autorizada por Disfraz Cabezón.';}else{if(r.pickupWindow!==windows(r.pickupDate,'pickup')||!windows(r.pickupDate,'pickup'))e.pickupWindow='Para este día hace falta una excepción previamente autorizada.';if(r.returnWindow!==windows(r.returnDate,'return')||!windows(r.returnDate,'return'))e.returnWindow='Para este día hace falta una excepción previamente autorizada.';}
- if(!Number.isFinite(r.total)||r.total<=0||r.total>100000000)e.total='Ingresá el total del alquiler acordado por WhatsApp.';
+ if(!Number.isFinite(r.total)||r.total<=0||r.total>100000000)e.total='No pudimos calcular el alquiler. Actualizá precios y promociones.';
  if(!['half','full'].includes(r.payMode))e.payMode='Elegí la modalidad de pago.';
  if(!['self','other'].includes(r.pickupBy))e.pickupBy='Indicá quién retira.';
  if(r.pickupBy==='other'){req('authorizedName','Ingresá nombre completo de quien retira.');if(!/^\d{7,8}$/.test(r.authorizedDni??''))e.authorizedDni='Ingresá el DNI de quien retira.';}

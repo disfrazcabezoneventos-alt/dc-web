@@ -1,7 +1,7 @@
 // Generado desde lib/model.ts, terms.ts, local-rental.ts y local-terms.ts. No editar por separado.
 const BRAND = { name: 'Disfraz Cabezón', owner: 'Lorena Ughetti', cuit: '27-29478271-6', address: 'Av. Rivadavia 3314, CABA', phone: '1149897969', email: 'disfrazcabezoneventos@gmail.com' };
 const OWNER_EMAIL = 'disfrazcabezoneventos@gmail.com';
-const VERSION = 'DC-2026-10-09.1';
+const VERSION = 'DC-2026-11-03.2';
 const STATUS = { pending: 'Pendiente', correction: 'A corregir', confirmed: 'Confirmado', rejected: 'Rechazado', refund_pending: 'Reintegro pendiente', refunded: 'Reintegrado', returned: 'Devuelto', incident: 'Con incidencia', cancel_requested: 'Cancelación solicitada' };
 const EMPTY = { fullName: '', dni: '', birthDate: '', address: '', city: '', phone: '', altPhone: '', email: '', items: [{ name: '', category: 'adulto', quantity: 1 }], pickupDate: '', returnDate: '', pickupWindow: '', returnWindow: '', specialSchedule: false, scheduleAgreement: '', total: 0, payMode: 'half', pickupBy: 'self', authorizedName: '', authorizedDni: '', docType: 'servicio', docDate: '', namesMatch: false, adult: false, privacy: false, priorInfo: false, truth: false, terms: false, clarification: '', requestKey: '' };
 const money = (v) => new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(v);
@@ -73,7 +73,7 @@ function validate(r, step, now = todayAR()) {
                 e.returnWindow = 'Para este día hace falta una excepción previamente autorizada.';
         }
         if (!Number.isFinite(r.total) || r.total <= 0 || r.total > 100000000)
-            e.total = 'Ingresá el total del alquiler acordado por WhatsApp.';
+            e.total = 'No pudimos calcular el alquiler. Actualizá precios y promociones.';
         if (!['half', 'full'].includes(r.payMode))
             e.payMode = 'Elegí la modalidad de pago.';
         if (!['self', 'other'].includes(r.pickupBy))
@@ -123,11 +123,11 @@ const TERMS = [
     },
     {
         "title": "Trajes, precio y seña",
-        "body": "Una contratación puede incluir varios trajes de adultos, cabezones o ambas categorías, con las mismas fechas de retiro y devolución. El contratante completa los personajes, cantidades, fechas, franjas horarias y precio total previamente acordados por WhatsApp, incluyendo las promociones aplicables. La seña equivale al 50% del precio total del alquiler: no incluye el depósito de garantía ni se calcula sobre alquiler más garantía. El saldo del alquiler se abona al retirar. Valores informados para esta versión, por traje: adulto, alquiler $60.000 y garantía $60.000; cabezón, alquiler $75.000 y garantía $100.000. El presupuesto particular y cualquier promoción deben quedar registrados para su revisión."
+        "body": "Una contratación puede incluir varios trajes de adultos, cabezones o ambas categorías, con las mismas fechas de retiro y devolución. El contratante completa personajes, cantidades, fechas y franjas horarias. El alquiler se calcula automáticamente con el precio de lista vigente por tipo de traje y las promociones activas al enviar, sin mezclar adultos y cabezones. Se conserva el detalle del cálculo aceptado; las reservas anteriores no se recalculan. La seña equivale al 50% del precio total del alquiler: no incluye el depósito de garantía ni se calcula sobre alquiler más garantía. El saldo del alquiler se abona al retirar. Valores informados para esta versión, por traje: adulto, alquiler $60.000 y garantía $60.000; cabezón, alquiler $75.000 y garantía $100.000. El resumen conserva subtotal, bonificaciones, descuento y total. Promociones solo para alquiler: 2x1 en disfraces de adulto y 3x2 en cabezones, sin mezclar categorías, mientras estén activas; no tienen fecha de vencimiento y el administrador puede apagarlas. La garantía se cobra por cada traje, incluidos los bonificados."
     },
     {
         "title": "Saldo de reservas con pago parcial",
-        "body": "El pago del 100% del alquiler congela el precio acordado. Según la política comercial informada, el pago parcial no congela el precio del alquiler: al retirar se descuenta del precio vigente la totalidad del dinero ya abonado. Ejemplo: si el precio inicial era $60.000, se abonaron $30.000 y el precio aplicable pasa a $80.000, el saldo resulta de $50.000, más el depósito de garantía. El importe y toda modificación deben informarse de forma clara y previa, respetando los derechos que correspondan al consumidor. Esta política no autoriza a desconocer una oferta o un precio que legalmente deba respetarse."
+        "body": "El pago del 100% congela el total calculado con la tarifa y las promociones aceptadas. Con seña del 50%, el saldo es el total del alquiler registrado menos los cobros verificados, con la garantía por separado. Apagar una promoción o cambiar la tarifa no recalcula reservas ya recibidas. Cualquier modificación posterior del acuerdo debe informarse y registrarse expresamente, respetando los derechos del consumidor."
     },
     {
         "title": "Datos de cobro y comprobante",
@@ -135,7 +135,7 @@ const TERMS = [
     },
     {
         "title": "Depósito de garantía",
-        "body": "El importe denominado habitualmente seguro es un depósito de garantía reembolsable, separado del alquiler. Se entrega al retirar, en efectivo billete, por cada traje incluido. Al devolver, se revisan frente al cliente todas las piezas y su estado. Si todo está completo y en las condiciones correspondientes, el depósito se reintegra en ese mismo momento. Los daños, faltantes, suciedad excesiva o cargos por demora deben documentarse y liquidarse conforme a las condiciones siguientes. El depósito no representa una contratación de seguro con una aseguradora."
+        "body": "El depósito de garantía —habitualmente llamado “seguro”— es reembolsable y separado del alquiler: $60.000 por adulto y $100.000 por cabezón, por cada traje, incluidos los bonificados. Se entrega al retirar, en efectivo billete. Al devolver se revisan frente al cliente las piezas y su estado. Si todo está completo y en condiciones, se reintegra en ese momento. Daños, faltantes, suciedad excesiva y demoras deben documentarse y liquidarse según estas condiciones. No es un seguro contratado con una aseguradora."
     },
     {
         "title": "Fechas, horarios y período incluido",
@@ -179,11 +179,8 @@ const TERMS = [
     }
 ];
 const DEFAULT_RENTAL_PRICES = { adulto: 60000, cabezon: 75000, revision: 'default' };
-const LOCAL_TERMS_VERSION = 'DC-LOCAL-2026-10-29.1';
+const LOCAL_TERMS_VERSION = 'DC-LOCAL-2026-11-03.2';
 const FORM_STATES = { reserved: 'Reserva', dispatched: 'Despachado', finished: 'Finalizado' };
-function localTotal(items, prices) {
-    return Math.round(items.reduce((sum, item) => sum + (prices[item.category] || 0) * item.quantity, 0) * 100) / 100;
-}
 function localSchedule(r, now = todayAR()) {
     return { ...r, pickupWindow: windows(r.pickupDate, 'pickup'), returnWindow: windows(r.returnDate, 'return'), specialSchedule: false, scheduleAgreement: '', payMode: r.pickupDate === now ? 'full' : r.payMode };
 }
@@ -212,7 +209,7 @@ function validateLocal(r, step, now = todayAR()) {
 const replacements = {
     'Solicitud, revisión y confirmación': 'Este formulario se completa presencialmente en el local y registra una solicitud de alquiler. No acredita pagos ni confirma por sí solo la entrega. El equipo verifica identidad, disponibilidad y las condiciones particulares antes de confirmar o despachar el alquiler.',
     'Identidad y documentación obligatoria': 'Debe contratar una persona mayor de 18 años. Se solicitan datos del contratante, domicilio declarado, teléfonos, correo y fotos del frente y dorso del DNI, tapando el número de trámite. En esta modalidad presencial no se solicita comprobante de domicilio. El personal revisa la identidad y los documentos.',
-    'Trajes, precio y seña': 'El precio por traje se obtiene de la tarifa vigente del local para Disfraz adulto o Disfraz cabezón, multiplicada por la cantidad. El resumen conserva la tarifa aceptada al enviar. Para retiros en el mismo día corresponde alquiler completo; para fechas futuras puede elegirse 50% o alquiler completo. Esta elección indica la modalidad acordada y no declara que el pago haya sido realizado. La garantía se informa por separado.',
+    'Trajes, precio y seña': 'El alquiler se calcula automáticamente con la tarifa de lista y las promociones activas por tipo de traje, sin mezclar adultos y cabezones. El resumen conserva precios de lista, subtotal, bonificaciones, descuento y total al enviar. La garantía corresponde a todos los trajes, incluidos los bonificados. Para retiros en el mismo día corresponde alquiler completo; para fechas futuras puede elegirse 50% o alquiler completo. Esta elección indica la modalidad acordada y no declara que el pago haya sido realizado. La garantía se informa por separado. Por traje: adulto, alquiler $60.000 y garantía $60.000; cabezón, alquiler $75.000 y garantía $100.000. Promociones solo para alquiler: 2x1 en disfraces de adulto y 3x2 en cabezones, sin mezclar categorías, mientras estén activas; no tienen fecha de vencimiento y el administrador puede apagarlas. La garantía se cobra por cada traje, incluidos los bonificados.',
     'Datos de cobro y comprobante': 'El pago se gestiona presencialmente con el equipo. Este formulario no solicita ni admite comprobantes de pago, no muestra una cuenta bancaria y no registra cobros. La modalidad elegida no acredita un pago. Cualquier cobro debe verificarse y registrarse por separado en el local.',
     'Información previa y cancelaciones': 'El contratante declara haber recibido en el local información sobre los trajes, precios, fechas, horarios, reserva, modalidad de pago, garantía, devolución, daños y faltantes. Las condiciones particulares quedan registradas para su revisión. Esta declaración no implica renuncia a derechos legales. Las cancelaciones se comunican al negocio por sus canales habituales.',
     'Declaración, firma electrónica y copias': 'El contratante declara que es mayor de 18 años y que los datos declarados y las fotos del DNI son auténticos, actuales y propios. El nombre del formulario, el DNI y la aclaración corresponden a la misma persona. La firma electrónica comprende la solicitud y, si corresponde, la autorización de retiro por otra persona. Se conserva la versión de estas condiciones, fecha, datos y firma originales. El cliente puede descargar su copia electrónica; las modificaciones de gestión posteriores no sustituyen la aceptación original.',

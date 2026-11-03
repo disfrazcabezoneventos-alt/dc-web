@@ -3,9 +3,13 @@ import assert from 'node:assert/strict';
 import {PDFDocument} from 'pdf-lib';
 import {pdfModules} from './pdf-harness.mjs';
 import {fixture,png} from './local-forms-harness.mjs';
-const {pdf,local,terms,webTerms}=pdfModules();
+const {pdf,local,terms,webTerms,pricing}=pdfModules();
 const signature=Buffer.from(png.base64,'base64');
 const create=(r,source='local',conditions=terms,layout='compact')=>pdf.contractPdf(r,'LOCAL-PRUEBA','2026-10-30T12:00:00Z',signature,conditions,'a'.repeat(64),'DC-LOCAL-2026-10-29.1',source,layout);
+
+test('PDF local con promociones: desglose firmado legible en una hoja para 1, 3 y 8 ítems',async()=>{
+ for(const count of [1,3,8]){const r=fixture();r.items=Array.from({length:count},(_,n)=>({name:'Personaje de ensayo '+n,category:n%2?'cabezon':'adulto',quantity:2,catalogCategory:n%2?'Cabezones':'Hombres'}));r.pricing=pricing.calculateRental(r.items,{adulto:60000,cabezon:75000},pricing.DEFAULT_PROMOTIONS);r.total=r.pricing.total;assert.equal((await PDFDocument.load(await create(r))).getPageCount(),1);}
+});
 
 test('PDF local: una hoja A4 con firma y varias categorías; conserva todos los datos originales',async()=>{
  for(const count of [1,3,8]){

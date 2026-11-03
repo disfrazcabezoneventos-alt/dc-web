@@ -20,12 +20,13 @@ test('local: firma y DNI obligatorios, sin cuenta bancaria, sin pago ni domicili
  assert.throws(()=>h.dispatch({...body,access:'b'.repeat(72)}),/otros datos/);
  for(const slot of ['dniFront','dniBack','signature']){const h2=localHarness(),next=submission(h2);delete next.files[slot];assert.throws(()=>h2.dispatch(next),/archivo/);assert.equal(h2.tables.reservas.length,0)}
 });
-test('local: no permite adulterar precios, horario, mismo día con seña ni documentos extra',()=>{
- for(const patch of [{total:1},{payMode:'half'},{pickupWindow:'a cualquier hora'},{specialSchedule:true},{docType:'servicio'}]){
+test('local: recalcula el total adulterado; rechaza horario, mismo día con seña y documentos extra',()=>{
+ const recalculated=localHarness();recalculated.dispatch(submission(recalculated,{...fixture(),total:1}));assert.equal(recalculated.tables.reservas[0].data.total,60000);assert.equal(recalculated.tables.reservas[0].pricingSnapshot.declaredTotal,1);
+ for(const patch of [{payMode:'half'},{pickupWindow:'a cualquier hora'},{specialSchedule:true},{docType:'servicio'}]){
   const h=localHarness();assert.throws(()=>h.dispatch(submission(h,{...fixture(),...patch})));assert.equal(h.tables.reservas.length,0);
  }
  const h=localHarness(),body=submission(h);body.files.receipt=png;assert.throws(()=>h.dispatch(body),/solo admite/);
- const h2=localHarness();assert.throws(()=>h2.dispatch({...submission(h2),pricingRevision:'old'}),/precios cambiaron/);
+ const h2=localHarness();assert.throws(()=>h2.dispatch({...submission(h2),pricingRevision:'old'}),/precios o promociones cambiaron/);
 });
 test('local: calcula adulto más cabezón por cantidades y admite seña futura',()=>{
  const h=localHarness(),data=fixture();data.pickupDate='2026-10-30';data.returnDate='2026-11-02';data.payMode='half';

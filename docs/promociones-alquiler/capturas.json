@@ -1,0 +1,512 @@
+[
+  {
+    "file": "contrato-pagina-1.png",
+    "width": 849,
+    "height": 1200,
+    "sha256": "10fe329499c4bf914e7e7157f798b4f1ae35a174ca93c371dc89f1c0001f9b6d"
+  },
+  {
+    "file": "contrato-pagina-2.png",
+    "width": 849,
+    "height": 1200,
+    "sha256": "0068e50e7f390eb66c564373d3aef185b602c978130f64d8f55548ce6d624749"
+  },
+  {
+    "file": "contrato-pagina-3.png",
+    "width": 849,
+    "height": 1200,
+    "sha256": "bcd2bf29fc75ef7e0b570d4f85505baefc262dad35f516c6daf7382784a3c046"
+  },
+  {
+    "file": "contrato-pagina-4.png",
+    "width": 849,
+    "height": 1200,
+    "sha256": "2d4f902cc67ebb6ed14bbb3decdf02f15e4ac31ea3392bc2a41699e3470ec10a"
+  },
+  {
+    "file": "contrato-pagina-5.png",
+    "width": 849,
+    "height": 1200,
+    "sha256": "66ac8c3fb836e6b731600013b301f8fe36241f2f440b48da0034ce676a44207c"
+  },
+  {
+    "file": "desktop-default-catalogo-corregido.png",
+    "width": 1440,
+    "height": 2446,
+    "sha256": "70a72d3d7dc91cbb8d160c27b90e3fd1217d2e0cc6d940b59cac25322728038e"
+  },
+  {
+    "file": "desktop-default-catalogo.png",
+    "width": 1440,
+    "height": 1918,
+    "sha256": "672dfa385119a125e27b40c9cd1be0e0a3ebcdf489e94917791b1620cbbbeaba"
+  },
+  {
+    "file": "desktop-default-detalle-adulto.png",
+    "width": 1440,
+    "height": 1000,
+    "sha256": "d4d65addf65fb1ba9a7d792e6a034157c7f90cefa6fe200ec8b3692fdfc7ce08"
+  },
+  {
+    "file": "desktop-default-detalle-cabezon.png",
+    "width": 1440,
+    "height": 1000,
+    "sha256": "7f55e08da1dc828a2f065c4c6bc6c608bea332e222ea235f909ff97ab3c6d468"
+  },
+  {
+    "file": "desktop-default-inicio.png",
+    "width": 1440,
+    "height": 1000,
+    "sha256": "b2914aace2ff3fe31cc026deab409963d7d3467b90de0af0e640882d9573a201"
+  },
+  {
+    "file": "desktop-default-local-firma.png",
+    "width": 1440,
+    "height": 1000,
+    "sha256": "08d3f227b1b6efcd6c6ae1ab421b46068c1f22762f1146b9c2247f6822ce42ef"
+  },
+  {
+    "file": "desktop-default-local-resumen.png",
+    "width": 1440,
+    "height": 1000,
+    "sha256": "373e24b95dd830e5e17d589875b7e30af972391b3370daf998e317fbb55fdffc"
+  },
+  {
+    "file": "desktop-default-web-firma.png",
+    "width": 1440,
+    "height": 1000,
+    "sha256": "50b7dcabc5dd1745c565f73c79802d8967dfd4fe35da4962655121bc7b19a500"
+  },
+  {
+    "file": "desktop-default-web-pago.png",
+    "width": 1440,
+    "height": 1000,
+    "sha256": "39b2aec8c712b3d068912c36c0bcdb196ccc3d8f0a8e2c417d72ecad1a30ff18"
+  },
+  {
+    "file": "desktop-default-web-resumen.png",
+    "width": 1440,
+    "height": 1000,
+    "sha256": "974cb5f7efb0611a3f024111629deda1c9a2040b544e9cb67eddf7c85e3ee1ae"
+  },
+  {
+    "file": "desktop-halloween-catalogo-corregido.png",
+    "width": 1440,
+    "height": 2550,
+    "sha256": "20123672ed3438c34df732558f8a6fc19a26d72be0b741552b4e9aaa30b0025d"
+  },
+  {
+    "file": "desktop-halloween-catalogo.png",
+    "width": 1440,
+    "height": 2022,
+    "sha256": "b53dca09a8f2b9ca52cffe8abc7333aea30c8af19db43745828f4bd92e62e493"
+  },
+  {
+    "file": "desktop-halloween-detalle-adulto.png",
+    "width": 1440,
+    "height": 1000,
+    "sha256": "0a89f0a713274f046130819961a77fa3f79ef989c91e9c63fb5c8fa381262fd0"
+  },
+  {
+    "file": "desktop-halloween-detalle-cabezon.png",
+    "width": 1440,
+    "height": 1000,
+    "sha256": "596672fbd5b79acb0ddd58dfefe2d5fb83461087958646f2e0d1763120bae38a"
+  },
+  {
+    "file": "desktop-halloween-inicio.png",
+    "width": 1440,
+    "height": 1000,
+    "sha256": "a5c2885949acfaf0983ea177eec5f31553d51d36b22315b48e91164bb9740eb6"
+  },
+  {
+    "file": "desktop-halloween-local-firma.png",
+    "width": 1440,
+    "height": 1000,
+    "sha256": "41de5f341b7834e33b3869140d32f6597b8e6964a826920ee29f6b4d37e07c6a"
+  },
+  {
+    "file": "desktop-halloween-local-resumen.png",
+    "width": 1440,
+    "height": 1000,
+    "sha256": "602e629a63b3ebd9fc042a0a15c31521ba88969c1511891cd4291a618b1a5477"
+  },
+  {
+    "file": "desktop-halloween-web-firma.png",
+    "width": 1440,
+    "height": 1000,
+    "sha256": "238025dde2bd441d5c48cd5f4ea11837da0c9ce88732d1f243a9b26db4103f49"
+  },
+  {
+    "file": "desktop-halloween-web-pago.png",
+    "width": 1440,
+    "height": 1000,
+    "sha256": "839a3eb667e81e40f8c87325bf631159d19eaa9c6ecb6b8dfbf5dbf86a289268"
+  },
+  {
+    "file": "desktop-halloween-web-resumen.png",
+    "width": 1440,
+    "height": 1000,
+    "sha256": "37b31295cf7dcf26044e318834a0228e12dac5dc6c67980fff727b8c0b55bb0d"
+  },
+  {
+    "file": "mobile-360-default-catalogo-corregido.png",
+    "width": 360,
+    "height": 2845,
+    "sha256": "87d058bbdd7717022a7f35031dba24902a775dda9a30fab0d8fba276007b52b0"
+  },
+  {
+    "file": "mobile-360-default-catalogo.png",
+    "width": 360,
+    "height": 2043,
+    "sha256": "3774109146f47665f43a171bf205d8b70122d5e0041161b5ec3a273b36071ec9"
+  },
+  {
+    "file": "mobile-360-default-detalle-adulto.png",
+    "width": 360,
+    "height": 640,
+    "sha256": "cc0253fcbf4f35e5608822ae1d99baa2206f7cd43988038d1a3eb894e8b327a4"
+  },
+  {
+    "file": "mobile-360-default-detalle-cabezon.png",
+    "width": 360,
+    "height": 640,
+    "sha256": "74532cca87546a9293ce5664659b14c99e1898c4dead8901fdb579531688d133"
+  },
+  {
+    "file": "mobile-360-default-inicio.png",
+    "width": 360,
+    "height": 640,
+    "sha256": "ffe60dc9884a2e763b58df76393f3832afdd688de45d5d635471fa2f33d6fe90"
+  },
+  {
+    "file": "mobile-360-default-local-firma.png",
+    "width": 360,
+    "height": 640,
+    "sha256": "1f0d477a56e544cca8ce1a08f77f267727d340bc770f55a9730346ea1e84bb1c"
+  },
+  {
+    "file": "mobile-360-default-local-resumen.png",
+    "width": 360,
+    "height": 640,
+    "sha256": "953bd1b658b01d5a15fca7a6f332c78699219127f5845122eac8316e5dd34d71"
+  },
+  {
+    "file": "mobile-360-default-web-firma.png",
+    "width": 360,
+    "height": 640,
+    "sha256": "00f9fc1a45f5765964d21a16984733044622d5b5d92852caca6b244e8307f6a7"
+  },
+  {
+    "file": "mobile-360-default-web-pago.png",
+    "width": 360,
+    "height": 640,
+    "sha256": "418377e6869754d8ad9daac2dc69541ef7c3b93a895b0b7e69488b132e42c89f"
+  },
+  {
+    "file": "mobile-360-default-web-resumen.png",
+    "width": 360,
+    "height": 640,
+    "sha256": "98ef6c366613994747254229f9a8b578246445552b311557a9b3fd1b10e4be75"
+  },
+  {
+    "file": "mobile-360-halloween-catalogo-corregido.png",
+    "width": 360,
+    "height": 2948,
+    "sha256": "5a4845d8d938469b5228052500aac9446e6f3575bb3e07bb34744901317a57cb"
+  },
+  {
+    "file": "mobile-360-halloween-catalogo.png",
+    "width": 360,
+    "height": 2147,
+    "sha256": "a592fae7737e35422732fa166e4ebf076ad990ab3c6886ca33e3bbfef2045e02"
+  },
+  {
+    "file": "mobile-360-halloween-detalle-adulto.png",
+    "width": 360,
+    "height": 640,
+    "sha256": "b0844ed795c8024a7fd9c16842c4d951e62634d5d4021d818eeae3c8be1aa9bc"
+  },
+  {
+    "file": "mobile-360-halloween-detalle-cabezon.png",
+    "width": 360,
+    "height": 640,
+    "sha256": "bc688e51dbefdc2194bacdc8927714aba7378ae0823cc5cb53e87e73124985a0"
+  },
+  {
+    "file": "mobile-360-halloween-inicio.png",
+    "width": 360,
+    "height": 640,
+    "sha256": "bdb2fe995a335a9179451bb30ae3f97b176bcc0e9c9ef8e686ee757a4fbcd7f5"
+  },
+  {
+    "file": "mobile-360-halloween-local-firma.png",
+    "width": 360,
+    "height": 640,
+    "sha256": "117967dd7c74af19b28a16a2b1ac7e649638143199d30590a84361cecd3e870d"
+  },
+  {
+    "file": "mobile-360-halloween-local-resumen.png",
+    "width": 360,
+    "height": 640,
+    "sha256": "744a75f51f661ae8fac919e8f566f1ed37129e0ae96aad3c23fb4e22a757d06b"
+  },
+  {
+    "file": "mobile-360-halloween-web-firma.png",
+    "width": 360,
+    "height": 640,
+    "sha256": "18e6028d8b35ab77f25672a380f2be611e91eee6d482e80fa907583b68f7db1f"
+  },
+  {
+    "file": "mobile-360-halloween-web-pago.png",
+    "width": 360,
+    "height": 640,
+    "sha256": "4699ee0590ad77ff2a243641f2efff503f18af0ac85e238a197d53c665cfd2ed"
+  },
+  {
+    "file": "mobile-360-halloween-web-resumen.png",
+    "width": 360,
+    "height": 640,
+    "sha256": "3e313beebc5a2d896728cc640e99cc6ac460c36b00b92b1b09cf8147a368ae4d"
+  },
+  {
+    "file": "mobile-390-default-catalogo-corregido.png",
+    "width": 390,
+    "height": 2907,
+    "sha256": "3260cf0d8be9fea2c2068a91cc7867946e178b33486d7340b82249ec4728d0be"
+  },
+  {
+    "file": "mobile-390-default-catalogo.png",
+    "width": 390,
+    "height": 2075,
+    "sha256": "507ece753ab677b51f5be4cd17f299f048ae6e1ae168c55714e6870a44489da6"
+  },
+  {
+    "file": "mobile-390-default-detalle-adulto.png",
+    "width": 390,
+    "height": 844,
+    "sha256": "246267582c5bc68b9d465be6304aca637561bdc643ddf619249ccf3f7f7dcd9a"
+  },
+  {
+    "file": "mobile-390-default-detalle-cabezon.png",
+    "width": 390,
+    "height": 844,
+    "sha256": "762f95fa1c9e0df10c1a8a73436a28fad315b41bcbc68a824bf9b60c31c02004"
+  },
+  {
+    "file": "mobile-390-default-inicio.png",
+    "width": 390,
+    "height": 844,
+    "sha256": "5343ce1693c8fd9b23bb1dd1248645a6dc27c23e2c8666b494b2ef175dbf0875"
+  },
+  {
+    "file": "mobile-390-default-local-firma.png",
+    "width": 390,
+    "height": 844,
+    "sha256": "c5c6d02a7c683a20909ebb1472cea527968e9df46c8b81b6c765501492cf30b8"
+  },
+  {
+    "file": "mobile-390-default-local-resumen.png",
+    "width": 390,
+    "height": 844,
+    "sha256": "8072f8ce68d816dc333f2090f47f74627bf6f0a519e20a43a7549ad3f5726119"
+  },
+  {
+    "file": "mobile-390-default-web-firma.png",
+    "width": 390,
+    "height": 844,
+    "sha256": "4587ff96da8473d077120bb80c8367cdaa525f6fd092fcb94d323dc926240fa3"
+  },
+  {
+    "file": "mobile-390-default-web-pago.png",
+    "width": 390,
+    "height": 844,
+    "sha256": "e3c9ae9915ac24b4ddf1eb17dbf8bc251986ff790bdb85c0a868fe4a3edf1102"
+  },
+  {
+    "file": "mobile-390-default-web-resumen.png",
+    "width": 390,
+    "height": 844,
+    "sha256": "87f9bcf763701c74a40a357658001957d7014ed416d0cd9f21fd194c923ab40b"
+  },
+  {
+    "file": "mobile-390-halloween-catalogo-corregido.png",
+    "width": 390,
+    "height": 3010,
+    "sha256": "1c2490da0e833ddf07451a28976baf0075d5edc57c27e828649eef039de0bbae"
+  },
+  {
+    "file": "mobile-390-halloween-catalogo.png",
+    "width": 390,
+    "height": 2178,
+    "sha256": "144a97b5170b36eadb4db7a984adec1282883dcb66b5ed9cfc6b5f6606c3143f"
+  },
+  {
+    "file": "mobile-390-halloween-detalle-adulto.png",
+    "width": 390,
+    "height": 844,
+    "sha256": "3057e379ffd1de2363fc8d83f1c72e4a2ce67dca4ebe7aff66fced255c36dde4"
+  },
+  {
+    "file": "mobile-390-halloween-detalle-cabezon.png",
+    "width": 390,
+    "height": 844,
+    "sha256": "986526140c7354a847d4d120f78ac20733db954cb20fc529ab13cc6798477afd"
+  },
+  {
+    "file": "mobile-390-halloween-inicio.png",
+    "width": 390,
+    "height": 844,
+    "sha256": "2e3bb3671d7ab391176f1dd37a5a9904f24aca7adee5f0fa6777965fae714fa2"
+  },
+  {
+    "file": "mobile-390-halloween-local-firma.png",
+    "width": 390,
+    "height": 844,
+    "sha256": "11ed5f97b4e881f2a5420224313a8f3cfe59dee4f3a5534edee7fefd1f83345a"
+  },
+  {
+    "file": "mobile-390-halloween-local-resumen.png",
+    "width": 390,
+    "height": 844,
+    "sha256": "8331b2902ac24e129b61024574ac8d3a24d6cb8ea9bbb27dca8058f3bcfd5f62"
+  },
+  {
+    "file": "mobile-390-halloween-web-firma.png",
+    "width": 390,
+    "height": 844,
+    "sha256": "cde36ebf42439b945eec4fd18a2d86741659f67a875681453e5f61ade479f700"
+  },
+  {
+    "file": "mobile-390-halloween-web-pago.png",
+    "width": 390,
+    "height": 844,
+    "sha256": "9cf1f57c99636c85ca681c049a24a7ce5ca61c3a46aaef68c907b81a581a2cfd"
+  },
+  {
+    "file": "mobile-390-halloween-web-resumen.png",
+    "width": 390,
+    "height": 844,
+    "sha256": "dba3d248ed20b2eaa44c3023e70113c9a185d2d9c7e1a181b3e9908a8ff246e5"
+  },
+  {
+    "file": "tablet-768-default-catalogo-corregido.png",
+    "width": 768,
+    "height": 2098,
+    "sha256": "1e6dab52634db8f5633c8b568a568c25f1ccaa3dcbb9dab9616f1f1a77a0d074"
+  },
+  {
+    "file": "tablet-768-default-catalogo.png",
+    "width": 768,
+    "height": 1728,
+    "sha256": "b5bed6f92c5bbab39c0f98a08449c8657995e55e89e1f3bbbe06000f3f26d348"
+  },
+  {
+    "file": "tablet-768-default-detalle-adulto.png",
+    "width": 768,
+    "height": 1024,
+    "sha256": "a034fe61e0b42900cb45f50c672d9b6b295be008745599e71ca232864f292244"
+  },
+  {
+    "file": "tablet-768-default-detalle-cabezon.png",
+    "width": 768,
+    "height": 1024,
+    "sha256": "96bb2e37e8de9f92a35d03a9a93ad4ca79c19987d11f665fa0a0f6e70082e3a6"
+  },
+  {
+    "file": "tablet-768-default-inicio.png",
+    "width": 768,
+    "height": 1024,
+    "sha256": "01d02a73544e817ff1bd854d2db6366fb731a84e01044c1d1460f998ca6473a3"
+  },
+  {
+    "file": "tablet-768-default-local-firma.png",
+    "width": 768,
+    "height": 1024,
+    "sha256": "177682c619db1b7bbc70247b1aab207a6627490e4b91d94b9396a66a6f6e1f4a"
+  },
+  {
+    "file": "tablet-768-default-local-resumen.png",
+    "width": 768,
+    "height": 1024,
+    "sha256": "b6fe7c1b324c5621d4e6f324646f8446c0e16d360e4f0502e90a0a89a0876442"
+  },
+  {
+    "file": "tablet-768-default-web-firma.png",
+    "width": 768,
+    "height": 1024,
+    "sha256": "5fbe97ff67743c1171af9d51f5f341c758606ae5e17c0c129ff4f27cb62ac29b"
+  },
+  {
+    "file": "tablet-768-default-web-pago.png",
+    "width": 768,
+    "height": 1024,
+    "sha256": "1633cb6940380dfb81515a5d3d4903b6d2184a33867265627af7fd3f1fca1380"
+  },
+  {
+    "file": "tablet-768-default-web-resumen.png",
+    "width": 768,
+    "height": 1024,
+    "sha256": "52b61e8b0e64cf5b4b19505f4976d7d6645fa2ef0a96e4c5aa386be7c99124b3"
+  },
+  {
+    "file": "tablet-768-halloween-catalogo-corregido.png",
+    "width": 768,
+    "height": 2217,
+    "sha256": "1d5d3612e161749850e6bccbbe05e1407522f72c69905103110535f6f1cdadba"
+  },
+  {
+    "file": "tablet-768-halloween-catalogo.png",
+    "width": 768,
+    "height": 1847,
+    "sha256": "5aa9882ec589ff125ae6181f4de9e12ec53fd3e475adc477a4ce1efd72e69f26"
+  },
+  {
+    "file": "tablet-768-halloween-detalle-adulto.png",
+    "width": 768,
+    "height": 1024,
+    "sha256": "c194463e722b49d00f78de06aa30eb78ae4776838f284d43e0eac90f4c9504dd"
+  },
+  {
+    "file": "tablet-768-halloween-detalle-cabezon.png",
+    "width": 768,
+    "height": 1024,
+    "sha256": "2d11aa3292d84b2b146ad3952bf7512a8d95790328a7bf5ae3250cb90d28f70d"
+  },
+  {
+    "file": "tablet-768-halloween-inicio.png",
+    "width": 768,
+    "height": 1024,
+    "sha256": "ee7e1066c69f1153cc04339982e8c9ef61736aa05afc700b2d0fe0a32acb903d"
+  },
+  {
+    "file": "tablet-768-halloween-local-firma.png",
+    "width": 768,
+    "height": 1024,
+    "sha256": "2cd824a418aa622415d76afacd4eb3b9a0a786ac4f44347782c354509ee6bf56"
+  },
+  {
+    "file": "tablet-768-halloween-local-resumen.png",
+    "width": 768,
+    "height": 1024,
+    "sha256": "007dcc6d56004893591750b5b78baef012f4b1e9df0ac5786adb5b96faa44f65"
+  },
+  {
+    "file": "tablet-768-halloween-web-firma.png",
+    "width": 768,
+    "height": 1024,
+    "sha256": "6c07310ea853602140796e547b56f1cec1e213f02f116ed636f139a5ac75b0c6"
+  },
+  {
+    "file": "tablet-768-halloween-web-pago.png",
+    "width": 768,
+    "height": 1024,
+    "sha256": "96b2037b3f8880519bd9c5a71f25eca350e054dd7f3c8853993212d88fe6db02"
+  },
+  {
+    "file": "tablet-768-halloween-web-resumen.png",
+    "width": 768,
+    "height": 1024,
+    "sha256": "0e4024d87a20c266a20ec2b334e0ccea27c296e2d96829ec6e2721c703f8dc13"
+  }
+]

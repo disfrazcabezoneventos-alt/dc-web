@@ -81,3 +81,13 @@ test('Admin: ve un cambio de categoría en lote y puede cancelar o confirmar des
  expect(h.tables.disfraces).toEqual(before);expect(h.tables.historial_cambios[0].status).toBe('rolled_back');
  await expect(page.locator('.catalog-history').locator('summary')).toContainText('Deshecho');
 });
+
+test('Admin: deshace corrección autorizada de alquiler sin perder una edición posterior ajena',async({page})=>{
+ const h=await setup(page,'admin'),before={...h.tables.disfraces[0],rentPrice:65000,insuranceDeposit:65000,tariff:'Premium'};
+ const after={...before,rentPrice:60000,insuranceDeposit:60000,tariff:'Estándar'};
+ h.tables.disfraces[0]={...after,stock:8};
+ h.tables.historial_cambios.push({id:crypto.randomUUID(),area:'disfraces',productId:before.id,productName:before.name,actor:{id:'codex',username:'correccion-autorizada-PR37',role:'admin'},action:'rental_catalog_correction',batch:'PR37-20261103',at:'2026-11-03T16:00:00Z',before,after,changes:Object.fromEntries(['rentPrice','insuranceDeposit','tariff'].map(k=>[k,{before:before[k],after:after[k]}])),status:'committed'});
+ await page.reload();await page.getByRole('button',{name:'Usuarios e historial',exact:true}).click();const item=page.locator('.catalog-history');await item.locator('summary').click();
+ page.once('dialog',d=>d.dismiss());await item.getByRole('button',{name:'Deshacer corrección de alquiler de Producto de ensayo',exact:true}).click();expect(h.tables.disfraces[0].rentPrice).toBe(60000);
+ page.once('dialog',d=>d.accept());await item.getByRole('button',{name:'Deshacer corrección de alquiler de Producto de ensayo',exact:true}).click();await expect(page.getByText('Corrección deshecha y registrada. Se conservaron los demás campos.',{exact:true})).toBeVisible();expect(h.tables.disfraces[0].rentPrice).toBe(65000);expect(h.tables.disfraces[0].stock).toBe(8);expect(h.tables.historial_cambios.at(-1).action).toBe('undo_rental_catalog_correction');
+});

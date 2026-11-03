@@ -1,10 +1,4 @@
 /* Formulario presencial y gestión de entradas. Requiere Code.gs y Validation.gs. */
-function rentalPrices_(){
- const read=(key,fallback)=>{const raw=config_(key);return raw?amount_(Number(raw)):fallback;};
- const adulto=read('LOCAL_PRICE_ADULTO',60000),cabezon=read('LOCAL_PRICE_CABEZON',75000);
- need_(adulto>0&&cabezon>0,'Revisá Precios disfraces.');
- return {adulto,cabezon,revision:hash_(JSON.stringify({adulto,cabezon}))};
-}
 function formSource_(r){return r.source==='local'?'local':'web';}
 function formData_(r){return r.managementData||r.data;}
 function safeIncoming_(r){
@@ -27,7 +21,7 @@ function incomingDispatch_(b){
  if(!actions.includes(b.action))return null;
  if(!['localConfig','submitLocal'].includes(b.action))session_(b.token);
  need_(config_('LOCAL_FORMS_ENABLED')==='yes','Primero ejecutá prepararFormulariosLocales_ y publicá Apps Script.');
- if(b.action==='localConfig')return {data:{version:1,prices:rentalPrices_()}};
+ if(b.action==='localConfig')return {data:{version:1,prices:rentalPrices_(),rentalConfig:rentalConfig_()}};
  if(b.action==='submitLocal')return {data:submitLocal_(b)};
  if(b.action==='saveRentalPrices'){
   need_(b.revision===rentalPrices_().revision,'Otra sesión cambió los precios. Recargá antes de guardar.');
@@ -88,12 +82,11 @@ function validateIncomingEdit_(r,source){
  need_(source!=='local'||!r.docDate&&!r.docType,'El formulario local no usa comprobante de domicilio.');
 }
 function submitLocal_(b){
- const data=b.data;
+ let data=b.data;
  need_(data&&/^[a-f0-9-]{36}$/.test(data.requestKey)&&typeof b.access==='string'&&b.access.length>=64,'Acceso de solicitud inválido.');
  const existing=rows_('reservas').find(r=>r.requestKey===data.requestKey);
- if(existing){need_(formSource_(existing)==='local'&&equal_(existing.accessHash,hash_(b.access))&&JSON.stringify(existing.data)===JSON.stringify(data),'Esta solicitud ya fue recibida con otros datos. Consultá al local.');return {id:existing.id,code:existing.code,mailStatus:existing.mailStatus,duplicate:true};}
- const prices=rentalPrices_();
- need_(b.pricingRevision===prices.revision&&data.total===localTotal(data.items,prices),'Los precios cambiaron. Volvé al paso Tu alquiler y actualizá la tarifa antes de firmar.');
+ if(existing)return rentalDuplicate_(existing,b,'local');
+ const submittedDataHash=rentalSubmissionHash_(b.data),priced=rentalSubmission_(b),prices=rentalPrices_();data=priced.data;
  need_(!data.docType&&!data.docDate&&!data.specialSchedule&&!data.scheduleAgreement,'El formulario local no admite domicilio adjunto ni horarios especiales.');
  validateRental_(data,1);
  data.items.forEach(item=>{
@@ -106,8 +99,8 @@ function submitLocal_(b){
  limit_('submit-local:'+data.email,8,3600);limit_('submit-local-global',160,3600);
  const checked=checkFiles_(b.files,['dniFront','dniBack','signature']),id=Utilities.getUuid(),createdAt=now_(),code='LOCAL-'+today_().replace(/-/g,'')+'-'+id.slice(0,6).toUpperCase();
  const signedHash=hash_(JSON.stringify({data,termsVersion:LOCAL_TERMS_VERSION,terms:localTerms,createdAt,files:Object.fromEntries(Object.entries(checked).map(([k,f])=>[k,f.hash]))}));
- const files=saveFiles_(checked,id),row={id,code,source:'local',requestKey:data.requestKey,accessHash:hash_(b.access),data,files,signedFiles:JSON.parse(JSON.stringify(files)),status:'pending',formState:'reserved',priceSnapshot:prices,createdAt,updatedAt:createdAt,terms:localTerms,termsVersion:LOCAL_TERMS_VERSION,signedHash,events:[{action:'pending',note:'Formulario presencial recibido. No acredita pagos.',at:createdAt}],mailStatus:'pending'};
+ const files=saveFiles_(checked,id),row={id,code,source:'local',requestKey:data.requestKey,accessHash:hash_(b.access),data,files,signedFiles:JSON.parse(JSON.stringify(files)),status:'pending',formState:'reserved',priceSnapshot:prices,pricingSnapshot:priced.snapshot,submittedDataHash,createdAt,updatedAt:createdAt,terms:localTerms,termsVersion:LOCAL_TERMS_VERSION,signedHash,events:[{action:'pending',note:'Formulario presencial recibido. No acredita pagos.',at:createdAt}],mailStatus:'pending'};
  try{put_('reservas',row)}catch(error){Object.values(files).forEach(f=>{try{DriveApp.getFileById(f.id).setTrashed(true)}catch(_){}});throw error;}
  try{row.mailStatus=notify_(row);put_('reservas',row)}catch(_){/* Saved; never ask to submit twice because email failed. */}
- return {id,code,mailStatus:row.mailStatus};
+ return {id,code,mailStatus:row.mailStatus,total:data.total,pricing:priced.snapshot};
 }

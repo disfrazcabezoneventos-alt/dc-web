@@ -1,8 +1,8 @@
 /* Roles, cuentas individuales y auditoría. Propiedades privadas; nunca devolver hashes. */
 const CATALOG_PBKDF2_ITERATIONS=600000;
-const CATALOG_PUBLIC_ACTIONS=['siteTheme','catalog','catalogData','login','bank','submit','submitLocal','localConfig','request','file','correct','cancel','viewLocalReceipt','recordSearchMiss'];
+const CATALOG_PUBLIC_ACTIONS=['siteTheme','catalog','catalogData','login','bank','submit','submitLocal','localConfig','request','file','correct','cancel','viewLocalReceipt','rentalConfig','recordSearchMiss'];
 const CATALOG_EDITOR_ACTIONS=['admin','logout','saveProduct','quickUpdate','uploadImage','publishProduct'];
-const CATALOG_ADMIN_ACTIONS=['admin','logout','saveCategory','mapLegacyCategory','deleteCategory','saveProduct','deleteProduct','uploadImage','status','movement','voidMovement','resolveCancel','bankSettings','setSiteTheme','setHalloweenCampaign','incomingForms','incomingRequest','incomingNotifications','dismissFormNotifications','saveRentalPrices','updateIncomingForm','deleteIncomingForm','incomingFile','localReceiptInfo','issueLocalReceipt','sendLocalReceipt','quickUpdate','catalogUsers','createCatalogUser','setCatalogUserActive','resetCatalogUserPassword','productHistory','restoreProductPhoto','publishProduct','recoverProductHistory','searchDemand'];
+const CATALOG_ADMIN_ACTIONS=['admin','logout','saveCategory','mapLegacyCategory','deleteCategory','saveProduct','deleteProduct','uploadImage','status','movement','voidMovement','resolveCancel','bankSettings','setSiteTheme','setHalloweenCampaign','incomingForms','incomingRequest','incomingNotifications','dismissFormNotifications','saveRentalPrices','updateIncomingForm','deleteIncomingForm','incomingFile','localReceiptInfo','issueLocalReceipt','sendLocalReceipt','quickUpdate','catalogUsers','createCatalogUser','setCatalogUserActive','resetCatalogUserPassword','productHistory','restoreProductPhoto','restoreRentalCatalogChange','publishProduct','recoverProductHistory','saveRentalPromotion','searchDemand'];
 function catalogRolesReady_(){return config_('CATALOG_ROLES_ENABLED')==='yes';}
 function catalogPrivateJson_(raw){try{return JSON.parse(raw)}catch(_){throw new Error('Configuración de cuentas inválida. Consultá al administrador.');}}
 function catalogAccount_(id){const raw=config_('CATALOG_USER_'+id);return raw?catalogPrivateJson_(raw):null;}
@@ -71,7 +71,7 @@ function prepararRolesCatalogo_(){
  });
 }
 function catalogAccessDispatch_(b,actor){
- if(!['catalogUsers','createCatalogUser','setCatalogUserActive','resetCatalogUserPassword','productHistory','restoreProductPhoto','publishProduct','recoverProductHistory'].includes(b.action))return null;
+ if(!['catalogUsers','createCatalogUser','setCatalogUserActive','resetCatalogUserPassword','productHistory','restoreProductPhoto','restoreRentalCatalogChange','publishProduct','recoverProductHistory'].includes(b.action))return null;
  need_(actor&&(actor.role==='admin'||actor.role==='editor'&&b.action==='publishProduct'),'No tenés permiso para esta acción.');
  need_(catalogRolesReady_(),'Ejecutá prepararRolesCatalogo_ en la hoja autorizada.');
  if(b.action==='recoverProductHistory')return {data:recoverCatalogHistory_({historyId:b.historyId,mode:b.mode})};
@@ -100,6 +100,19 @@ function catalogAccessDispatch_(b,actor){
   return {data:catalogWriteProduct_(actor,b.area,p,{...p,publicationState:'published',active:true},'publish',b.operationId)};
  }
  const h=rows_('historial_cambios').find(h=>h.id===b.historyId&&h.area===b.area&&h.productId===b.id&&h.status==='committed');
+ if(b.action==='restoreRentalCatalogChange'){
+  need_(h&&h.action==='rental_catalog_correction'&&h.batch==='PR37-20261103'&&h.before&&h.after,'Elegí una corrección de alquiler del PR37.');
+  const allowed=['rentPrice','insuranceDeposit','tariff','categoryId','categoryIds','category'];
+  const fields=Object.keys(h.changes||{});
+  need_(fields.length>0&&fields.every(k=>allowed.includes(k)),'Campos de corrección inválidos.');
+  const after={...p};
+  for(const key of fields){
+   need_(JSON.stringify(p[key])===JSON.stringify(h.after[key]),'El campo '+key+' cambió después de la corrección. Revisalo antes de deshacer.');
+   if(Object.prototype.hasOwnProperty.call(h.before,key))after[key]=h.before[key];else delete after[key];
+  }
+  const result=catalogWriteProduct_(actor,b.area,p,after,'undo_rental_catalog_correction',b.operationId);
+  return {data:result};
+ }
  need_(h&&h.changes.image&&h.changes.image.before,'No hay una foto anterior para restaurar.');
  const image=h.changes.image.before;need_(/^https:\/\/res\.cloudinary\.com\//.test(image)||image.startsWith('/catalog/'),'La foto histórica no tiene una URL permitida.');
  return {data:catalogWriteProduct_(actor,b.area,p,{...p,image,thumbnail:h.before.thumbnail||''},'restore_photo',b.operationId)};
