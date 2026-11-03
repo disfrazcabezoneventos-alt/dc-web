@@ -19,10 +19,14 @@ async function setup(page,role='editor'){
 test('Editor: panel móvil, H001/H002, reemplazo de foto y estado sin controles prohibidos',async({page},info)=>{
  const h=await setup(page);await expect(page.getByRole('heading',{name:'Tu catálogo.',exact:true})).toBeVisible();
  for(const label of ['Estadísticas','Caja','Revisión de reservas','Formularios entrantes','Usuarios e historial','Datos de cobro','Apariencia de la web','Categorías disfraces'])await expect(page.getByRole('button',{name:label,exact:true})).toHaveCount(0);
+ await expect(page.getByRole('columnheader',{name:'Stock',exact:true})).toHaveCount(0);
+ await page.getByRole('button',{name:'Cotillón',exact:true}).click();await expect(page.getByRole('columnheader',{name:'Stock',exact:true})).toHaveCount(0);
+ await page.getByRole('button',{name:'Disfraces',exact:true}).click();
  const row=page.getByRole('row',{name:'Producto de ensayo',exact:true});await expect(row.getByRole('button',{name:'Eliminar',exact:true})).toHaveCount(0);await expect(row.locator('input[type="number"]')).toHaveCount(0);
  await row.getByRole('button',{name:'Editar',exact:true}).click();const form=page.locator('#product-editor');
  await expect(form.getByRole('checkbox',{name:'Segunda categoría',exact:true})).toBeChecked();await form.getByLabel('Descripción (opcional)',{exact:true}).fill('');await form.getByLabel('Nombre',{exact:true}).fill('Nombre de ensayo editado');
  await expect(form.getByLabel('Unidades de stock',{exact:true})).toHaveCount(0);
+ await expect(form).not.toContainText('Stock:');
  await form.getByLabel('Foto del producto (hasta 8 MB)',{exact:true}).setInputFiles({name:'foto-ensayo.png',mimeType:'image/png',buffer:Buffer.from(png.base64,'base64')});await expect(form.getByRole('img',{name:'Foto del producto'})).toHaveAttribute('src',/miniatura-ensayo/);
  await form.getByRole('button',{name:'Guardar producto',exact:true}).click();await expect(form).toHaveCount(0);expect(h.tables.disfraces[0].categoryIds).toEqual(['d-primary','d-secondary']);expect(h.tables.disfraces[0].description).toBe('');expect(h.tables.disfraces[0].stock).toBe(4);
  const toggle=page.getByRole('row',{name:'Nombre de ensayo editado',exact:true}).getByRole('switch');await toggle.click();await expect(toggle).not.toBeChecked();expect(h.tables.historial_cambios.at(-1).changes.active.after).toBe(false);
@@ -35,6 +39,7 @@ test('Editor: crea borrador con foto y no se publica por URL/API; Admin publica 
  const draft=h.tables.disfraces.find(p=>p.name==='Borrador de ensayo');expect(draft.publicationState).toBe('draft');expect(draft.stock).toBe(0);expect(h.ctx.dispatch_({action:'catalogData'}).products.some(p=>p.id===draft.id)).toBe(false);
  expect(()=>h.ctx.dispatch_({action:'publishProduct',token:h.editor,area:draft.area,id:draft.id})).toThrow(/permiso/);
  await page.evaluate(token=>sessionStorage.setItem('dc-admin',token),h.admin);await page.reload();await page.getByRole('button',{name:'Disfraces',exact:true}).click();const row=page.getByRole('row',{name:'Borrador de ensayo',exact:true});await row.getByRole('button',{name:'Publicar borrador'}).click();await expect(row.getByRole('button',{name:'Publicar borrador'})).toHaveCount(0);expect(h.tables.disfraces.find(p=>p.id===draft.id).publicationState).toBe('published');
+ await expect(page.getByRole('columnheader',{name:'Stock',exact:true})).toBeVisible();await expect(row.getByRole('spinbutton',{name:'Unidades de Borrador de ensayo',exact:true})).toBeVisible();
  await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));await page.screenshot({path:info.outputPath('admin-catalogo.png'),fullPage:true,animations:'disabled'});
 });
 test('Admin: crea cuenta, restablece, desactiva y restaura la foto desde historial',async({page},info)=>{
