@@ -32,15 +32,30 @@ test('Editor: panel móvil, H001/H002, reemplazo de foto y estado sin controles 
  const toggle=page.getByRole('row',{name:'Nombre de ensayo editado',exact:true}).getByRole('switch');await toggle.click();await expect(toggle).not.toBeChecked();expect(h.tables.historial_cambios.at(-1).changes.active.after).toBe(false);
  await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));await page.screenshot({path:info.outputPath('editor-catalogo.png'),fullPage:true,animations:'disabled'});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });
-test('Editor: crea borrador con foto y no se publica por URL/API; Admin publica desde la lista',async({page},info)=>{
- const h=await setup(page);await page.getByRole('button',{name:'+ Nuevo borrador',exact:true}).click();const form=page.locator('#product-editor');
- await form.getByLabel('Nombre',{exact:true}).fill('Borrador de ensayo');await form.getByRole('combobox',{name:'Categoría',exact:true}).selectOption('d-primary');await form.getByLabel('Precio de venta',{exact:true}).fill('2500');
- await form.getByLabel('Foto del producto (hasta 8 MB)',{exact:true}).setInputFiles({name:'foto-ensayo.png',mimeType:'image/png',buffer:Buffer.from(png.base64,'base64')});await form.getByRole('button',{name:'Guardar borrador',exact:true}).click();await expect(form).toHaveCount(0);
- const draft=h.tables.disfraces.find(p=>p.name==='Borrador de ensayo');expect(draft.publicationState).toBe('draft');expect(draft.stock).toBe(0);expect(h.ctx.dispatch_({action:'catalogData'}).products.some(p=>p.id===draft.id)).toBe(false);
- expect(()=>h.ctx.dispatch_({action:'publishProduct',token:h.editor,area:draft.area,id:draft.id})).toThrow(/permiso/);
- await page.evaluate(token=>sessionStorage.setItem('dc-admin',token),h.admin);await page.reload();await page.getByRole('button',{name:'Disfraces',exact:true}).click();const row=page.getByRole('row',{name:'Borrador de ensayo',exact:true});await row.getByRole('button',{name:'Publicar borrador'}).click();await expect(row.getByRole('button',{name:'Publicar borrador'})).toHaveCount(0);expect(h.tables.disfraces.find(p=>p.id===draft.id).publicationState).toBe('published');
- await expect(page.getByRole('columnheader',{name:'Stock',exact:true})).toBeVisible();await expect(row.getByRole('spinbutton',{name:'Unidades de Borrador de ensayo',exact:true})).toBeVisible();
- await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));await page.screenshot({path:info.outputPath('admin-catalogo.png'),fullPage:true,animations:'disabled'});
+test('Editor: crea y publica directamente con foto en Disfraces y Cotillón sin mostrar stock',async({page},info)=>{
+ const h=await setup(page);
+ for(const [area,label,categoryId] of [['disfraces','Disfraces','d-primary'],['cotillon','Cotillón','c-primary']]){
+  await page.getByRole('button',{name:label,exact:true}).click();await page.getByRole('button',{name:'+ Agregar producto',exact:true}).click();const form=page.locator('#product-editor');
+  await expect(form).toContainText('sin aprobación previa');await expect(form.getByLabel('Unidades de stock',{exact:true})).toHaveCount(0);
+  const name='Producto nuevo de ensayo '+area;await form.getByLabel('Nombre',{exact:true}).fill(name);await form.getByRole('combobox',{name:'Categoría',exact:true}).selectOption(categoryId);await form.getByLabel('Precio de venta',{exact:true}).fill('2500');
+  await form.getByLabel('Foto del producto (hasta 8 MB)',{exact:true}).setInputFiles({name:'foto-ensayo.png',mimeType:'image/png',buffer:Buffer.from(png.base64,'base64')});await form.getByRole('button',{name:'Guardar y publicar',exact:true}).click();await expect(form).toHaveCount(0);
+  const product=h.tables[area].find(p=>p.name===name);expect(product.publicationState).toBe('published');expect(product.active).toBe(true);expect(product.stock).toBe(0);expect(h.ctx.dispatch_({action:'catalogData'}).products.some(p=>p.id===product.id)).toBe(true);
+  await expect(page.getByText('Producto creado y publicado.',{exact:true})).toBeVisible();await expect(page.getByRole('columnheader',{name:'Stock',exact:true})).toHaveCount(0);await expect(page.getByRole('row',{name,exact:true}).getByRole('button',{name:'Publicar borrador'})).toHaveCount(0);
+  await page.screenshot({path:info.outputPath('editor-publicacion-'+area+'.png'),fullPage:true,animations:'disabled'});
+ }
+});
+
+test('Editor y Admin: publican borradores existentes desde la lista sin alterar otros datos',async({page},info)=>{
+ const h=await setup(page);
+ for(const role of ['editor','admin']){
+  const draft=h.ctx.dispatch_({action:'saveProduct',token:h.admin,product:{...h.product,id:'',name:'Borrador de ensayo '+role,active:false,publicationState:'draft'},operationId:crypto.randomUUID()});
+  expect(h.ctx.dispatch_({action:'catalogData'}).products.some(p=>p.id===draft.id)).toBe(false);
+  await page.evaluate(token=>sessionStorage.setItem('dc-admin',token),role==='editor'?h.editor:h.admin);await page.reload();await page.getByRole('button',{name:'Disfraces',exact:true}).click();const row=page.getByRole('row',{name:draft.name,exact:true});await expect(row.getByRole('switch')).toBeDisabled();await row.getByRole('button',{name:'Publicar borrador'}).click();await expect(row.getByRole('button',{name:'Publicar borrador'})).toHaveCount(0);
+  expect(h.tables.disfraces.find(p=>p.id===draft.id)).toEqual({...draft,publicationState:'published',active:true});expect(h.tables.historial_cambios.at(-1).actor.role).toBe(role);expect(h.ctx.dispatch_({action:'catalogData'}).products.some(p=>p.id===draft.id)).toBe(true);
+  if(role==='admin'){await expect(page.getByRole('columnheader',{name:'Stock',exact:true})).toBeVisible();await expect(row.getByRole('spinbutton',{name:'Unidades de '+draft.name,exact:true})).toBeVisible();}
+  else await expect(page.getByRole('columnheader',{name:'Stock',exact:true})).toHaveCount(0);
+  await page.screenshot({path:info.outputPath(role+'-borrador-publicado.png'),fullPage:true,animations:'disabled'});
+ }
 });
 test('Admin: crea cuenta, restablece, desactiva y restaura la foto desde historial',async({page},info)=>{
  const h=await setup(page,'admin');await page.getByRole('button',{name:'Usuarios e historial',exact:true}).click();

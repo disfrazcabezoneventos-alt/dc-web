@@ -4,14 +4,15 @@ import crypto from 'node:crypto';
 import {catalogHarness} from './catalog-access-harness.mjs';
 import {png} from './local-forms-harness.mjs';
 const h=catalogHarness();h.createEditor();h.editor=h.loginEditor();
-const forbidden=['saveCategory','deleteCategory','mapLegacyCategory','deleteProduct','setSiteTheme','setHalloweenCampaign','status','movement','voidMovement','resolveCancel','bankSettings','incomingForms','incomingRequest','incomingNotifications','dismissFormNotifications','saveRentalPrices','updateIncomingForm','deleteIncomingForm','incomingFile','localReceiptInfo','issueLocalReceipt','sendLocalReceipt','catalogUsers','createCatalogUser','setCatalogUserActive','resetCatalogUserPassword','productHistory','recoverProductHistory','restoreProductPhoto','publishProduct','bank','submit','submitLocal','localConfig','request','file','correct','cancel','viewLocalReceipt'];
+const forbidden=['saveCategory','deleteCategory','mapLegacyCategory','deleteProduct','setSiteTheme','setHalloweenCampaign','status','movement','voidMovement','resolveCancel','bankSettings','incomingForms','incomingRequest','incomingNotifications','dismissFormNotifications','saveRentalPrices','updateIncomingForm','deleteIncomingForm','incomingFile','localReceiptInfo','issueLocalReceipt','sendLocalReceipt','catalogUsers','createCatalogUser','setCatalogUserActive','resetCatalogUserPassword','productHistory','recoverProductHistory','restoreProductPhoto','bank','submit','submitLocal','localConfig','request','file','correct','cancel','viewLocalReceipt'];
 for(const action of forbidden)test('Editor rechaza '+action+' sin ninguna escritura',()=>{
  const before=JSON.stringify(h.tables),props=JSON.stringify(h.settings);h.writes.length=0;
  assert.throws(()=>h.ctx.dispatch_({action,token:h.editor,id:h.product.id,area:'disfraces',product:h.product}),/permiso/);
  assert.equal(h.writes.length,0);assert.equal(JSON.stringify(h.tables),before);assert.equal(JSON.stringify(h.settings),props);
 });
-for(const action of forbidden)test('Administrador autoriza '+action+' en el control de API',()=>assert.equal(h.ctx.catalogApiActor_({action,token:h.admin}).role,'admin'));
-for(const action of ['admin','quickUpdate','saveProduct','uploadImage','catalogUsers','productHistory','unknown-action'])test('Sin sesión rechaza '+action+' antes del mantenimiento',()=>{
+for(const action of [...forbidden,'publishProduct'])test('Administrador autoriza '+action+' en el control de API',()=>assert.equal(h.ctx.catalogApiActor_({action,token:h.admin}).role,'admin'));
+test('Editor autoriza publishProduct en el control de API',()=>assert.equal(h.ctx.catalogApiActor_({action:'publishProduct',token:h.editor}).role,'editor'));
+for(const action of ['admin','quickUpdate','saveProduct','uploadImage','catalogUsers','productHistory','publishProduct','unknown-action'])test('Sin sesión rechaza '+action+' antes del mantenimiento',()=>{
  const before=JSON.stringify(h.tables);h.writes.length=0;assert.throws(()=>h.ctx.dispatch_({action}),/Sesión/);assert.equal(h.writes.length,0);assert.equal(JSON.stringify(h.tables),before);
 });
 test('Editor sube foto por Cloudinary sin ejecutar mantenimiento, y nunca destruye una foto',()=>{

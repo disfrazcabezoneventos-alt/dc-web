@@ -196,7 +196,7 @@ function quickUpdate_(b,actor){
  need_(keys.length>0&&keys.every(k=>allowed.includes(k)),'Solo se permiten active, stock, price y rentPrice.');
  const product=rows_(b.area).find(p=>p.id===b.id);
  need_(product&&product.area===b.area,'Producto inexistente en esta área.');
- if(actor?.role==='editor')need_(catalogPublicProduct_(product),'Solo el administrador puede publicar borradores.');
+ if(actor?.role==='editor')need_(catalogPublicProduct_(product),'Usá Publicar borrador antes de activar el producto.');
  if(b.revision)need_(b.revision===hash_(JSON.stringify(product)),'El producto cambió. Recargá antes de guardar.');
  const patch={};
  keys.forEach(key=>{

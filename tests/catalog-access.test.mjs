@@ -17,7 +17,7 @@ test('Editor: cuenta individual, datos mínimos y rechazo de TODAS las acciones 
  assert.equal(user.role,'editor');assert.equal(user.password,undefined);
  const data=h.ctx.dispatch_({action:'admin',token:h.editor});assert.deepEqual(Object.keys(data).sort(),['categories','products','role','user']);
  assert.ok(!JSON.stringify(data).includes(h.password));
- const forbidden=['saveCategory','deleteCategory','mapLegacyCategory','deleteProduct','setSiteTheme','setHalloweenCampaign','status','movement','voidMovement','resolveCancel','bankSettings','incomingForms','incomingRequest','incomingNotifications','dismissFormNotifications','saveRentalPrices','updateIncomingForm','deleteIncomingForm','incomingFile','localReceiptInfo','issueLocalReceipt','sendLocalReceipt','catalogUsers','createCatalogUser','setCatalogUserActive','resetCatalogUserPassword','productHistory','recoverProductHistory','restoreProductPhoto','publishProduct','bank','submit','submitLocal','localConfig','request','file','correct','cancel','viewLocalReceipt','unknown-action'];
+ const forbidden=['saveCategory','deleteCategory','mapLegacyCategory','deleteProduct','setSiteTheme','setHalloweenCampaign','status','movement','voidMovement','resolveCancel','bankSettings','incomingForms','incomingRequest','incomingNotifications','dismissFormNotifications','saveRentalPrices','updateIncomingForm','deleteIncomingForm','incomingFile','localReceiptInfo','issueLocalReceipt','sendLocalReceipt','catalogUsers','createCatalogUser','setCatalogUserActive','resetCatalogUserPassword','productHistory','recoverProductHistory','restoreProductPhoto','bank','submit','submitLocal','localConfig','request','file','correct','cancel','viewLocalReceipt','unknown-action'];
  for(const action of forbidden){const before=JSON.stringify(h.tables),settings=JSON.stringify(h.settings);h.writes.length=0;assert.throws(()=>h.ctx.dispatch_({action,token:h.editor,id:h.product.id,product:h.product,area:'disfraces'}),/permiso/,action);assert.equal(JSON.stringify(h.tables),before,action);assert.equal(JSON.stringify(h.settings),settings,action);assert.equal(h.writes.length,0,action);}
 });
 test('Editor: campos permitidos, H001 categorías secundarias, H002 descripción vacía, historial y restricciones de stock/fotos',()=>{
@@ -30,16 +30,38 @@ test('Editor: campos permitidos, H001 categorías secundarias, H002 descripción
  const toggled=h.ctx.dispatch_({action:'quickUpdate',token:h.editor,area:'disfraces',id:h.product.id,cambios:{active:false}});assert.equal(toggled.active,false);assert.equal(toggled.stock,4);
  assert.equal(h.tables.historial_cambios.at(-1).changes.active.after,false);
 });
-test('Editor crea borrador invisible incluso en Cotillón; solo Admin lo publica y queda auditado',()=>{
+test('Editor crea productos publicados en ambas áreas sin autorización y sin permiso para alterar stock',()=>{
  const h=catalogHarness();h.createEditor();const token=h.loginEditor();
  for(const area of ['cotillon','disfraces']){
+  const p={area,name:'Producto publicado de ensayo',description:'',mode:'venta',stock:0,active:true,publicationState:'published',price:1200,rentPrice:0,image:h.product.image,categoryId:area==='disfraces'?'d-primary':'c-primary'};
+  for(const patch of [{stock:1},{stock:-1},{stock:'0'},{image:''},{publicationState:'otro'},{active:'yes'},{custom:{forged:true}}]){
+   const before=JSON.stringify(h.tables);h.writes.length=0;
+   assert.throws(()=>h.ctx.dispatch_({action:'saveProduct',token,product:{...p,...patch}}));
+   assert.equal(JSON.stringify(h.tables),before);assert.equal(h.writes.length,0);
+  }
+  const product=h.ctx.dispatch_({action:'saveProduct',token,product:p,operationId:crypto.randomUUID()});
+  assert.equal(product.publicationState,'published');assert.equal(product.active,true);assert.equal(product.stock,0);
+  for(const action of ['catalog','catalogData']){
+   const result=h.ctx.dispatch_({action});assert.ok((result.products||result).some(p=>p.id===product.id));
+  }
+  const history=h.tables.historial_cambios.at(-1);assert.equal(history.action,'create');assert.equal(history.actor.role,'editor');assert.equal(history.status,'committed');assert.equal(history.changes.publicationState.after,'published');
+ }
+});
+
+test('borradores explícitos y clientes anteriores siguen privados; Editor y Admin pueden publicarlos con revisión y auditoría',()=>{
+ const h=catalogHarness();h.createEditor();const token=h.loginEditor();
+ for(const area of ['cotillon','disfraces'])for(const publisher of [token,h.admin]){
   const p={area,name:'Borrador de ensayo',description:'',mode:'venta',stock:0,active:false,price:1200,rentPrice:0,image:h.product.image,categoryId:area==='disfraces'?'d-primary':'c-primary'};
+  p.publicationState='draft';
   const op=crypto.randomUUID(),draft=h.ctx.dispatch_({action:'saveProduct',token,product:p,operationId:op});assert.equal(draft.publicationState,'draft');
   assert.ok(!h.ctx.dispatch_({action:'catalogData'}).products.some(p=>p.id===draft.id));assert.ok(!h.ctx.dispatch_({action:'catalog'}).some(p=>p.id===draft.id));
-  assert.throws(()=>h.ctx.dispatch_({action:'quickUpdate',token,area,id:draft.id,cambios:{active:true}}),/administrador/);
-  assert.throws(()=>h.ctx.dispatch_({action:'publishProduct',token,area,id:draft.id}),/permiso/);
-  const published=h.ctx.dispatch_({action:'publishProduct',token:h.admin,area,id:draft.id,revision:h.ctx.hash_(JSON.stringify(h.tables[area].find(p=>p.id===draft.id)))});
-  assert.equal(published.publicationState,'published');assert.equal(published.active,true);assert.equal(h.tables.historial_cambios.at(-1).action,'publish');assert.ok(h.ctx.dispatch_({action:'catalog'}).some(p=>p.id===draft.id));
+  assert.throws(()=>h.ctx.dispatch_({action:'quickUpdate',token,area,id:draft.id,cambios:{active:true}}),/Publicar borrador/);
+  const before=JSON.stringify(h.tables);
+  assert.throws(()=>h.ctx.dispatch_({action:'publishProduct',area,id:draft.id}),/Sesión/);
+  assert.throws(()=>h.ctx.dispatch_({action:'publishProduct',token:publisher,area,id:draft.id,revision:'vieja'}),/Recargá/);assert.equal(JSON.stringify(h.tables),before);
+  const published=h.ctx.dispatch_({action:'publishProduct',token:publisher,area,id:draft.id,revision:h.ctx.hash_(JSON.stringify(h.tables[area].find(p=>p.id===draft.id))),stock:999,image:'',active:false});
+  assert.equal(JSON.stringify(published),JSON.stringify({...draft,publicationState:'published',active:true}));
+  assert.equal(h.tables.historial_cambios.at(-1).action,'publish');assert.equal(h.tables.historial_cambios.at(-1).actor.role,publisher===token?'editor':'admin');assert.ok(h.ctx.dispatch_({action:'catalog'}).some(p=>p.id===draft.id));
  }
 });
 test('reset y desactivación revocan sesiones del Editor; credenciales/version del Admin también',()=>{

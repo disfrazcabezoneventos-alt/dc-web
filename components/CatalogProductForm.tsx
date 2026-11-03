@@ -9,8 +9,8 @@ export default function CatalogProductForm({product:p,categories,editor=false,bu
  const list=categories.filter(c=>c.area===p.area),locked=editor&&!!p.id;
  const set=(patch:Partial<Product>)=>change({...p,...patch});
  return <form id="product-editor" className="panel form-stack" onSubmit={e=>{e.preventDefault();setError('');if(editor&&!p.image){setError('Agregá una foto antes de guardar.');return;}save();}}>
-  <h3>{p.id?'Editar producto':editor?'Nuevo borrador':'Nuevo producto'}</h3>
-  {editor&&!p.id&&<p className="notice">El producto quedará en borrador. Solo el administrador puede publicarlo.</p>}
+  <h3>{p.id?'Editar producto':'Nuevo producto'}</h3>
+  {editor&&!p.id&&<p className="notice">Al guardar, el producto se publica en la web sin aprobación previa.</p>}
   <fieldset disabled={busy||uploading} className="catalog-form-fields"><legend>Datos del producto</legend><div className="field-grid">
    <label>Nombre<input required maxLength={150} value={p.name} onChange={e=>set({name:e.target.value})}/></label>
    <label>Descripción (opcional)<textarea maxLength={2000} value={p.description} onChange={e=>set({description:e.target.value})}/></label>
@@ -30,6 +30,6 @@ export default function CatalogProductForm({product:p,categories,editor=false,bu
   {p.image&&<img className="admin-thumbnail" src={thumbnailUrl(p.image,p.thumbnail)} alt="Foto del producto"/>}
   {!editor&&<><label>URL de Cloudinary<input type="url" value={p.image} onChange={e=>set({image:e.target.value,thumbnail:''})}/></label>{p.publicationState!=='draft'&&<label className="checkbox"><input type="checkbox" checked={p.active} onChange={e=>set({active:e.target.checked})}/>Visible en el catálogo</label>}</>}
   </fieldset>{uploading&&<p role="status">Subiendo foto y creando miniatura…</p>}{error&&<p role="alert" className="error-banner">{error}</p>}
-  <div className="actions"><button className="button dark" disabled={busy||uploading}>{busy?'Guardando…':editor&&!p.id?'Guardar borrador':'Guardar producto'}</button><button className="button" type="button" disabled={busy||uploading} onClick={cancel}>Cancelar</button></div>
+  <div className="actions"><button className="button dark" disabled={busy||uploading}>{busy?'Guardando…':editor&&!p.id?'Guardar y publicar':'Guardar producto'}</button><button className="button" type="button" disabled={busy||uploading} onClick={cancel}>Cancelar</button></div>
  </form>;
 }
