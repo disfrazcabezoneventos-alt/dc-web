@@ -3,8 +3,9 @@ export type Category={id:string;area:Area;name:string;storefront?:boolean;group?
 import {cotillonTaxonomy,cotillonInnerCategories} from './cotillon-taxonomy';
 export const saleConditions=['Nuevo a pedido','Nuevo Inmediato','Usado inmediato'] as const;
 export type SaleCondition=typeof saleConditions[number];
-export type Product={id:string;area:Area;name:string;categoryId?:string;categoryIds?:string[];categoryNames?:string[];catalogGroups?:string[];category:string;mode:'alquiler'|'venta'|'ambos';saleCondition?:SaleCondition|'';deliveryTime?:string;orderLimit?:number;price:number;priceKnown?:boolean;stockUnknown?:boolean;rentPrice:number;stock:number;image:string;thumbnail?:string;description:string;active:boolean;sourceId?:string;sourceImage?:string;publicationState?:'draft'|'published';revision?:string};
+export type Product={id:string;area:Area;name:string;categoryId?:string;categoryIds?:string[];categoryNames?:string[];catalogGroups?:string[];category:string;mode:'alquiler'|'venta'|'ambos';saleCondition?:SaleCondition|'';deliveryTime?:string;orderLimit?:number;price:number;priceKnown?:boolean;stockUnknown?:boolean;rentPrice:number;stock:number;available?:boolean;purchaseMax?:number;image:string;thumbnail?:string;description:string;active:boolean;sourceId?:string;sourceImage?:string;publicationState?:'draft'|'published';revision?:string};
 export function purchaseLimit(product:Product):number {
+ if(product.purchaseMax!==undefined)return Number.isInteger(product.purchaseMax)?Math.max(0,Math.min(10,product.purchaseMax)):0;
  if(product.area==='cotillon'&&product.stockUnknown)return 99;
  if(product.area==='disfraces'&&product.saleCondition==='Nuevo a pedido'){
   const limit=product.orderLimit??(product.stock>0?product.stock:1);

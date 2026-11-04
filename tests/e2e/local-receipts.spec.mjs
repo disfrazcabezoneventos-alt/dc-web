@@ -1,4 +1,4 @@
-import {test,expect} from '@playwright/test';
+import {test,expect} from './theme-fixture.mjs';
 import fs from 'node:fs';
 import {PDFDocument} from 'pdf-lib';
 import {receiptsHarness} from '../local-receipts-harness.mjs';

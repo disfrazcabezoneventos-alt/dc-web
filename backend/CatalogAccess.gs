@@ -247,6 +247,7 @@ function catalogBulkWrite_(state,updates){
  const count=Math.max(state.values.length,next.length);let first=-1,last=-1;
  for(let i=0;i<count;i++)if(JSON.stringify(state.values[i]||['',''])!==JSON.stringify(next[i]||['',''])){if(first<0)first=i;last=i;}
  if(first>=0)state.sheet.getRange(first+2,1,last-first+1,2).setValues(Array.from({length:last-first+1},(_,i)=>next[first+i]||['','']));
+ if(first>=0&&typeof publicCatalogInvalidate_==='function'){SpreadsheetApp.flush();publicCatalogInvalidate_();}
  state.values=next;state.records=next.map(row=>JSON.parse(row[1]));
 }
 function catalogCategoryState_(product){

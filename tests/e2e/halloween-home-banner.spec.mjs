@@ -1,4 +1,4 @@
-import {test,expect} from '@playwright/test';
+import {test,expect} from './theme-fixture.mjs';
 import fs from 'node:fs';
 
 const title='Halloween es este sábado 🎃';
@@ -46,7 +46,10 @@ for(const theme of ['default','halloween']){
   await expect(page.getByRole('region',{name:title})).toHaveCount(0);
   expect(await page.locator('main').evaluate(e=>e.firstElementChild?.classList.contains('hero'))).toBe(true);
   const saved=before[theme+'-'+info.project.name]||before[theme+'-desktop'];
-  expect(await page.locator('.hero').evaluate(e=>e.outerHTML)).toBe(saved.hero);
+  // H002 only changes nonvisual image loading hints; preserve the content/structure comparison.
+  const withoutLoadingHints=html=>html.replace(/<img\b[^>]*>/g,img=>img.replace(/\s(?:fetchpriority|decoding|loading)="[^"]*"/g,''));
+  expect(withoutLoadingHints(await page.locator('.hero').evaluate(e=>e.outerHTML))).toBe(withoutLoadingHints(saved.hero));
+  await expect(page.locator('.hero .photo-one img')).toHaveAttribute('fetchpriority','high');
   expect(await page.locator('main').innerText()).toBe(saved.mainText);
   const target=sizes[info.project.name],viewport=page.viewportSize();
   if(target&&viewport.width===target[0]&&viewport.height===target[1])expect(await page.locator('.hero').boundingBox()).toEqual(saved.box);

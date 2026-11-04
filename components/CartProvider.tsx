@@ -28,8 +28,8 @@ export function StoreActions(){
  const {items,openCart,ready}=useCotillonCart();
  const count=items.reduce((sum,item)=>sum+item.quantity,0);
  return <div className="store-actions" role="group" aria-label="Carrito y contacto">
-  {ready&&<button type="button" className="floating-cart" onClick={openCart} aria-label={'Abrir carrito de cotillón, '+count+' productos'}><ShoppingBag size={21}/><span>Carrito</span><strong aria-hidden="true">{count}</strong></button>}
-  <a className="floating-wa" href={whatsapp()} target="_blank" rel="noreferrer" aria-label="Consultar por WhatsApp"><MessageCircle /><span>¿Te ayudamos?</span></a>
+  {ready&&<button type="button" className="floating-cart" onClick={openCart} aria-label={'Carrito '+count+' · Abrir carrito de cotillón, '+count+' productos'}><ShoppingBag size={21}/><span>Carrito</span><strong aria-hidden="true">{count}</strong></button>}
+  <a className="floating-wa" href={whatsapp()} target="_blank" rel="noreferrer" aria-label="¿Te ayudamos? Consultar por WhatsApp"><MessageCircle /><span>¿Te ayudamos?</span></a>
  </div>;
 }
 

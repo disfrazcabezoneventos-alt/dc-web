@@ -48,9 +48,9 @@ export default function Catalog({area,featured=false,searchPage=false}:{area?:Pr
  useEffect(()=>{if(!selected)return;const dialog=dialogRef.current;if(dialog&&!dialog.open)dialog.showModal();const close=(event:KeyboardEvent)=>{if(event.key==='Escape')setSelected(null)};window.addEventListener('keydown',close);return()=>window.removeEventListener('keydown',close)},[selected]);
  useEffect(()=>setVisible(36),[query,category,mode,mainCategory,subCategory,innerCategory,sectionAll]);
 
- const pool=publicProducts.filter(p=>(!p.publicationState||p.publicationState==='published')&&(p.area==='cotillon'||p.active)&&(!area||p.area===area));
+ const pool=publicProducts.filter(p=>(!p.publicationState||p.publicationState==='published')&&p.active&&(!area||p.area===area));
  useEffect(()=>{if(searchPage){const sync=()=>setQuery(new URLSearchParams(location.search).get('q')?.slice(0,120)||'');sync();window.addEventListener('popstate',sync);return()=>window.removeEventListener('popstate',sync)}},[searchPage]);
- useEffect(()=>{if(loading)return;const sync=()=>{const id=new URLSearchParams(location.hash.slice(1)).get('producto');if(id){const p=publicProducts.find(p=>p.id===id&&(!area||p.area===area)&&(!p.publicationState||p.publicationState==='published')&&(p.area==='cotillon'||p.active));if(p)setSelected(p)}};sync();window.addEventListener('hashchange',sync);return()=>window.removeEventListener('hashchange',sync)},[loading,publicProducts,area]);
+ useEffect(()=>{if(loading)return;const sync=()=>{const id=new URLSearchParams(location.hash.slice(1)).get('producto');if(id){const p=publicProducts.find(p=>p.id===id&&(!area||p.area===area)&&(!p.publicationState||p.publicationState==='published')&&p.active);if(p)setSelected(p)}};sync();window.addEventListener('hashchange',sync);return()=>window.removeEventListener('hashchange',sync)},[loading,publicProducts,area]);
  const categoryNames=area==='disfraces'?categories.filter(c=>c.area===area).map(c=>c.name):[];
  if(pool.some(p=>!p.categoryId&&p.category==='Sin categoría'))categoryNames.push('Sin categoría');
  const filtered=area==='cotillon'?filterCotillonProducts(pool,categories,mainCategory,subCategory,innerCategory,sectionAll,query):pool.filter(p=>{

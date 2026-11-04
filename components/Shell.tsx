@@ -13,14 +13,15 @@ export default function Shell({children}: {children: React.ReactNode}) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    if (demo) return;
+    if (demo) {if (!document.documentElement.dataset.theme) applySiteTheme('default'); return;}
     let alive = true;
     const sync = () => api('siteTheme')
       .then(result => {
         const theme = readSiteTheme(result);
         if (alive && theme && document.documentElement.dataset.themePreview !== 'true') applySiteTheme(theme);
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => {if (alive && !document.documentElement.dataset.theme) applySiteTheme('default');});
     sync();
     const onVisible = () => {if (document.visibilityState === 'visible') sync();};
     const onStorage = (event: StorageEvent) => {
@@ -67,7 +68,7 @@ export default function Shell({children}: {children: React.ReactNode}) {
           </Link>
           <p>Hay un personaje para cada historia.<br />Y una fiesta esperando la tuya.</p>
         </div>
-        <div><strong>Nos encontramos acá</strong><p>Av. Rivadavia 3314, CABA<br /><a href={whatsapp()}>WhatsApp · 11 4989-7969</a></p></div>
+        <div id="como-llegar"><strong>Cómo llegar y horarios</strong><p>Av. Rivadavia 3314, CABA<br /><a href={whatsapp()}>WhatsApp · 11 4989-7969</a></p><p>Lunes a viernes: 10:00 a 14:00 y 16:00 a 20:00<br/>Sábados: 10:00 a 17:00<br/>Domingos: cerrado</p><a href="https://www.google.com/maps/search/?api=1&query=Av.+Rivadavia+3314+CABA" target="_blank" rel="noreferrer">Cómo llegar a Av. Rivadavia 3314 →</a></div>
         <div>
           <Link href="/condiciones/">Condiciones y privacidad</Link>
           <Link href="/arrepentimiento/">Solicitud de arrepentimiento</Link>

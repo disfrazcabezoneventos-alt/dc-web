@@ -37,7 +37,7 @@ export default function AdminProducts({area,products,categories,filters,onFilter
    {(filters.query||filters.category||filters.status!=='all')&&<button type="button" className="button" onClick={()=>onFilters({query:'',status:'all',category:'',page:1})}>Limpiar filtros</button>}
   </div>
   <p className={styles.count} role="status">Mostrando {visible.length} de {areaProducts.length} productos{filtered.length!==areaProducts.length&&<span> · {filtered.length} coinciden con los filtros</span>}</p>
-  {area==='cotillon'&&<p className={styles.storeNote}>En la tienda, los productos deshabilitados siguen visibles como agotados; no se pueden agregar al carrito.</p>}
+  {area==='cotillon'&&<p className={styles.storeNote}>Los productos deshabilitados no aparecen en la tienda ni en el buscador. Los habilitados sin stock siguen visibles como agotados.</p>}
   <div className={styles.tableWrap}><table className={styles.table}><thead><tr>{['Foto','Nombre','Categoría principal','Precio','Stock','Estado','Acciones'].filter(label=>!editor||label!=='Stock').map(label=><th scope="col" key={label}>{label}</th>)}</tr></thead><tbody>
    {!visible.length&&<tr><td colSpan={editor?6:7} className={styles.empty}>No encontramos productos con esos filtros.</td></tr>}
    {visible.map(product=><ProductRow key={product.area+':'+product.id} product={product} categories={available} busy={busy||pending.has(product.area+':'+product.id)} save={changes=>save(product,changes)} edit={()=>onEdit(product)} clone={onClone?()=>onClone(product):undefined} remove={onDelete?()=>onDelete(product):undefined} editor={editor} publish={onPublish?()=>onPublish(product):undefined}/>)}

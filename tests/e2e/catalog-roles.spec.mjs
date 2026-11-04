@@ -1,4 +1,4 @@
-import {test,expect} from '@playwright/test';
+import {test,expect} from './theme-fixture.mjs';
 import {catalogHarness} from '../catalog-access-harness.mjs';
 import {png} from '../local-forms-harness.mjs';
 import crypto from 'node:crypto';

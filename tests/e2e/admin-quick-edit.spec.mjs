@@ -1,4 +1,4 @@
-import {test,expect} from '@playwright/test';
+import {test,expect} from './theme-fixture.mjs';
 import {setupAdmin} from './admin-quick-fixture.mjs';
 const section=(page,area='Disfraces')=>page.getByRole('region',{name:'Productos de '+area,exact:true});
 const row=(page,name)=>section(page).getByRole('row',{name,exact:true});

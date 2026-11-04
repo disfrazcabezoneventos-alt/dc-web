@@ -1,4 +1,4 @@
-import {test,expect} from '@playwright/test';
+import {test,expect} from './theme-fixture.mjs';
 import {setupSearch as setup} from '../search-fixture.mjs';
 async function searchField(page){
  await expect(page.locator('.product-card').first()).toBeVisible();

@@ -10,5 +10,5 @@ export function matchesStoreSearch(product:Product,query:string,categories:Categ
  const text=expandSearchText([product.name,product.description,product.category,...product.categoryNames||[],...names].join(' ')).replace(/ /g,'');
  return words.every(word=>{const forms=[word];if(word.length>=4){if(word.endsWith('s'))forms.push(word.slice(0,-1));if(word.endsWith('es'))forms.push(word.slice(0,-2));}return forms.some(form=>text.includes(form));});
 }
-export function searchProducts(products:Product[],query:string,categories:Category[]=[]){return products.filter(p=>(!p.publicationState||p.publicationState==='published')&&(p.area==='cotillon'||p.active)&&matchesStoreSearch(p,query,categories));}
+export function searchProducts(products:Product[],query:string,categories:Category[]=[]){return products.filter(p=>(!p.publicationState||p.publicationState==='published')&&p.active&&matchesStoreSearch(p,query,categories));}
 export function productSearchHref(p:Product){return '/'+p.area+'/#producto='+encodeURIComponent(p.id);}
