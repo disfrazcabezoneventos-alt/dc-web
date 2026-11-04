@@ -193,7 +193,7 @@ html[data-theme="halloween"] .wordmark::before {
 html[data-theme="halloween"] .wordmark .brand-mark {
   width: 164px;
   height: 144px;
-  background-image: url('/brand-logo-halloween-v2.webp');
+  background-image: image-set(url("/brand-halloween-320.webp") type("image/webp"),url("/brand-halloween-320.png") type("image/png"));
   filter: drop-shadow(0 1px 12px #f6926070) drop-shadow(0 0 20px #985fc47a);
 }
 
@@ -507,7 +507,7 @@ html[data-theme="halloween"] .site-footer::before {
 html[data-theme="halloween"] .site-footer .brand-mark {
   width: 190px;
   height: 190px;
-  background-image: url('/brand-logo-halloween-v2.webp');
+  background-image: image-set(url("/brand-halloween-320.webp") type("image/webp"),url("/brand-halloween-320.png") type("image/png"));
 }
 html[data-theme="halloween"] .site-footer p,
 html[data-theme="halloween"] .site-footer small { color: #e4d1d5; }

@@ -1,4 +1,4 @@
-import {test,expect} from '@playwright/test';
+import {test,expect} from './theme-fixture.mjs';
 import {setupSearch} from '../search-fixture.mjs';
 for(const width of [1093,1024,900,768,390])for(const theme of ['default','halloween'])test(`${width}px ${theme}: menú, foco exterior y vacío de sugerencias`,async({page},info)=>{
  await page.setViewportSize({width,height:900});await setupSearch(page,theme);await page.goto('/disfraces/');await expect(page.locator('.product-card').first()).toBeVisible();

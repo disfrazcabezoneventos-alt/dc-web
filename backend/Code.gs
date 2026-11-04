@@ -24,8 +24,8 @@ function need_(ok,message){if(!ok)throw new Error(message);}
 function json_(value){return ContentService.createTextOutput(JSON.stringify(value)).setMimeType(ContentService.MimeType.JSON);}
 function sheet_(name){need_(TABLES.includes(name),'Tabla inválida.');const s=SpreadsheetApp.openById(config_('SPREADSHEET_ID')).getSheetByName(name);need_(s,'Ejecutá prepararConfiguracion_ primero.');return s;}
 function rows_(name){const s=sheet_(name);return s.getLastRow()<2?[]:s.getRange(2,1,s.getLastRow()-1,2).getValues().map(r=>JSON.parse(r[1]));}
-function putDirect_(name,obj){const s=sheet_(name),all=rows_(name),index=all.findIndex(r=>r.id===obj.id);const raw=JSON.stringify(obj);need_(raw.length<48000,'El registro excede el tamaño permitido.');s.getRange(index<0?s.getLastRow()+1:index+2,1,1,2).setValues([[obj.id,raw]]);SpreadsheetApp.flush();return obj;}
-function removeDirect_(name,id){const index=rows_(name).findIndex(r=>r.id===id);need_(index>=0,'No se encontró el registro.');sheet_(name).deleteRow(index+2);}
+function putDirect_(name,obj){const s=sheet_(name),all=rows_(name),index=all.findIndex(r=>r.id===obj.id);const raw=JSON.stringify(obj);need_(raw.length<48000,'El registro excede el tamaño permitido.');s.getRange(index<0?s.getLastRow()+1:index+2,1,1,2).setValues([[obj.id,raw]]);SpreadsheetApp.flush();if(typeof publicCatalogInvalidate_==='function'&&(CATEGORY_AREAS.includes(name)||name.indexOf('categorias_')===0))publicCatalogInvalidate_();return obj;}
+function removeDirect_(name,id){const index=rows_(name).findIndex(r=>r.id===id);need_(index>=0,'No se encontró el registro.');sheet_(name).deleteRow(index+2);if(typeof publicCatalogInvalidate_==='function'&&(CATEGORY_AREAS.includes(name)||name.indexOf('categorias_')===0))publicCatalogInvalidate_();}
 var CATALOG_ACTOR_=null;
 var CATALOG_WRITE_DIRECT_=false;
 function put_(name,obj){
@@ -109,7 +109,7 @@ function frameOrigin_(e){
  need_(origins.includes(origin),'Origen del sitio no configurado. Revisá SITE_URL y EXTRA_SITE_URLS.');
  return origin;
 }
-function doPost(e){let result;try{need_(e&&e.postData&&e.postData.contents.length<47000000,'Solicitud demasiado grande.');if(e.parameter&&e.parameter.transport==='frame')validateFrame_(e);const raw=e.parameter&&e.parameter.transport==='frame'?e.parameter.payload:e.postData.contents;const b=JSON.parse(raw);need_(b&&typeof b.action==='string','Solicitud inválida.');result={ok:true,data:b.action==='siteTheme'&&!b.token?{theme:siteTheme_()}:lock_(()=>dispatch_(b))};}catch(error){result={ok:false,error:String(error.message||'No se pudo completar la operación.').slice(0,300)};}return reply_(e,result);}
+function doPost(e){let result;try{need_(e&&e.postData&&e.postData.contents.length<47000000,'Solicitud demasiado grande.');if(e.parameter&&e.parameter.transport==='frame')validateFrame_(e);const raw=e.parameter&&e.parameter.transport==='frame'?e.parameter.payload:e.postData.contents;const b=JSON.parse(raw);need_(b&&typeof b.action==='string','Solicitud inválida.');if(['catalogData','catalog'].includes(b.action))need_(typeof publicRead_==='function','Falta instalar PublicCatalog.gs.');result={ok:true,data:typeof publicReadAction_==='function'&&publicReadAction_(b)?publicRead_(b):b.action==='siteTheme'&&!b.token?{theme:siteTheme_()}:lock_(()=>{const value=dispatch_(b);if(typeof publicCatalogInvalidate_==='function'&&catalogMutation_(b.action))publicCatalogInvalidate_();return value;})};}catch(error){result={ok:false,error:String(error.message||'No se pudo completar la operación.').slice(0,300)};}return reply_(e,result);}
 function dispatch_(b){
  const actor=typeof catalogApiActor_==='function'?catalogApiActor_(b):null;
  const previous=CATALOG_ACTOR_;CATALOG_ACTOR_=actor;

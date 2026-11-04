@@ -1,4 +1,4 @@
-import {test,expect} from '@playwright/test';
+import {test,expect} from './theme-fixture.mjs';
 
 const products=[
  {id:'mask-1',area:'cotillon',name:'Máscara de fiesta',category:'Halloween',categoryId:'halloween',categoryIds:['halloween'],catalogGroups:['FECHAS ESPECIALES'],mode:'venta',price:1500,priceKnown:true,stock:3,rentPrice:0,image:'',description:'Para festejar',active:true},
@@ -10,7 +10,8 @@ async function mockBackend(page,state={products,categories,cotillonImportReady:t
   if(delay)await new Promise(resolve=>setTimeout(resolve,delay));
   const fields=new URLSearchParams(route.request().postData()||'');
   const action=JSON.parse(fields.get('payload')||'{}').action;
-  const data=action==='catalogData'?state:action==='siteTheme'?{siteTheme:'default'}:null;
+  const rentalConfig={version:2,prices:{adulto:60000,cabezon:75000},promotions:[],revision:'cart-mock-v2'};
+  const data=action==='catalogData'?{...state,rentalConfig}:action==='rentalConfig'?rentalConfig:action==='siteTheme'?{siteTheme:'default'}:null;
   const message={type:'dc-apps-result',id:fields.get('bridgeId'),result:{ok:true,data}};
   await route.fulfill({status:200,contentType:'text/html; charset=utf-8',body:`<!doctype html><meta charset="utf-8"><script>parent.postMessage(${JSON.stringify(message)},${JSON.stringify(fields.get('origin'))})</script>`});
  });
@@ -155,7 +156,7 @@ test('la consulta de compra permite reintentar y recupera el disfraz elegido',as
 test('abrir el carrito consulta stock y precio nuevos aunque exista caché reciente',async({page})=>{
  await page.addInitScript(({oldProducts,categories})=>{
   localStorage.setItem('dc-cotillon-cart-v1',JSON.stringify([{id:'mask-1',quantity:1,unitPrice:1500,priceKnown:true}]));
-  sessionStorage.setItem('dc-public-catalog-v1',JSON.stringify({at:Date.now(),data:{products:oldProducts,categories,cotillonImportReady:true}}));
+  sessionStorage.setItem('dc-public-catalog-v2',JSON.stringify({at:Date.now(),data:{products:oldProducts,categories,cotillonImportReady:true}}));
  },{oldProducts:products,categories});
  await mockBackend(page,{products:[{...products[0],price:1800}],categories,cotillonImportReady:true});
  await page.goto('/cotillon/');

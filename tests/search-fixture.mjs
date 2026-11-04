@@ -3,7 +3,7 @@ import fs from 'node:fs';
 export async function setupSearch(page,theme='default',legacy=true){
  const h=catalogHarness();h.settings.SITE_THEME=theme;h.settings.COTILLON_EXCEL_2026_STATE='ready';h.settings.SEARCH_MISS_LOG_ENABLED='yes';
  h.tables.disfraces=[{...h.product,id:'spider',name:'Spider-Man rojo',description:'Máscara infantil'},{...h.product,id:'princess',name:'Princesas del reino'},...Array.from({length:7},(_,i)=>({...h.product,id:'hero-'+i,name:'Héroe '+i})),{...h.product,id:'hidden',name:'Producto secreto',publicationState:'draft'}];
- h.tables.cotillon=[{...h.product,id:'mask',area:'cotillon',mode:'venta',name:'Máscara roja',category:'Otros',categoryId:'c-primary',categoryIds:['c-primary'],active:false,stock:0}];
+ h.tables.cotillon=[{...h.product,id:'mask',area:'cotillon',mode:'venta',name:'Máscara roja',category:'Otros',categoryId:'c-primary',categoryIds:['c-primary'],active:true,stock:0}];
  const logs=[];let sheet=null;h.ctx.SpreadsheetApp={openById:()=>({getSheetByName:()=>sheet,insertSheet:()=>sheet={appendRow:r=>logs.push(r),setFrozenRows(){},getLastRow:()=>logs.length,getRange:()=>({getValues:()=>logs.slice(1)})}})};
  let catalogCalls=0;const missAttempts=[];
  await page.addInitScript(theme=>localStorage.setItem('dc-site-theme',theme),theme);

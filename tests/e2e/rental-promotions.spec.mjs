@@ -1,4 +1,4 @@
-import {test,expect} from '@playwright/test';
+import {test,expect} from './theme-fixture.mjs';
 import {localHarness,fixture,submission,png} from '../local-forms-harness.mjs';
 
 async function setup(page,theme){
@@ -37,7 +37,7 @@ for(const theme of ['default','halloween']){
   for(const name of ['Adulto solo venta','Niño de ensayo'])await expect(cards.filter({hasText:name}).locator('.rental-promo-tag')).toHaveCount(0);
   await shot(page,info,theme+'-catalogo');await page.getByRole('button',{name:'Ver detalle de Adulto de ensayo',exact:true}).click();await expect(page.getByRole('dialog')).toContainText('Llevá 2 y pagá 1');await shot(page,info,theme+'-detalle-adulto');await page.getByRole('button',{name:'Cerrar detalle',exact:true}).click();await page.getByRole('button',{name:'Ver detalle de Cabezón de ensayo',exact:true}).click();await expect(page.getByRole('dialog')).toContainText('Llevá 3 y pagá 2');await expect(page.getByRole('dialog')).toContainText('75.000');await shot(page,info,theme+'-detalle-cabezon');
   for(const id of ['adulto-2x1','cabezon-3x2']){const c=h.dispatch({action:'rentalConfig'});h.dispatch({action:'saveRentalPromotion',token:h.token,revision:c.revision,promotion:{...c.promotions.find(p=>p.id===id),active:false}});}
-  await page.evaluate(()=>sessionStorage.removeItem('dc-public-catalog-v1'));await page.reload();await expect(cards).toHaveCount(4);await expect(page.getByRole('complementary',{name:'Promociones de alquiler'})).toHaveCount(0);await expect(page.locator('.rental-promo-tag')).toHaveCount(0);
+  await page.evaluate(()=>sessionStorage.removeItem('dc-public-catalog-v2'));await page.reload();await expect(cards).toHaveCount(4);await expect(page.getByRole('complementary',{name:'Promociones de alquiler'})).toHaveCount(0);await expect(page.locator('.rental-promo-tag')).toHaveCount(0);
  });
  for(const local of [false,true])test(`${theme}: ${local?'local':'web'} completo, avisos, resumen y total del servidor`,async({page},info)=>{
   const h=await setup(page,theme);const failures=[];page.on('pageerror',e=>failures.push(e.message));await page.goto(local?'/reserva-local/':'/reservas/');await expect(page.getByRole('button',{name:'Continuar',exact:true})).toBeEnabled();await identity(page,local);

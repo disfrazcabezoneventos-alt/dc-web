@@ -7,7 +7,7 @@ const activeDeployment='https://script.google.com/macros/s/AKfycbynyGN99GuijF2x9
 // el frontend sin interrumpir el catálogo mientras se corrige la variable allí.
 export const endpoint = configuredEndpoint===retiredDeployment?activeDeployment:configuredEndpoint;
 export const demo = !endpoint;
-const CATALOG_CACHE_KEY='dc-public-catalog-v1';
+const CATALOG_CACHE_KEY='dc-public-catalog-v2';
 const CATALOG_CACHE_MS=60000;
 type CatalogResponse={rentalConfig?:RentalConfig;products:Product[];categories:Category[];campaign?:{halloween:boolean};cotillonImportReady?:boolean};
 let pendingCatalog:Promise<CatalogResponse>|null=null;
@@ -67,6 +67,9 @@ export async function catalogData(forceFresh=false):Promise<CatalogResponse>{
  pendingCatalog=(async()=>{
   let data:CatalogResponse;
   try{data=await api('catalogData')}catch(e){if(!/Acción desconocida|Sesión vencida/.test((e as Error).message))throw e;const products=await api('catalog') as Product[];data={products,categories:legacyCategories(products)}}
+  // Public v2 has no physical stock. Legacy views receive the purchase cap or the rental form ceiling (20).
+  // Rental availability is rechecked against Sheets before payment/submission; 20 is not inventory.
+  data={...data,products:data.products.filter(p=>p.active).map(p=>p.purchaseMax!==undefined?{...p,stock:p.available===false?0:p.area==='disfraces'&&p.mode!=='venta'?20:p.purchaseMax}:p)};
   try{sessionStorage.setItem(CATALOG_CACHE_KEY,JSON.stringify({at:Date.now(),data}))}catch{}
   return data;
  })();

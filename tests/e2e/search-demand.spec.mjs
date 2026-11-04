@@ -1,4 +1,4 @@
-import {test,expect} from '@playwright/test';
+import {test,expect} from './theme-fixture.mjs';
 import {setupSearch} from '../search-fixture.mjs';
 test('Admin ve búsquedas agrupadas y Editor no ve esa sección',async({page},info)=>{
  const {h,logs}=await setupSearch(page,'default',false);h.ctx.dispatch_({action:'recordSearchMiss',query:'Dragon'});logs.push(['"Dragón"','2026-11-03T12:00:00Z']);h.ctx.dispatch_({action:'recordSearchMiss',query:'Unicornio'});
@@ -10,6 +10,6 @@ test('Admin ve búsquedas agrupadas y Editor no ve esa sección',async({page},in
 test('registra solo consulta y fecha sin invalidar la caché ni recargar el catálogo',async({page})=>{
  const {logs,catalogCalls}=await setupSearch(page,'default',false);await page.goto('/buscar/?q=idea-imposible');await expect(page.getByRole('heading',{name:'No encontramos esa idea todavía.'})).toBeVisible();await expect.poll(()=>logs.length).toBe(2);expect(logs[1]).toHaveLength(2);expect(JSON.parse(logs[1][0])).toBe('idea-imposible');await expect(page.locator('.error-banner')).toHaveCount(0);
  await expect(page.locator('iframe[name^="dc-apps-"]')).toHaveCount(0);expect(catalogCalls()).toBe(1);
- expect(await page.evaluate(()=>!!sessionStorage.getItem('dc-public-catalog-v1'))).toBe(true);
+ expect(await page.evaluate(()=>!!sessionStorage.getItem('dc-public-catalog-v2'))).toBe(true);
  await page.goto('/buscar/?q=mascara');await expect(page.locator('.product-card')).toHaveCount(2);expect(catalogCalls()).toBe(1);
 });

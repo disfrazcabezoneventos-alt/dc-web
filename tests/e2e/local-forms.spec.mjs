@@ -1,4 +1,4 @@
-import {test,expect} from '@playwright/test';
+import {test,expect} from './theme-fixture.mjs';
 import {localHarness,fixture,submission,png} from '../local-forms-harness.mjs';
 import fs from 'node:fs';
 import {PDFDocument} from 'pdf-lib';
@@ -106,7 +106,10 @@ test('admin: archivos, contrato original, orden real por cada fecha y aviso web'
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });
 test('admin: polling a los 10 segundos, abrir aviso, borrar todos cancelar/aceptar y eliminar',async({page})=>{
- const h=localHarness();await backend(page,h);await admin(page,h);await expect(page.getByRole('button',{name:'Notificaciones de formularios: 0'})).toBeVisible();
+ const h=localHarness();await backend(page,h);
+ // Finish the initial poll before advancing fake time; otherwise inFlight skips the first interval.
+ const initialPoll=page.waitForResponse(r=>{try{const f=new URLSearchParams(r.request().postData()||'');return JSON.parse(f.get('payload')||'{}').action==='incomingNotifications'}catch{return false}});
+ await admin(page,h);await initialPoll;await expect(page.locator('iframe[name^="dc-apps-"]')).toHaveCount(0);await expect(page.getByRole('button',{name:'Notificaciones de formularios: 0'})).toBeVisible();
  const created=h.dispatch(submission(h));await page.clock.fastForward(11000);await expect(page.getByRole('button',{name:'Notificaciones de formularios: 1'})).toBeVisible();
  await page.getByRole('button',{name:'Notificaciones de formularios: 1'}).click();await page.getByRole('button',{name:new RegExp('Formulario local · '+created.code)}).click();await expect(page.getByRole('dialog')).toBeVisible();await page.getByRole('dialog').getByRole('button',{name:'Cerrar',exact:true}).click();await expect(page.getByRole('button',{name:'Notificaciones de formularios: 0'})).toBeVisible();
  h.tables.reservas.push({...structuredClone(h.tables.reservas[0]),id:'notice-web',code:'DC-NUEVO',source:undefined,adminNotificationReadAt:undefined});await page.clock.fastForward(11000);await page.getByRole('button',{name:'Notificaciones de formularios: 1'}).click();

@@ -11,9 +11,9 @@ test('H005: sin tildes, guiones, espacios, palabras en distinto orden y sinónim
  assert.ok(search.matchesStoreSearch({...product,categoryIds:['secondary']},'fiesta',[{id:'secondary',area:'disfraces',name:'Fiesta'}]));
  assert.equal(search.matchesStoreSearch(product,'rojo azul'),false);assert.equal(search.matchesStoreSearch(product,'🎈'),false);
 });
-test('público excluye borradores e inactivos de Disfraces, conserva agotados de Cotillón',()=>{
+test('público excluye borradores e inactivos de Disfraces, oculta inactivos de Cotillón',()=>{
  const list=[product,{...product,id:'draft',publicationState:'draft'},{...product,id:'off',active:false},{...product,id:'sold',area:'cotillon',active:false}];
- assert.deepEqual(search.searchProducts(list,'rojo').map(p=>p.id),['test','sold']);
+ assert.deepEqual(search.searchProducts(list,'rojo').map(p=>p.id),['test']);
  assert.equal(search.productSearchHref({...product,id:'id con /'}),'/disfraces/#producto=id%20con%20%2F');
 });
 test('plurales por palabra y sinónimos nuevos en ambas direcciones',()=>{

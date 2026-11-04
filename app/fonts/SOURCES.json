@@ -1,0 +1,16 @@
+[
+  {
+    "family": "DM Sans",
+    "url": "https://fonts.gstatic.com/s/dmsans/v17/rP2Yp2ywxg089UriI5-g4vlH9VoD8Cmcqbu0-K4.woff2",
+    "bytes": 36932,
+    "sha256": "9fea608a947e67020c33cad9a6fe3d60c54119dfb8cff87768a8117a15ed7543",
+    "license": "https://raw.githubusercontent.com/google/fonts/main/ofl/dmsans/OFL.txt"
+  },
+  {
+    "family": "Manrope",
+    "url": "https://fonts.gstatic.com/s/manrope/v23/xn7gYHE41ni1AdIRggexSg.woff2",
+    "bytes": 24532,
+    "sha256": "8c2def024c1bf31aacf3624ae3c4d701269b4ec3dc765c04830839f0d36b2d9e",
+    "license": "https://raw.githubusercontent.com/google/fonts/main/ofl/manrope/OFL.txt"
+  }
+]
