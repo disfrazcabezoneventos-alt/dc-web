@@ -20,3 +20,11 @@ test('plurales por palabra y sinónimos nuevos en ambas direcciones',()=>{
  for(const [query,name] of [['globos','Globo'],['pelucas','Peluca'],['papeles rojos','Papel rojo'],['flores','Flor'],['mujer maravilla','Wonder Woman'],['wonder woman','Mujer Maravilla'],['hombre murciélago','Batman'],['batman','Hombre Murciélago'],['banderín','Guirnalda'],['guirnalda','Banderín'],['banderines','Guirnalda']])assert.ok(search.matchesStoreSearch({...product,name,category:'',description:''},query),query+' / '+name);
  assert.equal(search.matchesStoreSearch({...product,name:'Ga',category:'',description:''},'gas'),false);
 });
+
+test('Tanda 2: nombres corregidos conservan las variantes de búsqueda en ambos sentidos',()=>{
+ const groups=[['Aladdín','Aladín'],["D’Artagnan",'Dartanian','Dartañán'],['Tinker Bell','Campanita'],['Cruella','Cruela'],['Bellatrix','Belatrix'],['Teletubby','Teletubie'],['Tung Tung Sahur','Tung Tung Shaur'],['Mario Bros.','Mario Bross']];
+ for(const group of groups)for(const name of group)for(const query of group)assert.ok(search.matchesStoreSearch({...product,name,category:'',description:''},query),`${query} / ${name}`);
+ assert.ok(search.matchesStoreSearch({...product,name:'Aladdín Verde',category:'',description:''},'ALADIN VERDE'));
+ assert.equal(search.matchesStoreSearch({...product,name:'Aladdín Verde',category:'',description:''},'aladin azul'),false);
+ assert.equal(search.matchesStoreSearch({...product,name:'Barney',category:'',description:''},'aladin'),false);
+});
