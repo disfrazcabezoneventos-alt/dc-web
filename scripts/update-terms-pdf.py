@@ -2,7 +2,7 @@
 import io,json,os
 from pathlib import Path
 from pypdf import PdfReader,PdfWriter
-from pypdf.generic import ContentStream,NameObject
+from pypdf.generic import ContentStream,NameObject,FloatObject
 from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
@@ -23,8 +23,12 @@ for token in ['ñ','á','é','í','ó','ú','“','”','—']:
 purple=HexColor('#76519b'); grey=HexColor('#67717c'); ink=HexColor('#263039')
 
 def strip_text(page,index):
-    stream=ContentStream(page['/Contents'],reader); result=[]; group=None
+    stream=ContentStream(page['/Contents'],reader); result=[]; group=None; logo_clips=0
     for args,op in stream.operations:
+        # El logo proviene de una captura: recortar el borde superior evita la raya negra.
+        # Conserva el tamano, la posicion y el dibujo original; solo quita margen blanco.
+        if index==0 and op==b're' and len(args)==4 and all(abs(float(a)-b)<0.0001 for a,b in zip(args,(398.2756,2,100,101.3025))):
+            args=list(args);args[3]=FloatObject('99.8025');logo_clips+=1
         if op==b'BT': group=[(args,op)];continue
         if group is not None:
             group.append((args,op))
@@ -38,6 +42,7 @@ def strip_text(page,index):
                 group=None
         else:result.append((args,op))
     assert group is None
+    if index==0:assert logo_clips==1,f'Recorte de logo inesperado: {logo_clips}'
     stream.operations=result;page[NameObject('/Contents')]=stream
 
 def label(c,text,x,top,size=8.8,font='ContractSans',color=grey):
