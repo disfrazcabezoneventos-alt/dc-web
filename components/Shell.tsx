@@ -7,6 +7,7 @@ import {api, demo, whatsapp} from '@/lib/api';
 import {applySiteTheme, isSiteTheme, readSiteTheme} from '@/lib/theme';
 import HalloweenAtmosphere from '@/components/HalloweenAtmosphere';
 import GlobalSearch from './GlobalSearch';
+import PublicAnalytics from './PublicAnalytics';
 import CartProvider,{StoreActions} from '@/components/CartProvider';
 
 export default function Shell({children}: {children: React.ReactNode}) {
@@ -39,6 +40,7 @@ export default function Shell({children}: {children: React.ReactNode}) {
   }, []);
 
   return <CartProvider>
+    <PublicAnalytics />
     <HalloweenAtmosphere />
     <div className="site-shell">
       <div className="topbar">DISFRACES, COTILLÓN Y MUCHAS GANAS DE FESTEJAR <span>✦ Av. Rivadavia 3314 · CABA</span></div>
