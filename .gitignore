@@ -15,3 +15,15 @@ excel-tienda/salidas/*.csv
 docs/promociones-alquiler/capturas/*admin*
 
 /generated/
+
+# Evidencia privada y credenciales: nunca publicar en el repositorio.
+docs/**/*admin*.png
+docs/admin-quick-edit/*.png
+docs/seguridad-admin/*.png
+docs/**/*reservas*.png
+docs/**/*reserva*.png
+docs/qa/formulario-local/*.png
+.clasprc.json
+*.p12
+*.pfx
+*.key

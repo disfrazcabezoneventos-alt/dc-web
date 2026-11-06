@@ -1,9 +1,38 @@
 services:
   - type: web
-    name: disfraz-cabezon
+    name: dc-web
     runtime: static
     buildCommand: npm ci && npm run build
     staticPublishPath: out
     envVars:
       - key: NEXT_PUBLIC_APPS_SCRIPT_URL
         sync: false
+      - key: NEXT_PUBLIC_TURNSTILE_SITE_KEY
+        sync: false
+      - key: NEXT_PUBLIC_CLOUDFLARE_WEB_ANALYTICS_TOKEN
+        sync: false
+    headers:
+      - path: /*
+        name: Strict-Transport-Security
+        value: >-
+          max-age=31536000
+      - path: /*
+        name: Content-Security-Policy
+        value: >-
+          default-src 'none'; base-uri 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://res.cloudinary.com; font-src 'self' data:; connect-src 'self' data: blob: https://cloudflareinsights.com https://static.cloudflareinsights.com https://challenges.cloudflare.com; frame-src https://script.google.com https://*.googleusercontent.com https://maps.google.com https://www.google.com https://challenges.cloudflare.com; form-action 'self' https://script.google.com https://*.googleusercontent.com; frame-ancestors 'none'; object-src 'none'; worker-src 'self' blob:; upgrade-insecure-requests
+      - path: /*
+        name: X-Frame-Options
+        value: >-
+          DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: >-
+          nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: >-
+          strict-origin-when-cross-origin
+      - path: /*
+        name: Permissions-Policy
+        value: >-
+          camera=(), microphone=(), geolocation=()

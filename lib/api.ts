@@ -1,3 +1,4 @@
+import {verifyHuman} from './turnstile';
 import type {SiteInfo} from './site-info';
 import type {RentalConfig} from './rental-pricing';
 import type {Category,Product} from './catalog';
@@ -13,6 +14,7 @@ const CATALOG_CACHE_MS=60000;
 type CatalogResponse={siteInfo?:SiteInfo;rentalConfig?:RentalConfig;products:Product[];categories:Category[];campaign?:{halloween:boolean};cotillonImportReady?:boolean};
 let pendingCatalog:Promise<CatalogResponse>|null=null;
 export async function api(action:string, data:Record<string,unknown>={}, token=''):Promise<any> {
+  if(['submit','submitLocal','cancel','correct','purchaseCheck','cartCheck'].includes(action))data={...data,turnstileToken:await verifyHuman(action)};
   if(!endpoint) throw new Error('Modo demostración: configurá NEXT_PUBLIC_APPS_SCRIPT_URL para guardar datos reales.');
   // Un formulario dirigido a un iframe permite recibir la respuesta de Apps Script
   // mediante postMessage. fetch() queda bloqueado por CORS en un sitio estático.
