@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "node scripts/build-product-pages.mjs && next dev --hostname 127.0.0.1",
     "build": "node scripts/build-product-pages.mjs && next build && node scripts/check-product-pages.mjs",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
     "test": "node --test tests/*.test.mjs",
     "test:e2e": "playwright test"
   },
