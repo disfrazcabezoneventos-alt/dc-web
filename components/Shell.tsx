@@ -8,6 +8,8 @@ import {applySiteTheme, isSiteTheme, readSiteTheme} from '@/lib/theme';
 import HalloweenAtmosphere from '@/components/HalloweenAtmosphere';
 import GlobalSearch from './GlobalSearch';
 import PublicAnalytics from './PublicAnalytics';
+import SiteInfoProvider from './SiteInfoProvider';
+import VisitUs from './VisitUs';
 import CartProvider,{StoreActions} from '@/components/CartProvider';
 
 export default function Shell({children}: {children: React.ReactNode}) {
@@ -39,7 +41,7 @@ export default function Shell({children}: {children: React.ReactNode}) {
     };
   }, []);
 
-  return <CartProvider>
+  return <CartProvider><SiteInfoProvider>
     <PublicAnalytics />
     <HalloweenAtmosphere />
     <div className="site-shell">
@@ -70,13 +72,13 @@ export default function Shell({children}: {children: React.ReactNode}) {
           </Link>
           <p>Hay un personaje para cada historia.<br />Y una fiesta esperando la tuya.</p>
         </div>
-        <div id="como-llegar"><strong>Cómo llegar y horarios</strong><p>Av. Rivadavia 3314, CABA<br /><a href={whatsapp()}>WhatsApp · 11 4989-7969</a></p><p>Lunes a viernes: 10:00 a 14:00 y 16:00 a 20:00<br/>Sábados: 10:00 a 17:00<br/>Domingos: cerrado</p><a href="https://www.google.com/maps/search/?api=1&query=Av.+Rivadavia+3314+CABA" target="_blank" rel="noreferrer">Cómo llegar a Av. Rivadavia 3314 →</a></div>
+
         <div>
           <Link href="/condiciones/">Condiciones y privacidad</Link>
           <Link href="/arrepentimiento/">Solicitud de arrepentimiento</Link>
         </div>
-        <small>© {new Date().getFullYear()} Disfraz Cabezón · Hecho para celebrar.</small>
+        <VisitUs compact/><small>© {new Date().getFullYear()} Disfraz Cabezón · Hecho para celebrar.</small>
       </footer>
     </div>
-  </CartProvider>;
+  </SiteInfoProvider></CartProvider>;
 }

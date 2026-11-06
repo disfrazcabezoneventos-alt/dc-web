@@ -116,6 +116,7 @@ function dispatch_(b){
  try{return dispatchBody_(b,actor)}finally{CATALOG_ACTOR_=previous;}
 }
 function dispatchBody_(b,actor){
+ if(typeof siteInfoDispatch_==='function'){const site=siteInfoDispatch_(b,actor);if(site)return site.data;}
  if(typeof rentalPromotionsDispatch_==='function'){const promotions=rentalPromotionsDispatch_(b);if(promotions)return promotions.data;}
  if(b.action==='recordSearchMiss')return recordSearchMiss_(b);
  if(b.action==='searchDemand'){need_(actor&&actor.role==='admin','No tenés permiso para esta acción.');return searchDemand_();}
@@ -133,7 +134,7 @@ function dispatchBody_(b,actor){
  if(typeof incomingDispatch_==='function'){const incoming=incomingDispatch_(b);if(incoming)return incoming.data;}
  // Las lecturas públicas no reparan stock ni crean categorías.
  if(b.action==='catalog')return CATEGORY_AREAS.flatMap(a=>products_(a).filter(p=>(typeof catalogPublicProduct_!=='function'||catalogPublicProduct_(p))&&(a==='cotillon'||p.active)));
- if(b.action==='catalogData')return {rentalConfig:rentalConfig_(),products:CATEGORY_AREAS.flatMap(a=>products_(a).filter(p=>(typeof catalogPublicProduct_!=='function'||catalogPublicProduct_(p))&&(a==='cotillon'||p.active))),categories:CATEGORY_AREAS.flatMap(categories_),campaign:siteCampaign_(),cotillonImportReady:config_('COTILLON_EXCEL_2026_STATE')==='ready'};
+ if(b.action==='catalogData')return {siteInfo:typeof siteInfo_==='function'?siteInfo_():null,rentalConfig:rentalConfig_(),products:CATEGORY_AREAS.flatMap(a=>products_(a).filter(p=>(typeof catalogPublicProduct_!=='function'||catalogPublicProduct_(p))&&(a==='cotillon'||p.active))),categories:CATEGORY_AREAS.flatMap(categories_),campaign:siteCampaign_(),cotillonImportReady:config_('COTILLON_EXCEL_2026_STATE')==='ready'};
  if(b.action==='login'){
   if(typeof catalogLogin_==='function')return catalogLogin_(b);
   limit_('login-global',60,900);limit_('login:'+String(b.username).toLowerCase(),8,900);
@@ -156,7 +157,7 @@ function dispatchBody_(b,actor){
  recoverStock_();
  if(['admin','saveCategory','saveProduct','mapLegacyCategory'].includes(b.action))ensureCotillonDepth3_();
  if(b.action==='logout'){CacheService.getScriptCache().remove('session:'+hash_(b.token));return {ok:true};}
- if(b.action==='admin')return {role:'admin',user:actor||{role:'admin'},catalogRolesReady:typeof catalogRolesReady_==='function'&&catalogRolesReady_(),products:typeof catalogProductsForManagement_==='function'?catalogProductsForManagement_():CATEGORY_AREAS.flatMap(products_),categories:CATEGORY_AREAS.flatMap(categories_),requests:rows_('reservas').filter(r=>!r.deletedAt).map(({accessHash,terms,files,...r})=>r),movements:rows_('movimientos'),cancellations:rows_('cancelaciones'),bank:bank_(),mailMode:config_('MAIL_MODE'),siteTheme:siteTheme_(),campaign:siteCampaign_(),localFormsReady:config_('LOCAL_FORMS_ENABLED')==='yes'};
+ if(b.action==='admin')return {role:'admin',user:actor||{role:'admin'},catalogRolesReady:typeof catalogRolesReady_==='function'&&catalogRolesReady_(),products:typeof catalogProductsForManagement_==='function'?catalogProductsForManagement_():CATEGORY_AREAS.flatMap(products_),categories:CATEGORY_AREAS.flatMap(categories_),requests:rows_('reservas').filter(r=>!r.deletedAt).map(({accessHash,terms,files,...r})=>r),movements:rows_('movimientos'),cancellations:rows_('cancelaciones'),bank:bank_(),mailMode:config_('MAIL_MODE'),siteInfo:typeof siteInfo_==='function'?siteInfo_():null,siteTheme:siteTheme_(),campaign:siteCampaign_(),localFormsReady:config_('LOCAL_FORMS_ENABLED')==='yes'};
  if(b.action==='setSiteTheme'){need_(['default','halloween'].includes(b.theme),'Tema inválido.');props_().setProperty('SITE_THEME',b.theme);return {theme:siteTheme_()};}
  if(b.action==='setHalloweenCampaign'){need_(typeof b.enabled==='boolean','Estado de campaña inválido.');props_().setProperty('CAMPAIGN_HALLOWEEN',b.enabled?'on':'off');return siteCampaign_();}
  if(b.action==='saveCategory'){

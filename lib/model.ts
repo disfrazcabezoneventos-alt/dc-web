@@ -1,7 +1,7 @@
 import type {RentalCalculation} from './rental-pricing';
 export const BRAND = {name:'Disfraz Cabezón',owner:'Lorena Ughetti',cuit:'27-29478271-6',address:'Av. Rivadavia 3314, CABA',phone:'1149897969',email:'disfrazcabezoneventos@gmail.com'};
 export const OWNER_EMAIL = 'disfrazcabezoneventos@gmail.com';
-export const VERSION = 'DC-2026-11-03.2';
+export const VERSION = 'DC-2026-11-05.2';
 export const STATUS:Record<string,string>={pending:'Pendiente',correction:'A corregir',confirmed:'Confirmado',rejected:'Rechazado',refund_pending:'Reintegro pendiente',refunded:'Reintegrado',returned:'Devuelto',incident:'Con incidencia',cancel_requested:'Cancelación solicitada'};
 export type Costume={name:string;category:'adulto'|'cabezon';quantity:number;catalogCategoryId?:string;catalogCategory?:string;productId?:string};
 export type Rental={pricing?:RentalCalculation;fullName:string;dni:string;birthDate:string;address:string;city:string;phone:string;altPhone:string;email:string;items:Costume[];pickupDate:string;returnDate:string;pickupWindow:string;returnWindow:string;specialSchedule:boolean;scheduleAgreement:string;total:number;payMode:'half'|'full';pickupBy:'self'|'other';authorizedName:string;authorizedDni:string;docType:string;docDate:string;namesMatch:boolean;adult:boolean;privacy:boolean;priorInfo:boolean;truth:boolean;terms:boolean;clarification:string;requestKey:string};

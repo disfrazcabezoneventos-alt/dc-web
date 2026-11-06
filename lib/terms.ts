@@ -25,7 +25,7 @@ export const terms: {title:string;body:string}[] = [
   },
   {
     "title": "Depósito de garantía",
-    "body": "El depósito de garantía —habitualmente llamado “seguro”— es reembolsable y separado del alquiler: $60.000 por adulto y $100.000 por cabezón, por cada traje, incluidos los bonificados. Se entrega al retirar, en efectivo billete. Al devolver se revisan frente al cliente las piezas y su estado. Si todo está completo y en condiciones, se reintegra en ese momento. Daños, faltantes, suciedad excesiva y demoras deben documentarse y liquidarse según estas condiciones. No es un seguro contratado con una aseguradora."
+    "body": "El depósito de garantía —habitualmente llamado “seguro”— es reembolsable y separado del alquiler: $60.000 por adulto y $100.000 por cabezón, por cada traje, incluidos los bonificados. Se entrega al retirar, en efectivo billete. En el local, las piezas se revisan frente al cliente y, si están completas y en condiciones, la garantía se reintegra en el momento. En devoluciones por envío o mensajería, se reintegra por transferencia después de revisar los trajes. Daños, faltantes, suciedad excesiva y demoras deben documentarse y liquidarse según estas condiciones. No es un seguro contratado con una aseguradora."
   },
   {
     "title": "Fechas, horarios y período incluido",
@@ -66,5 +66,9 @@ export const terms: {title:string;body:string}[] = [
   {
     "title": "Derecho de arrepentimiento",
     "body": "En las contrataciones a distancia, el consumidor puede revocar la aceptación dentro de los diez días corridos contados desde la celebración del contrato o la entrega del bien, lo último que ocurra, en los casos y términos legalmente aplicables. Es un derecho irrenunciable y su ejercicio no genera responsabilidad ni gastos para el consumidor. Puede comunicarlo mediante el botón de arrepentimiento del formulario, WhatsApp 11 4989-7969 o disfrazcabezoneventos@gmail.com. Cuando corresponda devolver el bien, debe ponerlo a disposición y los gastos legales de devolución son a cargo del proveedor. Rigen la Ley 24.240 y el Código Civil y Comercial de la Nación."
-  }
+  },
+{
+  "title": "Medios de pago y envíos",
+  "body": "Efectivo: 10% de descuento · Transferencia, débito y crédito: precio de lista. Disfraces: podés calcular el envío con Uber desde tu domicilio hasta el local, o pedirnos por WhatsApp un contacto de mensajería de confianza. Los cabezones son voluminosos y no se pueden llevar en moto. La garantía se entrega en efectivo al retirar. En el local se reintegra en el momento si los trajes están completos y en condiciones; en devoluciones por envío o mensajería, se reintegra por transferencia después de revisar los trajes. Cotillón: podés pedir un envío por Uber, Didi o Rappi, o comprarnos directamente por Rappi. El retiro por mensajería requiere comunicación y autorización previa del negocio, con la identificación correspondiente."
+}
 ];

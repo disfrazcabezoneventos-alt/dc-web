@@ -13,3 +13,5 @@ playwright-report/
 # Evidencia administrativa y auditorías: conservar solo fuera del repositorio público.
 excel-tienda/salidas/*.csv
 docs/promociones-alquiler/capturas/*admin*
+
+/generated/

@@ -34,7 +34,7 @@ test('PDF: el original completo sigue disponible y el formulario web conserva el
 });
 
 test('PDF local: el resumen solo se usa para el texto exacto conocido, nunca para condiciones diferentes',()=>{
- assert.match(local.localPrintConditions(terms).join('\n'),/Día extra: 50%/);
+ assert.match(local.localPrintConditions(terms).join('\n'),/Día extra: 50%/);assert.match(local.localPrintConditions(terms).join('\n'),/por transferencia después de revisar/);
  const custom={title:'Reprogramaciones',body:'Condición particular distinta que debe conservarse completa.'};
  assert.equal(local.localPrintConditions([custom])[0],'1. Reprogramaciones: '+custom.body);
  const unknown={title:'Acuerdo particular',body:'Texto íntegro de la condición especial.'};

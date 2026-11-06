@@ -5,7 +5,7 @@ import {usePathname} from 'next/navigation';
 import Script from 'next/script';
 
 const publicPaths=new Set(['/', '/disfraces', '/cotillon', '/buscar', '/reservas', '/comprar', '/condiciones', '/arrepentimiento']);
-const isPublic=(path:string)=>publicPaths.has(path.replace(/\/+$/,'')||'/');
+const isPublic=(path:string)=>publicPaths.has(path.replace(/\/+$/,'')||'/')||/^\/p\/[a-z0-9_-]+\/?$/i.test(path);
 
 export default function PublicAnalytics(){
  const pathname=usePathname();
