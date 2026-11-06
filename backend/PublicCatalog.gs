@@ -1,12 +1,12 @@
 /* Public read model v1. No credentials, source records or rental calculation use this cache. */
 const PUBLIC_CATALOG_FIELDS_=['id','area','name','description','price','rentPrice','mode','category','categoryId','categoryIds','categoryNames','catalogGroups','image','thumbnail','saleCondition','deliveryTime','orderLimit','priceKnown','stockUnknown','active'];
-function publicReadAction_(b){return ['catalogData','catalog','siteTheme','localConfig','rentalConfig'].includes(b.action);}
-function publicCatalogInvalidate_(){props_().setProperty('PUBLIC_CATALOG_REVISION',Utilities.getUuid());}
-function publicCatalogVersion_(){const p=props_().getProperties();return 'pc3gzip:'+hash_(JSON.stringify(['SPREADSHEET_ID','PUBLIC_CATALOG_REVISION','RENTAL_PROMOTIONS_V1','LOCAL_PRICE_ADULTO','LOCAL_PRICE_CABEZON','SITE_THEME','CAMPAIGN_HALLOWEEN','COTILLON_EXCEL_2026_STATE'].map(k=>p[k]||'')));}
+function publicReadAction_(b){return ['catalogData','catalog','siteTheme','localConfig','rentalConfig','siteInfo'].includes(b.action);}
+function publicCatalogInvalidate_(options){props_().setProperty('PUBLIC_CATALOG_REVISION',Utilities.getUuid());if(options?.pages!==false&&typeof markCatalogPagesDirty_==='function')markCatalogPagesDirty_();}
+function publicCatalogVersion_(){const p=props_().getProperties();return 'pc3gzip:'+hash_(JSON.stringify(['SPREADSHEET_ID','PUBLIC_CATALOG_REVISION','RENTAL_PROMOTIONS_V1','LOCAL_PRICE_ADULTO','LOCAL_PRICE_CABEZON','SITE_THEME','CAMPAIGN_HALLOWEEN','COTILLON_EXCEL_2026_STATE','SITE_PUBLIC_INFO_V1'].map(k=>p[k]||'')));}
 function publicCatalogBuild_(){
  const products=CATEGORY_AREAS.flatMap(a=>products_(a).filter(p=>(typeof catalogPublicProduct_!=='function'||catalogPublicProduct_(p))&&p.active)).map(p=>({...Object.fromEntries(PUBLIC_CATALOG_FIELDS_.filter(k=>p[k]!==undefined).map(k=>[k,p[k]])),available:p.stock>0,purchaseMax:Math.min(10,Math.max(0,Number(p.stock)||0))}));
  const fields=['id','area','name','storefront','group','parentId','mappedToCategoryId'];
- return {catalogVersion:2,snapshotId:Utilities.getUuid(),rentalConfig:rentalConfig_(),products,categories:CATEGORY_AREAS.flatMap(categories_).map(c=>Object.fromEntries(fields.filter(k=>c[k]!==undefined).map(k=>[k,c[k]]))),campaign:siteCampaign_(),cotillonImportReady:config_('COTILLON_EXCEL_2026_STATE')==='ready'};
+ return {siteInfo:typeof siteInfo_==='function'?siteInfo_():null,catalogVersion:2,snapshotId:Utilities.getUuid(),rentalConfig:rentalConfig_(),products,categories:CATEGORY_AREAS.flatMap(categories_).map(c=>Object.fromEntries(fields.filter(k=>c[k]!==undefined).map(k=>[k,c[k]]))),campaign:siteCampaign_(),cotillonImportReady:config_('COTILLON_EXCEL_2026_STATE')==='ready'};
 }
 function publicCatalogCached_(cache,version){
  try{
@@ -44,6 +44,7 @@ function publicCatalog_(){
  return publicCatalogBuild_();
 }
 function publicRead_(b){
+ if(b.action==='siteInfo')return siteInfo_();
  if(b.action==='siteTheme')return {theme:siteTheme_()};
  if(b.action==='rentalConfig')return rentalConfig_();
  if(b.action==='localConfig'){need_(config_('LOCAL_FORMS_ENABLED')==='yes','Primero ejecutá prepararFormulariosLocales_ y publicá Apps Script.');return {version:1,prices:rentalPrices_(),rentalConfig:rentalConfig_()};}

@@ -28,3 +28,9 @@ test('Tanda 2: nombres corregidos conservan las variantes de búsqueda en ambos 
  assert.equal(search.matchesStoreSearch({...product,name:'Aladdín Verde',category:'',description:''},'aladin azul'),false);
  assert.equal(search.matchesStoreSearch({...product,name:'Barney',category:'',description:''},'aladin'),false);
 });
+
+test('Tanda 3: ocho grupos nuevos en ambas direcciones, sin mezclar productos ajenos',()=>{
+ for(const group of [['doctor','médico'],['policía','policia','cana'],['enfermera','enfermero'],['bombero','bombera'],['pirata','corsario'],['zombie','zombi'],['calabaza','zapallo'],['cumpleaños','cumple']])for(const name of group)for(const query of group)assert.ok(search.matchesStoreSearch({...product,name,category:'',description:''},query),name+' / '+query);assert.equal(search.matchesStoreSearch({...product,name:'Princesa',category:'',description:''},'médico'),false);
+});
+
+test('el alias cana no convierte Mexicana, Americana o Canasta en policías',()=>{for(const name of ['Servilletas Calavera Mexicana','Americana','Canasta'])assert.equal(search.matchesStoreSearch({...product,name,description:'',category:''},'policía'),false,name);assert.ok(search.matchesStoreSearch({...product,name:'Gorro de cana',description:'',category:''},'policía'));});

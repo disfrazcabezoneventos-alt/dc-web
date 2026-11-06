@@ -30,7 +30,7 @@ def strip_text(page,index):
             group.append((args,op))
             if op==b'ET':
                 text=' '.join(str(a) for a,o in group if o in [b'Tj',b'TJ'])
-                remove='09.10.2026' in text
+                remove='09.10.2026' in text or (' / 5' in text)
                 if index==0:remove=remove or 'Trajes y fechas acordados' in text or 'Precio del alquiler acordado' in text or 'separado' in text
                 if index==1:remove=remove or 'Una contrataci' in text or 'El pago del 100%' in text or '05 Saldo de reservas' in text
                 if index==2:remove=remove or 'El importe denominado' in text
@@ -52,6 +52,7 @@ def paragraph(c,text,top,bottom,size=10.4):
 for i,page in enumerate(reader.pages):
     strip_text(page,i);buf=io.BytesIO();c=canvas.Canvas(buf,pagesize=(595.2756,841.8898))
     label(c,'Modelo para revisión · Versión '+data['version'],46,807.8,8)
+    label(c,str(i+1)+' / 6',520,807.8,8)
     if i==0:
         label(c,'Modelo para revisión · '+data['version'],46,159.5,10.3)
         label(c,'Trajes y fechas · alquiler y promociones',46,429.1,11.2,'ContractBold',purple)
@@ -64,12 +65,28 @@ for i,page in enumerate(reader.pages):
     elif i==2:
         paragraph(c,data['terms'][6]['body'],232.7,315,size=10.1)
     c.save();buf.seek(0);page.merge_page(PdfReader(buf).pages[0]);writer.add_page(page)
+# Coordinated supplement: keep the five original designed pages and blank signature fields.
+buf=io.BytesIO();c=canvas.Canvas(buf,pagesize=(595.2756,841.8898))
+c.setFillColor(HexColor('#f2ecf9'));c.roundRect(30,657,535,150,18,fill=1,stroke=0)
+c.drawImage('public/brand-normal-320.png',440,686,width=105,height=105,preserveAspectRatio=True,mask='auto')
+label(c,'Disfraz Cabezón',46,57,22,'ContractBold',purple)
+label(c,'Solicitud y contrato de alquiler',46,90,11)
+label(c,'05 / INFORMACIÓN COMPLEMENTARIA',46,127,10,'ContractBold',purple)
+label(c,'18 Medios de pago y envíos',46,212,17,'ContractBold',purple)
+paragraph(c,data['terms'][-1]['body'],252,570,size=11)
+label(c,'Esta información integra las condiciones de alquiler de esta versión.',46,625,10)
+label(c,'Modelo para revisión · Versión '+data['version'],46,807.8,8)
+label(c,'6 / 6',520,807.8,8)
+c.save();buf.seek(0);writer.add_page(PdfReader(buf).pages[0])
 writer.add_metadata({'/Title':'Contrato de alquiler — '+data['version'],'/Author':'Disfraz Cabezón'})
 output=Path('public/Contrato_de_Alquiler_Disfraz_Cabezon.pdf')
 with output.open('wb') as f:writer.write(f)
 check=PdfReader(output);text='\n'.join(p.extract_text() for p in check.pages)
-assert len(check.pages)==5
+assert len(check.pages)==6
+assert 'en ese momento' not in text
+assert 'por transferencia después de revisar los trajes' in ' '.join(text.split())
+assert data['terms'][-1]['title'] in text
 for token in ['$60.000','$75.000','$100.000','2x1','3x2','bonificados','ñ','—','“','”',data['version']]:assert token in text,token
 for token in ['$65.000','Premium','09.10.2026','pago parcial no congela']:assert token not in text,token
 Path('tmp/pdfs/contrato-final.txt').write_text(text,encoding='utf-8')
-print('Contrato: 5 páginas originales, diseño conservado y textos verificados.')
+print('Contrato: cinco páginas de diseño conservadas y suplemento coordinado. Seis páginas verificadas.')

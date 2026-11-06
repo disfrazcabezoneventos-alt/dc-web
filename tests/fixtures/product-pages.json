@@ -1,0 +1,44 @@
+{
+  "products": [
+    {
+      "id": "spider",
+      "area": "disfraces",
+      "name": "Spider-Man rojo",
+      "description": "Máscara infantil",
+      "price": 1000,
+      "rentPrice": 60000,
+      "mode": "alquiler",
+      "category": "Héroes",
+      "active": true,
+      "available": true,
+      "purchaseMax": 4,
+      "image": "/catalog/spider.jpg"
+    },
+    {
+      "id": "mask",
+      "area": "cotillon",
+      "name": "Máscara roja",
+      "description": "Accesorio para fiestas",
+      "price": 1000,
+      "rentPrice": 0,
+      "mode": "venta",
+      "category": "Otros",
+      "active": true,
+      "available": true,
+      "purchaseMax": 4,
+      "image": "/catalog/spider.jpg"
+    },
+    {
+      "id": "hidden",
+      "area": "cotillon",
+      "name": "Inactivo de prueba",
+      "price": 10,
+      "rentPrice": 0,
+      "mode": "venta",
+      "category": "Otros",
+      "active": false,
+      "image": "/catalog/spider.jpg"
+    }
+  ],
+  "categories": []
+}

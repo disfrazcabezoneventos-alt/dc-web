@@ -1,7 +1,7 @@
 // Generado desde lib/model.ts, terms.ts, local-rental.ts y local-terms.ts. No editar por separado.
 const BRAND = { name: 'Disfraz Cabezón', owner: 'Lorena Ughetti', cuit: '27-29478271-6', address: 'Av. Rivadavia 3314, CABA', phone: '1149897969', email: 'disfrazcabezoneventos@gmail.com' };
 const OWNER_EMAIL = 'disfrazcabezoneventos@gmail.com';
-const VERSION = 'DC-2026-11-03.2';
+const VERSION = 'DC-2026-11-05.1';
 const STATUS = { pending: 'Pendiente', correction: 'A corregir', confirmed: 'Confirmado', rejected: 'Rechazado', refund_pending: 'Reintegro pendiente', refunded: 'Reintegrado', returned: 'Devuelto', incident: 'Con incidencia', cancel_requested: 'Cancelación solicitada' };
 const EMPTY = { fullName: '', dni: '', birthDate: '', address: '', city: '', phone: '', altPhone: '', email: '', items: [{ name: '', category: 'adulto', quantity: 1 }], pickupDate: '', returnDate: '', pickupWindow: '', returnWindow: '', specialSchedule: false, scheduleAgreement: '', total: 0, payMode: 'half', pickupBy: 'self', authorizedName: '', authorizedDni: '', docType: 'servicio', docDate: '', namesMatch: false, adult: false, privacy: false, priorInfo: false, truth: false, terms: false, clarification: '', requestKey: '' };
 const money = (v) => new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(v);
@@ -135,7 +135,7 @@ const TERMS = [
     },
     {
         "title": "Depósito de garantía",
-        "body": "El depósito de garantía —habitualmente llamado “seguro”— es reembolsable y separado del alquiler: $60.000 por adulto y $100.000 por cabezón, por cada traje, incluidos los bonificados. Se entrega al retirar, en efectivo billete. Al devolver se revisan frente al cliente las piezas y su estado. Si todo está completo y en condiciones, se reintegra en ese momento. Daños, faltantes, suciedad excesiva y demoras deben documentarse y liquidarse según estas condiciones. No es un seguro contratado con una aseguradora."
+        "body": "El depósito de garantía —habitualmente llamado “seguro”— es reembolsable y separado del alquiler: $60.000 por adulto y $100.000 por cabezón, por cada traje, incluidos los bonificados. Se entrega al retirar, en efectivo billete. Al devolver se revisan frente al cliente las piezas y su estado. Si todo está completo y en condiciones, se reintegra por transferencia después de revisar los trajes. Daños, faltantes, suciedad excesiva y demoras deben documentarse y liquidarse según estas condiciones. No es un seguro contratado con una aseguradora."
     },
     {
         "title": "Fechas, horarios y período incluido",
@@ -176,10 +176,14 @@ const TERMS = [
     {
         "title": "Derecho de arrepentimiento",
         "body": "En las contrataciones a distancia, el consumidor puede revocar la aceptación dentro de los diez días corridos contados desde la celebración del contrato o la entrega del bien, lo último que ocurra, en los casos y términos legalmente aplicables. Es un derecho irrenunciable y su ejercicio no genera responsabilidad ni gastos para el consumidor. Puede comunicarlo mediante el botón de arrepentimiento del formulario, WhatsApp 11 4989-7969 o disfrazcabezoneventos@gmail.com. Cuando corresponda devolver el bien, debe ponerlo a disposición y los gastos legales de devolución son a cargo del proveedor. Rigen la Ley 24.240 y el Código Civil y Comercial de la Nación."
-    }
+    },
+{
+  "title": "Medios de pago y envíos",
+  "body": "Efectivo: 10% de descuento · Transferencia, débito y crédito: precio de lista. Disfraces: podés calcular el envío con Uber desde tu domicilio hasta el local, o pedirnos por WhatsApp un contacto de mensajería de confianza. Los cabezones son voluminosos y no se pueden llevar en moto. La garantía se entrega en efectivo al retirar y se devuelve por transferencia después de revisar los trajes. Cotillón: podés pedir un envío por Uber, Didi o Rappi, o comprarnos directamente por Rappi. El retiro por mensajería requiere comunicación y autorización previa del negocio, con la identificación correspondiente."
+}
 ];
 const DEFAULT_RENTAL_PRICES = { adulto: 60000, cabezon: 75000, revision: 'default' };
-const LOCAL_TERMS_VERSION = 'DC-LOCAL-2026-11-03.2';
+const LOCAL_TERMS_VERSION = 'DC-LOCAL-2026-11-05.1';
 const FORM_STATES = { reserved: 'Reserva', dispatched: 'Despachado', finished: 'Finalizado' };
 function localSchedule(r, now = todayAR()) {
     return { ...r, pickupWindow: windows(r.pickupDate, 'pickup'), returnWindow: windows(r.returnDate, 'return'), specialSchedule: false, scheduleAgreement: '', payMode: r.pickupDate === now ? 'full' : r.payMode };

@@ -1,3 +1,4 @@
+import type {SiteInfo} from './site-info';
 import type {RentalConfig} from './rental-pricing';
 import type {Category,Product} from './catalog';
 const configuredEndpoint=process.env.NEXT_PUBLIC_APPS_SCRIPT_URL || '';
@@ -9,7 +10,7 @@ export const endpoint = configuredEndpoint===retiredDeployment?activeDeployment:
 export const demo = !endpoint;
 const CATALOG_CACHE_KEY='dc-public-catalog-v2';
 const CATALOG_CACHE_MS=60000;
-type CatalogResponse={rentalConfig?:RentalConfig;products:Product[];categories:Category[];campaign?:{halloween:boolean};cotillonImportReady?:boolean};
+type CatalogResponse={siteInfo?:SiteInfo;rentalConfig?:RentalConfig;products:Product[];categories:Category[];campaign?:{halloween:boolean};cotillonImportReady?:boolean};
 let pendingCatalog:Promise<CatalogResponse>|null=null;
 export async function api(action:string, data:Record<string,unknown>={}, token=''):Promise<any> {
   if(!endpoint) throw new Error('Modo demostración: configurá NEXT_PUBLIC_APPS_SCRIPT_URL para guardar datos reales.');
@@ -41,14 +42,14 @@ export async function api(action:string, data:Record<string,unknown>={}, token='
       if(event.data?.type!=='dc-apps-result'||event.data.id!==id)return;
       finish(undefined,event.data.result);
     };
-    const publicRead=['catalogData','catalog','siteTheme','localConfig','rentalConfig','incomingForms','incomingRequest','incomingNotifications','localReceiptInfo','viewLocalReceipt'].includes(action);
+    const publicRead=['siteInfo','catalogData','catalog','siteTheme','localConfig','rentalConfig','incomingForms','incomingRequest','incomingNotifications','localReceiptInfo','viewLocalReceipt'].includes(action);
     const timer=setTimeout(()=>finish(new Error(publicRead?'No se pudo conectar con Apps Script. Revisá que la implementación web esté activa y que la URL configurada en Render sea la misma.':'Apps Script tardó demasiado en responder. Si estabas guardando datos, revisá el panel antes de repetir la operación.')),publicRead?30000:120000);
     window.addEventListener('message',receive);
     document.body.append(frame,form);
     form.submit();
   });
   if(!result.ok) throw new Error(result.error||'No se pudo completar la operación.');
-  if(!['catalogData','catalog','siteTheme','recordSearchMiss','rentalConfig','localConfig'].includes(action))try{sessionStorage.removeItem(CATALOG_CACHE_KEY)}catch{}
+  if(!['siteInfo','catalogData','catalog','siteTheme','recordSearchMiss','rentalConfig','localConfig'].includes(action))try{sessionStorage.removeItem(CATALOG_CACHE_KEY)}catch{}
   return result.data;
 }
 export async function fileData(file:Blob){

@@ -2,7 +2,7 @@ import {test,expect} from '@playwright/test';
 import {setupSearch} from '../search-fixture.mjs';
 
 const beacon='https://static.cloudflareinsights.com/beacon.min.js';
-const publics=['/','/disfraces/','/cotillon/','/buscar/?q=princesa','/reservas/','/comprar/','/condiciones/','/arrepentimiento/'];
+const publics=['/','/disfraces/','/cotillon/','/buscar/?q=princesa','/reservas/','/comprar/','/condiciones/','/arrepentimiento/','/p/spider/'];
 const privates=['/admin/','/constancia/','/solicitud/','/reserva-local/'];
 async function openMenu(page){if(page.viewportSize().width<=760)await page.getByRole('button',{name:'Abrir menú',exact:true}).click()}
 
@@ -15,7 +15,7 @@ async function setup(page,theme){
 }
 
 for(const theme of ['default','halloween']){
- test(`${theme}: beacon diferido solo en las ocho páginas públicas`,async({page})=>{
+ test(`${theme}: beacon diferido solo en las nueve rutas públicas, incluida una ficha`,async({page})=>{
   const {requests,errors}=await setup(page,theme);
   for(const path of publics){
    await page.goto(path);

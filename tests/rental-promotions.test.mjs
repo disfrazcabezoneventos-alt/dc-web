@@ -59,7 +59,7 @@ function body(h,source='local',data={}){
 for(const source of ['web','local'])test(`${source}: servidor ignora total, snapshot, firma, seña e idempotencia tras apagar promo`,()=>{
  const h=localHarness(),b=body(h,source,{items:items(3,2).map(i=>({...i,name:'Ensayo',catalogCategory:'Sin categoría'})),total:1,pricing:{total:1,guarantee:1}});
  const created=h.dispatch(b),row=h.tables.reservas[0];assert.equal(created.total,270000);assert.equal(row.data.total,270000);assert.equal(row.data.pricing.guarantee,380000);assert.equal(row.pricingSnapshot.discount,60000);assert.equal(row.pricingSnapshot.free,1);assert.equal(row.pricingSnapshot.declaredTotal,1);assert.equal(row.pricingSnapshot.legacy,false);
- h.ctx.halfData={...row.data,payMode:'half'};assert.equal(vm.runInContext('paid(halfData)',h.ctx),135000);assert.match(row.termsVersion,/2026-11-03/);
+ h.ctx.halfData={...row.data,payMode:'half'};assert.equal(vm.runInContext('paid(halfData)',h.ctx),135000);assert.match(row.termsVersion,/2026-11-05/);
  const original=structuredClone(row),config=h.dispatch({action:'rentalConfig'});
  h.dispatch({action:'saveRentalPromotion',token:h.token,revision:config.revision,promotion:{...config.promotions[0],active:false}});
  assert.equal(h.dispatch(b).duplicate,true);assert.deepEqual(h.tables.reservas[0],original);

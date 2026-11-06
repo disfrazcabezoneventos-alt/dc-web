@@ -12,7 +12,7 @@ const summaries:Record<string,[string,string]>={
  'Trajes, precio y seña':['Alquiler','Tarifa aceptada por tipo y cantidad. Retiro en el día: alquiler completo; fechas futuras: 50% o 100%. La garantía es separada.'],
  'Saldo de reservas con pago parcial':['Precio y saldo','Se conserva el cálculo aceptado. Saldo: total registrado menos cobros verificados. Los cambios de tarifa o promociones no recalculan reservas recibidas.'],
  'Datos de cobro y comprobante':['Cobros','El pago se verifica y registra por separado en el local. La modalidad elegida en este formulario no acredita un pago.'],
- 'Depósito de garantía':['Garantía','Depósito reembolsable en efectivo al retirar. Se revisan las piezas frente al cliente y se devuelve al restituirlas completas y en condiciones.'],
+ 'Depósito de garantía':['Garantía','Depósito reembolsable en efectivo al retirar. Se revisan las piezas frente al cliente y se devuelve por transferencia después de revisar los trajes completos y en condiciones.'],
  'Fechas, horarios y período incluido':['Horarios','Retiro: L-V 16-20 h; sáb. 10-12 h. Devolución: L-V 10-14 h; sáb. 10-12 h. Viernes a lunes integra el período base. Excepciones con autorización previa.'],
  'Retiro por otra persona':['Autorizados','Retira el contratante o la persona indicada con nombre y DNI. Cambios y mensajería requieren autorización previa e identificación.'],
  'Entrega, cuidado y limpieza':['Cuidado','Se registran piezas y estado. Limpieza habitual incluida; consultar antes de lavar. No se cobran desgaste normal, defectos previos ni limpieza habitual como daños.'],
@@ -22,6 +22,7 @@ const summaries:Record<string,[string,string]>={
  'Información previa y cancelaciones':['Información y cancelación','Información recibida en el local; las condiciones particulares se conservan. Cancelaciones por los canales del negocio, sin renuncia a derechos legales.'],
  'Privacidad y uso de la documentación':['Datos personales','Uso para gestionar el alquiler y obligaciones legales, con acceso restringido y sin publicidad. Acceso, rectificación o supresión: correo del negocio.'],
  'Declaración, firma electrónica y copias':['Firma y copia','Datos y DNI propios. La firma electrónica comprende la solicitud y la autorización de retiro. Se conserva el original con sus condiciones y se puede solicitar copia completa.'],
+ 'Medios de pago y envíos':['Pagos y envíos','Efectivo: 10% de descuento. Transferencia, débito y crédito: lista. Envíos por aplicaciones o mensajería con autorización; los cabezones no viajan en moto.'],
  'Derecho de arrepentimiento':['Derechos','En contrataciones a distancia, revocación en 10 días en los casos legalmente aplicables, sin gastos. Comunicación por WhatsApp o correo. Se mantienen los derechos legales.'],
 };
 
