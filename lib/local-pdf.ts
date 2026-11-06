@@ -12,7 +12,7 @@ const summaries:Record<string,[string,string]>={
  'Trajes, precio y seña':['Alquiler','Tarifa aceptada por tipo y cantidad. Retiro en el día: alquiler completo; fechas futuras: 50% o 100%. La garantía es separada.'],
  'Saldo de reservas con pago parcial':['Precio y saldo','Se conserva el cálculo aceptado. Saldo: total registrado menos cobros verificados. Los cambios de tarifa o promociones no recalculan reservas recibidas.'],
  'Datos de cobro y comprobante':['Cobros','El pago se verifica y registra por separado en el local. La modalidad elegida en este formulario no acredita un pago.'],
- 'Depósito de garantía':['Garantía','Depósito reembolsable en efectivo al retirar. Se revisan las piezas frente al cliente y se devuelve por transferencia después de revisar los trajes completos y en condiciones.'],
+ 'Depósito de garantía':['Garantía','Depósito en efectivo al retirar. En el local se reintegra en el momento si está todo en condiciones; por envío o mensajería, por transferencia después de revisar los trajes.'],
  'Fechas, horarios y período incluido':['Horarios','Retiro: L-V 16-20 h; sáb. 10-12 h. Devolución: L-V 10-14 h; sáb. 10-12 h. Viernes a lunes integra el período base. Excepciones con autorización previa.'],
  'Retiro por otra persona':['Autorizados','Retira el contratante o la persona indicada con nombre y DNI. Cambios y mensajería requieren autorización previa e identificación.'],
  'Entrega, cuidado y limpieza':['Cuidado','Se registran piezas y estado. Limpieza habitual incluida; consultar antes de lavar. No se cobran desgaste normal, defectos previos ni limpieza habitual como daños.'],

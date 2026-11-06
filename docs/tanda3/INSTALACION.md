@@ -38,7 +38,7 @@ Referencias: [hooks de Render](https://render.com/docs/deploy-hooks), [horario a
 
 ## 5. Condiciones coordinadas y reversión
 
-Versión web **DC-2026-11-05.1** y local **DC-LOCAL-2026-11-05.1**. Garantía en efectivo al retirar y devolución por transferencia después de revisar los trajes. Se actualizan web, backend, resumen imprimible local y modelo PDF. Los contratos anteriores conservan su texto y versión originales. El PDF mantiene las cinco páginas diseñadas y agrega una sexta con medios de pago y envíos.
+Versión web **DC-2026-11-05.2** y local **DC-LOCAL-2026-11-05.2**. Garantía en efectivo al retirar. En el local, reintegro en el momento si está todo en condiciones; por envío o mensajería, transferencia después de revisar los trajes. Se actualizan web, backend, resumen imprimible local y modelo PDF. Los contratos anteriores conservan su texto y versión originales. El PDF mantiene las cinco páginas diseñadas y agrega una sexta con medios de pago y envíos.
 
 Si hace falta revertir tras instalar: desactivar el activador, restaurar la versión Apps Script anotada y revertir el merge del frontend mediante un commit normal. La nueva propiedad es aditiva y no afecta al backend anterior. No se borran datos ni contratos históricos.
 

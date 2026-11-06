@@ -11,7 +11,7 @@ Draft desde main `1fc286d` (PR41 ya incluye Cloudflare Web Analytics). No se fus
 - Metadatos con precio antes de la descripción, para que no lo corte un texto largo. Las fotos originales de Cloudinary usan una derivada horizontal 1200×630 con `c_lpad`: encuadre completo y relleno blanco, sin recorte ni ampliación de la foto. No se cambian la foto ni miniatura del catálogo. [Documentación del modo limit pad](https://cloudinary.com/documentation/image_padding_modes).
 - Hook secreto solo en Script Properties y activador manual de instalación a las 03:00 de Argentina. Agrupa cambios de productos/categorías/precios/promos/tema; solo una solicitud diaria cuando hay revisión pendiente. Cambiar solo la calificación/fotos del local invalida su copia pública, pero no genera builds de productos. Un hook aceptado no equivale a deploy Live.
 - Ocho grupos nuevos de sinónimos. La palabra **cana** no se toma dentro de *Mexicana*, *Americana* o *Canasta*: evita publicar resultados de policía para servilletas mexicanas. Las propuestas del registro están en [SINONIMOS_PROPUESTOS.md](SINONIMOS_PROPUESTOS.md), sin aplicarlas.
-- Web, backend, PDF modelo y resumen imprimible local coordinados para devolver la garantía por transferencia después de revisar los trajes. Los contratos históricos conservan el texto firmado. [Instalación y reversión](INSTALACION.md).
+- Web, backend, PDF modelo y resumen imprimible local coordinados con la opción A aprobada: devolución en el local, reintegro en el momento si está todo en condiciones; por envío o mensajería, transferencia después de revisar los trajes. Los contratos históricos conservan el texto firmado. [Instalación y reversión](INSTALACION.md).
 
 ## Validación
 
