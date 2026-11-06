@@ -1,7 +1,7 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
 import Link from 'next/link';
-import {catalogData,demo,whatsapp} from '@/lib/api';
+import {api,catalogData,demo,whatsapp} from '@/lib/api';
 import {Product,purchaseLimit,seed} from '@/lib/catalog';
 import {money} from '@/lib/model';
 import {thumbnailUrl} from '@/lib/thumbnail';
@@ -43,9 +43,10 @@ export default function PurchaseForm(){
  const available=selected?purchaseLimit(selected):0;
  const canSend=!!selected&&available>0&&Number.isInteger(quantity)&&quantity>=1&&quantity<=available;
 
- function send(e:React.FormEvent<HTMLFormElement>){
+ async function send(e:React.FormEvent<HTMLFormElement>){
   e.preventDefault();
   if(!selected||!canSend){setError('Elegí una cantidad dentro del límite indicado para este producto.');return}
+  if(!demo&&process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY){try{await api('purchaseCheck',{area:'disfraces',id:selected.id,quantity,unitPrice:selected.price})}catch(e){setError((e as Error).message);return}}
   const condition=selected.area==='disfraces'&&selected.saleCondition?' Condición de venta: '+selected.saleCondition+'.':'';
   const measures=madeToOrder(selected)?' Entiendo que la entrega puede demorar '+(selected.deliveryTime||'aproximadamente 1 mes')+'. Por favor, indíquenme qué medidas tengo que enviar para confeccionarlo.':'';
   const message='¡Hola! Quiero consultar para comprar '+quantity+' × '+selected.name+' ('+(selected.area==='cotillon'?'Cotillón':'Disfraces')+', '+selected.category+'). Precio publicado: '+money(selected.price)+' por unidad.'+condition+measures+' Mi nombre es '+name.trim()+'.'+(note.trim()?' Consulta: '+note.trim():'');

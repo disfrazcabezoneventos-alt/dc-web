@@ -1,8 +1,8 @@
 /* Roles, cuentas individuales y auditoría. Propiedades privadas; nunca devolver hashes. */
 const CATALOG_PBKDF2_ITERATIONS=600000;
-const CATALOG_PUBLIC_ACTIONS=['siteTheme','catalog','catalogData','login','bank','submit','submitLocal','localConfig','request','file','correct','cancel','viewLocalReceipt','rentalConfig','recordSearchMiss','siteInfo'];
-const CATALOG_EDITOR_ACTIONS=['admin','logout','saveProduct','quickUpdate','uploadImage','publishProduct'];
-const CATALOG_ADMIN_ACTIONS=['admin','logout','saveCategory','mapLegacyCategory','deleteCategory','saveProduct','deleteProduct','uploadImage','status','movement','voidMovement','resolveCancel','bankSettings','setSiteTheme','setHalloweenCampaign','incomingForms','incomingRequest','incomingNotifications','dismissFormNotifications','saveRentalPrices','updateIncomingForm','deleteIncomingForm','incomingFile','localReceiptInfo','issueLocalReceipt','sendLocalReceipt','quickUpdate','catalogUsers','createCatalogUser','setCatalogUserActive','resetCatalogUserPassword','productHistory','restoreProductPhoto','restoreRentalCatalogChange','publishProduct','recoverProductHistory','saveRentalPromotion','searchDemand','saveSiteInfo'];
+const CATALOG_PUBLIC_ACTIONS=['siteTheme','catalog','catalogData','login','bank','submit','submitLocal','localConfig','request','file','correct','cancel','viewLocalReceipt','rentalConfig','recordSearchMiss','siteInfo','purchaseCheck','cartCheck'];
+const CATALOG_EDITOR_ACTIONS=['admin','logout','saveProduct','quickUpdate','uploadImage','publishProduct','securityStatus','securityActivity','beginTotp','confirmTotp','disableTotp','changeOwnPassword'];
+const CATALOG_ADMIN_ACTIONS=['admin','logout','saveCategory','mapLegacyCategory','deleteCategory','saveProduct','deleteProduct','uploadImage','status','movement','voidMovement','resolveCancel','bankSettings','setSiteTheme','setHalloweenCampaign','incomingForms','incomingRequest','incomingNotifications','dismissFormNotifications','saveRentalPrices','updateIncomingForm','deleteIncomingForm','incomingFile','localReceiptInfo','issueLocalReceipt','sendLocalReceipt','quickUpdate','catalogUsers','createCatalogUser','setCatalogUserActive','resetCatalogUserPassword','productHistory','restoreProductPhoto','restoreRentalCatalogChange','publishProduct','recoverProductHistory','saveRentalPromotion','searchDemand','saveSiteInfo','securityStatus','securityActivity','beginTotp','confirmTotp','disableTotp','revokeSessions','changeOwnPassword'];
 function catalogRolesReady_(){return config_('CATALOG_ROLES_ENABLED')==='yes';}
 function catalogPrivateJson_(raw){try{return JSON.parse(raw)}catch(_){throw new Error('Configuración de cuentas inválida. Consultá al administrador.');}}
 function catalogAccount_(id){const raw=config_('CATALOG_USER_'+id);return raw?catalogPrivateJson_(raw):null;}
@@ -22,8 +22,9 @@ function medirHashCatalogo_(iterations=CATALOG_PBKDF2_ITERATIONS){
  const start=Date.now();DcPasswords.derive(ficticia,salt,iterations);const ms=Date.now()-start;
  console.log(JSON.stringify({iterations,ms}));return ms;
 }
-function catalogSessionVersion_(u){return hash_(JSON.stringify([u.id,u.username,u.active,u.password,u.sessionVersion]));}
+function catalogSessionVersion_(u){return hash_(JSON.stringify([u.id,u.username,u.active,u.password,u.sessionVersion,config_('SECURITY_SESSION_EPOCH')]));}
 function catalogIdentity_(token){
+ if(typeof securityEnabled_==='function'&&securityEnabled_())return securityIdentity_(token);
  need_(typeof token==='string'&&token.length>30,'Sesión vencida. Volvé a ingresar.');
  const cache=CacheService.getScriptCache(),key='session:'+hash_(token),raw=cache.get(key);
  if(equal_(raw,adminSessionVersion_()))return {id:'administrator',username:config_('ADMIN_USER'),role:'admin'};
@@ -37,11 +38,13 @@ function catalogApiActor_(b){
  const isPublic=CATALOG_PUBLIC_ACTIONS.includes(b.action);
  if(isPublic&&!b.token)return null;
  const actor=session_(b.token,true);
+ if(actor.mfaPending)need_(['securityStatus','beginTotp','confirmTotp','logout'].includes(b.action),'Completá la verificación en dos pasos.');
  const allowed=actor.role==='admin'?CATALOG_ADMIN_ACTIONS.concat(CATALOG_PUBLIC_ACTIONS):CATALOG_EDITOR_ACTIONS.concat(['siteTheme','catalog','catalogData']);
  need_(allowed.includes(b.action),'No tenés permiso para esta acción.');
  return actor;
 }
 function catalogLogin_(b){
+ if(typeof securityEnabled_==='function'&&securityEnabled_())return securityLogin_(b);
  const username=String(b.username||'').trim().toLowerCase(),password=b.password;
  limit_('login-global',60,900);limit_('login:'+username,8,900);
  need_(typeof password==='string'&&password.length<=128,'Usuario o contraseña incorrectos.');
@@ -85,7 +88,7 @@ function catalogAccessDispatch_(b,actor){
  if(['setCatalogUserActive','resetCatalogUserPassword'].includes(b.action)){
   const u=catalogAccount_(String(b.id||''));need_(u,'Usuario inexistente.');
   if(b.action==='setCatalogUserActive'){need_(typeof b.active==='boolean','Estado inválido.');u.active=b.active;}else u.password=passwordRecord_(b.password);
-  u.sessionVersion=Utilities.getUuid();u.updatedAt=now_();props_().setProperty('CATALOG_USER_'+u.id,JSON.stringify(u));return {data:catalogAccountView_(u)};
+  u.sessionVersion=Utilities.getUuid();u.updatedAt=now_();props_().setProperty('CATALOG_USER_'+u.id,JSON.stringify(u));if(b.action==='resetCatalogUserPassword'&&typeof securityNotify_==='function')securityNotify_('Contraseña modificada','Cuenta: '+u.username);return {data:catalogAccountView_(u)};
  }
  if(b.action==='productHistory'){
   need_(!b.cursor||typeof b.cursor==='string'&&b.cursor.length<150,'Cursor inválido.');

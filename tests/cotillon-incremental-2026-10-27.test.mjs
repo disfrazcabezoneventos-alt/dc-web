@@ -1,3 +1,4 @@
+import {cotillonCopy} from './synthetic-import-fixtures.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -8,7 +9,7 @@ const code=fs.readFileSync('backend/Code.gs','utf8');
 const addon=fs.readFileSync('backend/CotillonIncremental20261027.gs','utf8');
 const raw=fs.readFileSync('backend/import-cotillon-incremental-2026-10-27.json','utf8');
 const payload=JSON.parse(raw).products;
-const sourceDir='tmp/import-2026-10-27/originales';
+
 
 function csvRows(text){
  const rows=[],line=[];let value='',quoted=false;
@@ -28,8 +29,8 @@ function setup(){
  const settings={SPREADSHEET_ID:'production-sheet-dummy-012345678901234',COTILLON_INC_20261027_TEST_ID:'copy-of-store-sheet-012345678901234'};
  const writeCounts={total:0};
  const data={
-  cotillon:csvRows(fs.readFileSync(`${sourceDir}/cotillon.csv`,'utf8')),
-  categorias_cotillon:csvRows(fs.readFileSync(`${sourceDir}/categorias_cotillon.csv`,'utf8')),
+  cotillon:cotillonCopy(payload).cotillon,
+  categorias_cotillon:cotillonCopy(payload).categorias_cotillon,
  };
  const sheets=new Map();
  class Sheet{

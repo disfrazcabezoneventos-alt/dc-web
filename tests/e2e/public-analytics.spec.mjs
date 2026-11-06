@@ -24,7 +24,7 @@ for(const theme of ['default','halloween']){
    const script=page.locator('#dc-cloudflare-web-analytics');
    await expect(script).toHaveAttribute('type','module');
    await expect(script).toHaveAttribute('data-nscript','lazyOnload');
-   await expect(script).toHaveAttribute('data-cf-beacon',JSON.stringify({token:'423aece803a247f5aa622735d0e5c158'}));
+   await expect(script).toHaveAttribute('data-cf-beacon',JSON.stringify({token:process.env.NEXT_PUBLIC_CLOUDFLARE_WEB_ANALYTICS_TOKEN||'11111111111111111111111111111111'}));
    expect(await page.evaluate(()=>performance.getEntriesByType('resource').find(r=>r.name.includes('beacon.min.js')).startTime>=performance.getEntriesByType('navigation')[0].loadEventStart)).toBe(true);
   }
   expect(errors).toEqual([]);

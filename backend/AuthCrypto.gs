@@ -24,7 +24,8 @@ var DcPasswords = (() => {
   // scripts/auth-crypto-entry.mjs
   var auth_crypto_entry_exports = {};
   __export(auth_crypto_entry_exports, {
-    derive: () => derive
+    derive: () => derive,
+    hotp: () => hotp
   });
 
   // node_modules/@noble/hashes/utils.js
@@ -95,6 +96,9 @@ var DcPasswords = (() => {
   }
   function rotr(word, shift) {
     return word << 32 - shift | word >>> shift;
+  }
+  function rotl(word, shift) {
+    return word << shift | word >>> 32 - shift >>> 0;
   }
   var hasHexBuiltin = /* @__PURE__ */ (() => (
     // @ts-ignore
@@ -260,81 +264,6 @@ var DcPasswords = (() => {
     return hmac_;
   })();
 
-  // node_modules/@noble/hashes/pbkdf2.js
-  function pbkdf2Init(hash, _password, _salt, _opts) {
-    ahash(hash);
-    const opts = checkOpts({ dkLen: 32, asyncTick: 10 }, _opts);
-    const { c, dkLen, asyncTick } = opts;
-    anumber(c, "c");
-    anumber(dkLen, "dkLen");
-    anumber(asyncTick, "asyncTick");
-    if (c < 1)
-      throw new Error('"c" (iterations) must be >= 1');
-    if (dkLen < 1)
-      throw new Error('"dkLen" must be >= 1');
-    if (dkLen > (2 ** 32 - 1) * hash.outputLen)
-      throw new Error("derived key too long");
-    const p = kdfInputToBytes(_password, "password");
-    try {
-      const s = kdfInputToBytes(_salt, "salt");
-      try {
-        const DK = new Uint8Array(dkLen);
-        const { iHash, oHash, outputLen } = hmac.create(hash, p);
-        const u = new Uint8Array(outputLen);
-        const eng = pbkdf2Engine(iHash, oHash, s, u);
-        return { c, dkLen, asyncTick, DK, outputLen, eng };
-      } finally {
-        if (typeof _salt === "string")
-          clean(s);
-      }
-    } finally {
-      if (typeof _password === "string")
-        clean(p);
-    }
-  }
-  function pbkdf2Engine(iHash, oHash, salt, u) {
-    const counter = new Uint8Array(4);
-    const view = createView(counter);
-    const salted = iHash._cloneInto().update(salt);
-    const work = oHash._cloneInto();
-    const iClone = iHash._cloneInto;
-    const oClone = oHash._cloneInto;
-    return {
-      u1: (ti, Ti) => {
-        view.setInt32(0, ti, false);
-        salted._cloneInto(work).update(counter).digestInto(u);
-        oHash._cloneInto(work).update(u).digestInto(u);
-        Ti.set(u.subarray(0, Ti.length));
-      },
-      // Whole `F` inner loop for the sync variant: one optimized function owns the hot loop.
-      rounds: (c, Ti) => {
-        for (let ui = 1; ui < c; ui++) {
-          iClone.call(iHash, work).update(u).digestInto(u);
-          oClone.call(oHash, work).update(u).digestInto(u);
-          for (let i = 0; i < Ti.length; i++)
-            Ti[i] ^= u[i];
-        }
-      },
-      output: (DK) => {
-        iHash.destroy();
-        oHash.destroy();
-        salted.destroy();
-        work.destroy();
-        clean(u);
-        return DK;
-      }
-    };
-  }
-  function pbkdf2(hash, password, salt, opts) {
-    const { c, dkLen, DK, outputLen, eng } = pbkdf2Init(hash, password, salt, opts);
-    for (let ti = 1, pos = 0; pos < dkLen; ti++, pos += outputLen) {
-      const Ti = DK.subarray(pos, pos + outputLen);
-      eng.u1(ti, Ti);
-      eng.rounds(c, Ti);
-    }
-    return eng.output(DK);
-  }
-
   // node_modules/@noble/hashes/_u64.js
   var fromNumH = (n) => n / 2 ** 32 | 0;
   var fromNumL = (n) => n >>> 0;
@@ -457,6 +386,160 @@ var DcPasswords = (() => {
     528734635,
     1541459225
   ]);
+
+  // node_modules/@noble/hashes/legacy.js
+  var SHA1_IV = /* @__PURE__ */ Uint32Array.from([
+    1732584193,
+    4023233417,
+    2562383102,
+    271733878,
+    3285377520
+  ]);
+  var SHA1_W = /* @__PURE__ */ new Uint32Array(80);
+  var _SHA1 = class extends HashMD {
+    constructor() {
+      super(64, 20, 8, false);
+      __publicField(this, "A", SHA1_IV[0] | 0);
+      __publicField(this, "B", SHA1_IV[1] | 0);
+      __publicField(this, "C", SHA1_IV[2] | 0);
+      __publicField(this, "D", SHA1_IV[3] | 0);
+      __publicField(this, "E", SHA1_IV[4] | 0);
+    }
+    get() {
+      const { A, B, C, D, E } = this;
+      return [A, B, C, D, E];
+    }
+    set(A, B, C, D, E) {
+      this.A = A | 0;
+      this.B = B | 0;
+      this.C = C | 0;
+      this.D = D | 0;
+      this.E = E | 0;
+    }
+    _cloneInto(to) {
+      (to || (to = new this.constructor())).set(...this.get());
+      return this._cloneIntoMeta(to);
+    }
+    process(view, offset) {
+      for (let i = 0; i < 16; i++, offset += 4)
+        SHA1_W[i] = view.getUint32(offset, false);
+      for (let i = 16; i < 80; i++)
+        SHA1_W[i] = rotl(SHA1_W[i - 3] ^ SHA1_W[i - 8] ^ SHA1_W[i - 14] ^ SHA1_W[i - 16], 1);
+      let { A, B, C, D, E } = this;
+      for (let i = 0; i < 80; i++) {
+        let F, K;
+        if (i < 20) {
+          F = Chi(B, C, D);
+          K = 1518500249;
+        } else if (i < 40) {
+          F = B ^ C ^ D;
+          K = 1859775393;
+        } else if (i < 60) {
+          F = Maj(B, C, D);
+          K = 2400959708;
+        } else {
+          F = B ^ C ^ D;
+          K = 3395469782;
+        }
+        const T = rotl(A, 5) + F + E + K + SHA1_W[i] | 0;
+        E = D;
+        D = C;
+        C = rotl(B, 30);
+        B = A;
+        A = T;
+      }
+      A = A + this.A | 0;
+      B = B + this.B | 0;
+      C = C + this.C | 0;
+      D = D + this.D | 0;
+      E = E + this.E | 0;
+      this.set(A, B, C, D, E);
+    }
+    roundClean() {
+      clean(SHA1_W);
+    }
+    destroy() {
+      this.destroyed = true;
+      this.set(0, 0, 0, 0, 0);
+      clean(this.buffer);
+    }
+  };
+  var sha1 = /* @__PURE__ */ createHasher(() => new _SHA1());
+
+  // node_modules/@noble/hashes/pbkdf2.js
+  function pbkdf2Init(hash, _password, _salt, _opts) {
+    ahash(hash);
+    const opts = checkOpts({ dkLen: 32, asyncTick: 10 }, _opts);
+    const { c, dkLen, asyncTick } = opts;
+    anumber(c, "c");
+    anumber(dkLen, "dkLen");
+    anumber(asyncTick, "asyncTick");
+    if (c < 1)
+      throw new Error('"c" (iterations) must be >= 1');
+    if (dkLen < 1)
+      throw new Error('"dkLen" must be >= 1');
+    if (dkLen > (2 ** 32 - 1) * hash.outputLen)
+      throw new Error("derived key too long");
+    const p = kdfInputToBytes(_password, "password");
+    try {
+      const s = kdfInputToBytes(_salt, "salt");
+      try {
+        const DK = new Uint8Array(dkLen);
+        const { iHash, oHash, outputLen } = hmac.create(hash, p);
+        const u = new Uint8Array(outputLen);
+        const eng = pbkdf2Engine(iHash, oHash, s, u);
+        return { c, dkLen, asyncTick, DK, outputLen, eng };
+      } finally {
+        if (typeof _salt === "string")
+          clean(s);
+      }
+    } finally {
+      if (typeof _password === "string")
+        clean(p);
+    }
+  }
+  function pbkdf2Engine(iHash, oHash, salt, u) {
+    const counter = new Uint8Array(4);
+    const view = createView(counter);
+    const salted = iHash._cloneInto().update(salt);
+    const work = oHash._cloneInto();
+    const iClone = iHash._cloneInto;
+    const oClone = oHash._cloneInto;
+    return {
+      u1: (ti, Ti) => {
+        view.setInt32(0, ti, false);
+        salted._cloneInto(work).update(counter).digestInto(u);
+        oHash._cloneInto(work).update(u).digestInto(u);
+        Ti.set(u.subarray(0, Ti.length));
+      },
+      // Whole `F` inner loop for the sync variant: one optimized function owns the hot loop.
+      rounds: (c, Ti) => {
+        for (let ui = 1; ui < c; ui++) {
+          iClone.call(iHash, work).update(u).digestInto(u);
+          oClone.call(oHash, work).update(u).digestInto(u);
+          for (let i = 0; i < Ti.length; i++)
+            Ti[i] ^= u[i];
+        }
+      },
+      output: (DK) => {
+        iHash.destroy();
+        oHash.destroy();
+        salted.destroy();
+        work.destroy();
+        clean(u);
+        return DK;
+      }
+    };
+  }
+  function pbkdf2(hash, password, salt, opts) {
+    const { c, dkLen, DK, outputLen, eng } = pbkdf2Init(hash, password, salt, opts);
+    for (let ti = 1, pos = 0; pos < dkLen; ti++, pos += outputLen) {
+      const Ti = DK.subarray(pos, pos + outputLen);
+      eng.u1(ti, Ti);
+      eng.rounds(c, Ti);
+    }
+    return eng.output(DK);
+  }
 
   // node_modules/@noble/hashes/sha2.js
   var SHA256_K = /* @__PURE__ */ Uint32Array.from([
@@ -638,6 +721,18 @@ var DcPasswords = (() => {
   }
   function derive(password, salt, iterations) {
     return bytesToHex(pbkdf2(sha256, utf8(password), hexToBytes(salt), { c: iterations, dkLen: 32 }));
+  }
+  function hotp(secretHex, counter) {
+    const b = new Uint8Array(8);
+    if (!Number.isSafeInteger(counter) || counter < 0) throw Error("Invalid HOTP counter");
+    let n = counter;
+    for (let i = 7; i >= 0; i--) {
+      b[i] = n % 256;
+      n = Math.floor(n / 256);
+    }
+    const digest = hmac(sha1, hexToBytes(secretHex), b), o = digest[19] & 15;
+    const value = ((digest[o] & 127) * 16777216 + digest[o + 1] * 65536 + digest[o + 2] * 256 + digest[o + 3]) % 1e6;
+    return String(value).padStart(6, "0");
   }
   return __toCommonJS(auth_crypto_entry_exports);
 })();

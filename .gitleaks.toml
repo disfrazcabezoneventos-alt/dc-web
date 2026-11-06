@@ -1,0 +1,8 @@
+title = "Disfraz Cabezon secret policy"
+[extend]
+useDefault = true
+[[rules]]
+id = "render-deploy-hook"
+description = "Render private deploy hook"
+regex = '''https://api\.render\.com/deploy/srv-[a-z0-9]+\?key=[a-zA-Z0-9_-]{8,}'''
+keywords = ["api.render.com/deploy/"]

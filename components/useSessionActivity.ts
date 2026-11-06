@@ -1,0 +1,3 @@
+'use client';
+import {useEffect} from 'react';import {api} from '@/lib/api';
+export function useSessionActivity(token:string,logout:()=>void){useEffect(()=>{if(!token||token==='demo')return;let last=Date.now(),sent=last;const active=()=>{last=Date.now()};const check=setInterval(()=>{if(Date.now()-last>=7200000){logout();return}if(last>sent&&document.visibilityState==='visible'){sent=last;api('securityActivity',{},token).catch(e=>{if(/Sesión vencida/.test(e.message))logout()})}},60000);for(const event of ['pointerdown','keydown','touchstart','scroll'])window.addEventListener(event,active,{passive:true});return()=>{clearInterval(check);for(const event of ['pointerdown','keydown','touchstart','scroll'])window.removeEventListener(event,active)}},[token]);}

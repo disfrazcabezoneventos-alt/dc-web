@@ -45,7 +45,7 @@ function incomingDispatch_(b){
  if(b.action==='incomingRequest')return {data:safeIncoming_(row)};
  if(b.action==='incomingFile'){
   need_(['dniFront','dniBack','addressProof','receipt','signature'].includes(b.slot),'Archivo inválido.');
-  const file=(b.original?row.files:{...row.files,...row.managementFiles})?.[b.slot];need_(file,'No hay archivo en ese campo.');
+  const file=(b.original?row.files:{...row.files,...row.managementFiles})?.[b.slot];need_(file?.id&&!file.removedAt,'El documento ya no está disponible según el plazo de conservación aprobado.');
   const blob=DriveApp.getFileById(file.id).getBlob();return {data:{base64:Utilities.base64Encode(blob.getBytes()),type:blob.getContentType()}};
  }
  if(typeof needNoPendingReceipt_==='function')needNoPendingReceipt_(row.id);

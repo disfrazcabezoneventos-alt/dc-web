@@ -1,3 +1,4 @@
+import {syntheticPhotoArchives} from './synthetic-import-fixtures.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -9,7 +10,7 @@ const addon=fs.readFileSync('backend/DisfracesIncremental20261028.gs','utf8');
 const raw=fs.readFileSync('backend/import-disfraces-2026-10-28.json','utf8');
 const manifest=JSON.parse(raw);
 const guide=fs.readFileSync('backend/GUIA_IMPORTACION_DISFRACES_2026_10_28.md','utf8');
-const folder='tmp/disfraces-2026-10-28';
+const synthetic=syntheticPhotoArchives(manifest);const runtimeHash=crypto.createHash('sha256').update(synthetic.raw).digest('hex');
 const names=['Hombres','Cabezones','Mujeres','Personajes','Profesiones','Superheroes y Princesas','Halloween','Históricos','Otros'];
 
 function unzipStored(bytes){
@@ -64,14 +65,14 @@ function setup(){
     const response=cloudinaryCalls===1?{secure_url:'https://res.cloudinary.com/test/photo.jpg'}:{secure_url:'https://res.cloudinary.com/test/photo.jpg',eager:[{secure_url:'https://res.cloudinary.com/test/thumb.jpg'}]};
     return {getResponseCode:()=>200,getContentText:()=>JSON.stringify(response)};
    }
-   return {getResponseCode:()=>200,getContentText:()=>raw};
+   return {getResponseCode:()=>200,getContentText:()=>synthetic.raw};
   }},
-  DriveApp:{getFileById:id=>{const name=archiveById.get(id);assert.ok(name);return {getBlob:()=>({getBytes:()=>[...fs.readFileSync(`${folder}/${name}`)]})};}},
+  DriveApp:{getFileById:id=>{const name=archiveById.get(id);assert.ok(name);return {getBlob:()=>({getBytes:()=>[...synthetic.archives.get(name)]})};}},
   SpreadsheetApp:{openById:id=>({getSheetByName:name=>copies[id===testId?'test':'production'].get(name)||null}),flush(){}},
   LockService:{getScriptLock:()=>({tryLock:()=>true,releaseLock(){}})}
  });
  vm.runInContext(code,context,{filename:'Code.gs'});
- vm.runInContext(addon,context,{filename:'DisfracesIncremental20261028.gs'});
+ vm.runInContext(addon.replace(/const DISFRACES_20261028_SHA256='[a-f0-9]+'/,'const DISFRACES_20261028_SHA256='+JSON.stringify(runtimeHash)),context,{filename:'DisfracesIncremental20261028.gs'});
  const products=mode=>copies[mode].get('disfraces').rows.slice(1).map(row=>JSON.parse(row[1]));
  return {context,settings,copies,products,getCloudinaryCalls:()=>cloudinaryCalls};
 }
@@ -132,7 +133,7 @@ test('los 30 lotes en la copia crean respaldo y preservan fichas manuales y Coti
 });
 test('simulación local: solo se activa una ficha cuando Cloudinary entrega foto y miniatura',()=>{
  const {context,settings,copies,products,getCloudinaryCalls}=setup();
- settings.DISFRACES_20261028_APPROVED=crypto.createHash('sha256').update(raw).digest('hex');
+ settings.DISFRACES_20261028_APPROVED=runtimeHash;
  settings.CLOUDINARY_CLOUD_NAME='test';
  settings.CLOUDINARY_API_KEY='test';
  settings.CLOUDINARY_API_SECRET='test';

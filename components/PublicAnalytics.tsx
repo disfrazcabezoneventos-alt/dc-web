@@ -24,6 +24,7 @@ export default function PublicAnalytics(){
   document.addEventListener('click',crossBoundary,true);
   return ()=>document.removeEventListener('click',crossBoundary,true);
  },[]);
- if(!pathname||!isPublic(pathname))return null;
- return <Script id="dc-cloudflare-web-analytics" type="module" src="https://static.cloudflareinsights.com/beacon.min.js" strategy="lazyOnload" data-cf-beacon='{"token":"423aece803a247f5aa622735d0e5c158"}'/>;
+ const token=process.env.NEXT_PUBLIC_CLOUDFLARE_WEB_ANALYTICS_TOKEN;
+ if(!pathname||!isPublic(pathname)||!token)return null;
+ return <Script id="dc-cloudflare-web-analytics" type="module" src="https://static.cloudflareinsights.com/beacon.min.js" strategy="lazyOnload" data-cf-beacon={JSON.stringify({token})}/>;
 }
